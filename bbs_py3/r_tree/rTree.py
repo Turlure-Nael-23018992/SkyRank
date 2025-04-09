@@ -10,11 +10,6 @@ class RTree():
     self.root = Node()
 
 
-
-
-
-
-
   '''
   K = Key()
   Insert new tuple Key in tree

@@ -14,7 +14,8 @@ from Algorithms.CoskySQL_param import CoskySQL
 #from Algorithms.DP_IDP import DP_IDP
 #from Algorithms.DP_IDP_cpp import DP_IDP
 from Algorithms.SkyIR import SkyIR
-from Database.DatabaseHelpers import SQL_DataMocker, Database
+from Database.DatabaseHelpers import  Database
+from Database.SQL_DataMocker import SQL_DataMocker
 from Utils.DataParser import DataParser
 from Utils.TimerUtils import TimeCalc
 from Utils.DisplayHelpers import beauty_print
@@ -24,6 +25,7 @@ from time import *
 ROWS_RATIO_MULT = pow(10, 6)
 ROWS_RATIO_UNITS = [1, 2, 5, 10]
 ROWS_RATIO = [x * ROWS_RATIO_MULT for x in ROWS_RATIO_UNITS]
+
 
 
 class AppRun:
@@ -84,9 +86,8 @@ class AppRun:
                 row_len = row
                 dict_data = SQL_DataMocker(col_len, row_len, db_filepath).dict_data
                 beauty_print(f"[col]:{col} [row]:{row}", dict_data)
-                #sleep(5)
+                # sleep(5)
         print("Mock data done")
-
 
 def data_normalizer(time_dict, max_rows, max_time, scaleX=280, scaleY=280):
     """
@@ -117,7 +118,7 @@ def data_normalizer(time_dict, max_rows, max_time, scaleX=280, scaleY=280):
     line2 = ""
     print("% Lines")
     for alg_idx in range(len_dict_val):
-        line1_header = f"\draw[{colors[alg_idx]}, line width=2pt]"
+        line1_header = f"\\draw[{colors[alg_idx]}, line width=2pt]"
         line1 = ""
         for k in time_dict.keys():
             x = int(round(k * ratio_x))
@@ -138,32 +139,26 @@ def compare_all():
     """
     db_filepath = f"../Assets/pokemon.db"
     log_filepath = fr"..\Assets\log.txt"
-    algo_types = [SkyIR, CoskySQL, CoskyAlgorithme]
+    algo_types = [SkyIR,CoskyAlgorithme,CoskySQL] #
     #iterations =[8, 40, 250, 500, 750, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 100000, 200000, 500000]
     rows = ROWS_RATIO  #[10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]
     col_count = 3
     time_dict = {k: [0, 0, 0, 0] for k in rows}
 
-    max_rows = 10
-    max_time = 10
+    max_rows = 0
+    max_time = 0
 
     root_databases = fr"..\Assets\databases"
     for col in [3]:
-        for row in [10]:  # rows;
+        for row in rows:
             #Permets d'afficher le temps d'éxécution de chaque algo
-            database_filepath = fr"{root_databases}\cosky_db_C{col}_R{row}.db"
+            database_filepath = fr"{root_databases}\cosky_db_C{col}_R{row}.db" # Récupération du chemin
             iteration_logs = []
             print(f"[{row}] iterations...")
             app_run = (AppRun("../Assets/databases/cosky_db_C3_R10.db"))
-            print(app_run.db_filepath)
-
-            try:
-                app_run.select_all()
-            except sqlite3.OperationalError as e:
-                print(f"Erreur de connexion à la base de données : {e}")
-                continue
-
-            r = DataParser(app_run).r_dict  # Transformation des données en dictionnaire
+            print(app_run.select_all())  # Sélectionne toutes les données de la table
+            r = DataParser(app_run.select_all()).r_dict  # Transformation des données en dictionnaire
+            #On a transformé les données en dictionnaire Pour les algos qui en ont besoin
             
             # Pour tous les types d'algos
             for idx, algo_type in enumerate(algo_types):
@@ -174,11 +169,20 @@ def compare_all():
                 time_calc = TimeCalc(row, algo_name)
                 # Pour l'algo SQL on lui rajoute l'objet connection dans les arguments
                 if algo_name == "CoskySQL":
-                    algo_obj = algo_type(database_filepath)
+                    # a besoin d'un chemin
+                    try:
+                        algo_obj = algo_type(database_filepath)
+                    except sqlite3.Error as e:
+                        print(f"Erreur lors de la création de l'objet {algo_name} :", e)
+                        continue
                 elif algo_name == "SkyIR":
+                    # a besoin d'un dictionnaire de données
                     algo_obj = algo_type(r).skyIR(10)
-                else:
+                    print("SkyIR instancié")
+                elif algo_name == "CoskyAlgorithme":
+                    # a besoin d'un dictionnaire de données
                     algo_obj = algo_type(r)
+                    print("CoskyAlgorithme instancié ")
                 time_calc.stop()  # Arrête le timer
                 iteration_logs.append(time_calc)  # Ajoute le temps d'éxécution à la liste
 
@@ -190,6 +194,7 @@ def compare_all():
 
                 if current_time > max_time:
                     max_time = current_time
+
             # Affichage du temps d'éxécution de chaque algo
             min_for_sample = min([x.ratio for x in iteration_logs])
             for x in iteration_logs:
@@ -200,7 +205,7 @@ def compare_all():
 
                 print(x.get_formated_data())
 
-    data_normalizer(time_dict, max_rows, max_time)
+    #data_normalizer(time_dict, max_rows, max_time)
 
 
 # Déclaration des algos

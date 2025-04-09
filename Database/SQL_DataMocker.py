@@ -1,4 +1,5 @@
-from DatabaseHelpers import Database
+from Database.DatabaseHelpers import Database
+from Utils.DataParser import DataParser
 
 class SQL_DataMocker:
     '''

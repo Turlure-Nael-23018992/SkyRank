@@ -17,7 +17,6 @@ class CoskySQL:
         self.cursor =self.conn.cursor()
         self.table_name="Pokemon"
         self.colonnes_initiales_str = []
-
         try:
             self.colonne_len=self.nombre_colonnes_table()
         except Exception as e:
@@ -26,8 +25,6 @@ class CoskySQL:
         self.colonne_names = self.get_column_names(self.table_name)
 
         self.run()
-
-
 
     def get_column_names(self, nom_table):
         '''
@@ -142,10 +139,6 @@ class CoskySQL:
 
 
 if __name__ == '__main__':
-
-
-
-
     db_filepath= f"../Assets/pokemon.db"
     cosky_sql = CoskySQL(db_filepath, is_debug=True)
     print("cosky_sql:",cosky_sql.rows_res)

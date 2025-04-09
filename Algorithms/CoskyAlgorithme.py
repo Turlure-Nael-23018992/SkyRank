@@ -102,11 +102,6 @@ class CoskyAlgorithme:
         return self.s
 
 
-
-
-
-
-
 if __name__ == '__main__':
     r_big = {
         1: (5, 20, 0.014285714),
