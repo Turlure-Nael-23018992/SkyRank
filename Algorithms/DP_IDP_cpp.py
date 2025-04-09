@@ -9,7 +9,7 @@ ffi.cdef("""
 """)
 
 # Charger la bibliothèque partagée
-C = ffi.dlopen(r"C:\Users\Julie\Documents\Pro\Prog\Python\CoSky\CoSky\Core\liblm.so")
+C = ffi.dlopen(r"\Core\liblm.so")
 
 class DP_IDP:
     '''

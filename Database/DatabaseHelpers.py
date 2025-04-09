@@ -286,9 +286,6 @@ class Database:
             print("212:", e)
             return False
 
-
-
-
 class SQL_DataMocker:
     '''
     Class that mock data from the database above
@@ -322,12 +319,9 @@ if __name__ == '__main__':
 
     db_filepath= f"../Assets/pokemon.db"
     for col in range(3, 4):
-        #print("col:", col)
         for row in range(500, 501):
-            #print("row:", row)
 
             col_len=col
             row_len=row
             dict_data = SQL_DataMocker(col_len, row_len,db_filepath).dict_data
-            #beauty_print(f"[col]:{col} [row]:{row}",dict_data)
-            #print(100*'*')
+
