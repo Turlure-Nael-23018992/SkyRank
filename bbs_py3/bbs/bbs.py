@@ -1,88 +1,100 @@
-#!/usr/bin/ python
+#!/usr/bin/python
 
 from .heap import Heap
 
+
 class BBS():
-	"""class for Branch and Bound algorith"""
-	def __init__(self, tree):
-		self.tree = tree
-		
-	"""
-	Get skylines from tree and return
-	"""
-	def skyline(self, sp, layer, minIdp={}):
-		lm = {}
-		#minIdp = {}
-		see = 0
+    """BBS Algorithm Class"""
 
+    def __init__(self, tree):
+        # R-Tree structure
+        self.tree = tree
 
-		# now create the priority heap for skylines with rTree.root
-		prHeap = Heap(self.tree.root)
-		# create empty skyline set
-		skylines = []
+    def skyline(self, sp, layer, minIdp={}):
+        """
+        Computes the skyline points from the R-Tree.
 
-		# initialize the comparision
-		comparirions = 0
-		# loop through heap untill it's not empty
-		while prHeap.size() != 0:
-			# 
-			dominated = False
-			# get the minimum heap key for next iteration
-			# this is a (pripority, key) tuple
-			heapItem = prHeap.deleteMin()
-			
-			# get the key value from heap item
-			key = heapItem[1]
+        Arguments:
+        - sp: source point identifier (for tracking)
+        - layer: layer level (useful for multi-layer skylines)
+        - minIdp: dictionary of dominations per point
 
-			# loop through all the skylines for dominance for this key
-			for item in skylines:
-				# check for dominance of key with items in skyline set
-				comparirions += 1
-				if(item.mbr.dominates(key.mbr)):
-					if (key.tupleId == None and key.childNode != None):
-						for item in key.childNode.keys:
-							lm[item.tupleId] = layer
-							if minIdp.get(item.tupleId):
-								minIdp[item.tupleId] += 1
-							else:
-								minIdp[item.tupleId]= 1
-							see = see + 1
-							#print(sp, "dominates", item.tupleId, "(c)")
-					else:
-						if (item.tupleId == sp):
-							lm[key.tupleId] = layer
-							if minIdp.get(key.tupleId):
-								minIdp[key.tupleId] += 1
-							else:
-								minIdp[key.tupleId] = 1
-							see = see + 1
-							#print(sp, "dominates", key.tupleId)
+        Returns:
+        - list of skyline points
+        - number of dominance comparisons performed
+        - dictionary of dominated points at this level
+        - updated minIdp
+        - total number of dominated points
+        """
 
-					# key is dominated by a skyline
-					# so continue with another key
-					dominated = True
-					break
-			if dominated:
-				# key is domintated and is removed from heap
-				# so continue with next key
-				continue
+        lm = {}  # Dictionary of dominated points
+        see = 0   # Counter for dominated points
 
-			# key is not dominated 
-			if(key.childNode != None):
-				# we are not at leaf node
-				# do the expansions
-				prHeap.enqueue(key.childNode)
-			else:
-				# we are at leap and found a tuple, so insert it into skyline set
-				skylines.append(key)
-		"""
-		print("============================================================")
-		print("sp=", sp)
-		print("layer=", layer)
-		print("lm=", lm)
-		print("minIdp=", minIdp)
-		print("see=", see)
-		print("\===========================================================")
-		"""
-		# now return the skyline set
-		return skylines, comparirions, lm, minIdp, see
+        # Heap initialization
+        prHeap = Heap(self.tree.root)
+
+        # List of skyline points (non-dominated)
+        skylines = []
+
+        # Dominance comparison counter
+        comparirions = 0
+
+        # Process elements in the heap until it's empty
+        while prHeap.size() != 0:
+            dominated = False  # Dominance status of the current element
+
+            # Retrieve the highest-priority element from the heap
+            heapItem = prHeap.deleteMin()
+            key = heapItem[1]  # Key (node or point) to analyze
+
+            # Check if 'key' is dominated by any existing skyline point
+            for item in skylines:
+                comparirions += 1
+                if (item.mbr.dominates(key.mbr)):
+                    # Case 1: 'key' is an internal node (not a leaf point)
+                    if (key.tupleId == None and key.childNode != None):
+                        for item in key.childNode.keys:
+                            lm[item.tupleId] = layer
+                            if minIdp.get(item.tupleId):
+                                minIdp[item.tupleId] += 1
+                            else:
+                                minIdp[item.tupleId] = 1
+                            see += 1
+                    else:
+                        # Case 2: 'key' is a dominated (leaf) point
+                        if (item.tupleId == sp):
+                            lm[key.tupleId] = layer
+                            if minIdp.get(key.tupleId):
+                                minIdp[key.tupleId] += 1
+                            else:
+                                minIdp[key.tupleId] = 1
+                            see += 1
+
+                    # If 'key' is dominated, discard it
+                    dominated = True
+                    break
+
+            if dominated:
+                # If the element is dominated, move to the next one
+                continue
+
+            # If the element is not dominated:
+            if (key.childNode != None):
+                # Case: It's an internal node -> explore its children
+                prHeap.enqueue(key.childNode)
+            else:
+                # Case: It's a leaf point -> add it to the skyline
+                skylines.append(key)
+
+        # Return the results
+        return skylines, comparirions, lm, minIdp, see
+
+"""
+        print("============================================================")
+        print("sp=", sp)
+        print("layer=", layer)
+        print("lm=", lm)
+        print("minIdp=", minIdp)
+        print("see=", see)
+        print("\===========================================================")
+"""

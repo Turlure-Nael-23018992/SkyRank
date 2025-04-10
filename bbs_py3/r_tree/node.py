@@ -1,39 +1,12 @@
 #!/usr/bin/ python
-#import six
-from .enum import Enum
+import six
 from .mbr import MBR
-
-class NodeType(Enum):
-    """Node types in R-Tree"""
-    root = 1
-    node = 2
-    leaf = 3
-
-class Key():
-    """Key for R-Tree"""
-    def __init__(self, tupleId=None, mbr=None, node=None, childNode=None):
-        self.mbr = mbr
-        self.tupleId = tupleId
-        self.node = node
-        self.childNode = childNode
-
-    def __lt__(self, other):
-        if other:
-            return self.mbr.priority() < other.mbr.priority()
-
-    def __repr__(self):
-        return f"""
-    mbr:{self.mbr}
-    tupleId:{self.tupleId}
-    node:{self.node}
-    childNode:{self.childNode}
-    """
-
-
+from .Key import Key
+from .NodeType import NodeType
 
 
 class Node():
-    """Node Structure"""
+    """r-Tree Node Structure"""
     def __init__(self,  nodeType=NodeType.leaf):
         self.parent = None
         self.keys = []
