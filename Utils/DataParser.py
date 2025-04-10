@@ -2,9 +2,9 @@ from Utils.DisplayHelpers import beauty_print
 
 
 class DataParser:
-    '''
+    """
     Class that converts data from SQL to Python dictionnary
-    '''
+    """
 
     def __init__(self, sql_r):
         self.sql_r = sql_r

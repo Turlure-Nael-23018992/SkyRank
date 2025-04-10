@@ -1,6 +1,7 @@
 import random
 import sqlite3, math
 import string
+import time
 
 
 
@@ -134,9 +135,9 @@ class CoskySQL:
 
         return self.rows_res
 
-
 if __name__ == '__main__':
-    db_filepath= f"../Assets/pokemon.db"
+    db_filepath= f"../Assets/databases/cosky_db_C6_R50000.db"
+    startTime = time.time()
     cosky_sql = CoskySQL(db_filepath, is_debug=True)
     print("cosky_sql:",cosky_sql.rows_res)
-    print(100*'*')
+    print(f"temps: {time.time() - startTime}")

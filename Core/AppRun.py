@@ -29,9 +29,9 @@ ROWS_RATIO = [x * ROWS_RATIO_MULT for x in ROWS_RATIO_UNITS]
 
 
 class AppRun:
-    '''
+    """
     EntryPoint of the app
-    '''
+    """
 
     def __init__(self, db_filepath):
         self.table_name = "Pokemon"
@@ -43,21 +43,21 @@ class AppRun:
         self.rows = ROWS_RATIO
 
     def select_all(self):
-        '''
+        """
         Select tout
         :return: Tous les enregistrements de la table
-        '''
+        """
         sql_query = f"SELECT * FROM {self.table_name}"
         self.cursor.execute(sql_query)
         return self.cursor.fetchall()
 
     def create_table(self, root_databases, col, row):
-        '''
+        """
         Crée une table dans la base de données
         :param root_databases: Le chemin vers le dossier contenant les bases de données
         :param col: Le nombre de colonnes
         :param row: Le nombre de lignes
-        '''
+        """
         database_filepath = fr"{root_databases}\cosky_db_C{col}_R{row // self.ratio_for_count}M.db"
         sql_mocker = SQL_DataMocker(col, row, filepath=database_filepath)
         r_dict = sql_mocker.run()
@@ -140,7 +140,7 @@ def compare_all():
     """
     db_filepath = f"../Assets/pokemon.db"
     log_filepath = fr"..\Assets\log.txt"
-    algo_types = [CoskyAlgorithme] #, CoskySQL SkyIR,
+    algo_types = [SkyIR, CoskyAlgorithme, CoskySQL] #
     #iterations =[8, 40, 250, 500, 750, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 100000, 200000, 500000]
     rows = ROWS_RATIO  #[10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]
     col_count = 3
@@ -150,7 +150,7 @@ def compare_all():
     max_time = 0
 
     root_databases = fr"..\Assets\databases"
-    for col in [3,6,9]:
+    for col in [3]: #,6,9
         for row in rows:
             #Permets d'afficher le temps d'éxécution de chaque algo
             database_filepath = fr"{root_databases}\cosky_db_C{col}_R{row}.db" # Récupération du chemin
@@ -206,7 +206,7 @@ def compare_all():
 
                 print(x.get_formated_data())
 
-    #data_normalizer(time_dict, max_rows, max_time)
+    data_normalizer(time_dict, max_rows, max_time)
 
 
 # Déclaration des algos

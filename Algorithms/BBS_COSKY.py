@@ -1,5 +1,5 @@
 from Utils.DisplayHelpers import beauty_print
-from bbs_py3.bbs.bbs import BBS
+from bbs_py3.bbs.Bbs import BBS
 from bbs_py3.r_tree.rTree import RTree
 
 

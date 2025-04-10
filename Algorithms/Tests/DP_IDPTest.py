@@ -1,7 +1,7 @@
 import unittest
 import json
 
-from Algorithms.DP_IDP import DP_IDP
+from Algorithms.DP_IDP_DH import DP_IDP
 
 class DP_IDPTest(unittest.TestCase):
     """Test suite for DP_IDP algorithm"""

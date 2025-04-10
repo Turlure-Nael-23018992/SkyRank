@@ -1,4 +1,6 @@
 import math
+import time
+import json
 
 from Algorithms.BBS_COSKY import BBS_COSKY
 from Utils.DisplayHelpers import beauty_print
@@ -113,11 +115,17 @@ if __name__ == '__main__':
         8: (9, 90, 0.033333333)
     }
 
+    with open ("r_big.json", "r") as f:
+        r_big = json.load(f)
+
     r = {
         1: (5, 20, 1 / 70),
         2: (4, 60, 1 / 50),
         4: (1, 80, 1 / 60)
     }
 
-    cosky = CoskyAlgorithme(r_petit)
-    beauty_print("Algo Cosky",cosky.s)
+
+    startTime = time.time()
+    cosky = CoskyAlgorithme(r_big)
+    print(cosky.s)
+    print(f"temps: {time.time() - startTime}")

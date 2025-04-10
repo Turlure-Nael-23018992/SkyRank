@@ -9,12 +9,12 @@ from Utils.DisplayHelpers import print_green, print_red
 
 
 class DP_IDP_ALL:
-    '''
-    Classe qui lance l'algorithme DP-IDP
-    '''
+    """
+    Class to run the DP-IDP algorithm
+    """
 
     def __init__(self, r, is_debug=False):
-        self.is_debug = is_debug  # Permet de toogle le graphe et les matrices
+        self.is_debug = is_debug  # Toggle matrice and graph mode
         self.relations = r
         self.dom, self.tot = self.dp_idp1()
         if self.is_debug:
@@ -55,10 +55,10 @@ def python2_to_python3_folders(py3_dir, py2_dir):
 
 
 def menu(default_choice="2"):
-    '''
-    Menu d'init
-    :return: L'objet de la base de données
-    '''
+    """
+    Init menu
+    :return: Database object
+    """
     user_choice = default_choice
     while user_choice not in ("0", "1"):
         user_choice = input('Première utilisation\n0.Oui\n1.Non')

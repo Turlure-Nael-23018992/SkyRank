@@ -8,7 +8,7 @@ queryFile : file that contains query data for getting skylines
 dataFile  : file from which we want to get skylines
 """
 from r_tree.rTree import RTree
-from bbs.bbs import BBS
+from bbs.Bbs import BBS
 import sys
 import getopt
 import time

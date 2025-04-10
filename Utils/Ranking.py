@@ -1,9 +1,9 @@
 from collections import OrderedDict
 
 class Ranking:
-    '''
-    Classe qui optimise le 'sort' par split du ranking
-    '''
+    """
+    Class to optimize the 'sort' by split of the ranking
+    """
 
     def __init__(self):
         self.ordered_dict = OrderedDict()
@@ -21,8 +21,7 @@ r = [
     (9, 90, 1 / 30)
 ]
 
-# Si un nombre A est meilleur qu'un autre nombre B ce n'est pas la peine de
-# comparer A avec les nombres qui sont moins bons que B
+# If A is better than B, it is not necessary to compare A with the numbers that are less good than B
 
 len_ = len(r)
 dom = [["/" if x == y else 0 for y in range(len_)] for x in range(len_)]

@@ -2,23 +2,23 @@ import psutil
 import GPUtil
 from tabulate import tabulate
 
-def afficher_stats_pc():
-    # Récupérer les informations sur la RAM
+def display_pc_stats():
+    # Retrieve information about the RAM
     mem = psutil.virtual_memory()
-    ram_total = mem.total / (1024 ** 3)  # Convertir en Go
-    ram_utilisee = mem.used / (1024 ** 3)  # Convertir en Go
-    ram_libre = mem.available / (1024 ** 3)  # Convertir en Go
+    ram_total = mem.total / (1024 ** 3)  # Convert to GB
+    ram_used = mem.used / (1024 ** 3)  # Convert to GB
+    ram_free = mem.available / (1024 ** 3)  # Convert to GB
 
-    # Récupérer les informations sur le processeur
-    cpu_cores_logiques = psutil.cpu_count()
-    cpu_cores_physiques = psutil.cpu_count(logical=False)
+    # Retrieve information about the processor
+    cpu_logical_cores = psutil.cpu_count()
+    cpu_physical_cores = psutil.cpu_count(logical=False)
     cpu_freq = psutil.cpu_freq()
     cpu_freq_max = cpu_freq.max
     cpu_freq_min = cpu_freq.min
     cpu_freq_current = cpu_freq.current
-    cpu_utilisation = psutil.cpu_percent(interval=1)
+    cpu_usage = psutil.cpu_percent(interval=1)
 
-    # Récupérer les informations sur le GPU
+    # Retrieve information about the GPU
     gpus = GPUtil.getGPUs()
     gpu_info = []
     for gpu in gpus:
@@ -32,25 +32,25 @@ def afficher_stats_pc():
             "temperature": f"{gpu.temperature} °C"
         })
 
-    # Afficher les informations dans un format tabulaire
+    # Display information in a tabular format
     print("RAM:")
     ram_table = [
         ["Total", f"{ram_total:.2f} GB"],
-        ["Utilisée", f"{ram_utilisee:.2f} GB"],
-        ["Libre", f"{ram_libre:.2f} GB"]
+        ["Used", f"{ram_used:.2f} GB"],
+        ["Free", f"{ram_free:.2f} GB"]
     ]
-    print(tabulate(ram_table, headers=["Type", "Valeur"], tablefmt="grid"))
+    print(tabulate(ram_table, headers=["Type", "Value"], tablefmt="grid"))
 
-    print("\nProcesseur:")
+    print("\nProcessor:")
     cpu_table = [
-        ["Cœurs logiques", cpu_cores_logiques],
-        ["Cœurs physiques", cpu_cores_physiques],
-        ["Fréquence Max", f"{cpu_freq_max:.2f} MHz"],
-        ["Fréquence Min", f"{cpu_freq_min:.2f} MHz"],
-        ["Fréquence Actuelle", f"{cpu_freq_current:.2f} MHz"],
-        ["Utilisation", f"{cpu_utilisation} %"]
+        ["Logical Cores", cpu_logical_cores],
+        ["Physical Cores", cpu_physical_cores],
+        ["Max Frequency", f"{cpu_freq_max:.2f} MHz"],
+        ["Min Frequency", f"{cpu_freq_min:.2f} MHz"],
+        ["Current Frequency", f"{cpu_freq_current:.2f} MHz"],
+        ["Usage", f"{cpu_usage} %"]
     ]
-    print(tabulate(cpu_table, headers=["Type", "Valeur"], tablefmt="grid"))
+    print(tabulate(cpu_table, headers=["Type", "Value"], tablefmt="grid"))
 
     if gpu_info:
         print("\nGPU:")
@@ -65,12 +65,12 @@ def afficher_stats_pc():
                 gpu["total_memory"],
                 gpu["temperature"]
             ])
-        print(tabulate(gpu_table, headers=["ID", "Nom", "Charge", "Mémoire Libre", "Mémoire Utilisée", "Mémoire Totale", "Température"], tablefmt="grid"))
+        print(tabulate(gpu_table, headers=["ID", "Name", "Load", "Free Memory", "Used Memory", "Total Memory", "Temperature"], tablefmt="grid"))
     else:
-        print("\nGPU: Aucun GPU détecté")
+        print("\nGPU: No GPU detected")
 
-# Appeler la fonction pour afficher les stats du PC
-afficher_stats_pc()
+# Call the function to display PC stats
+display_pc_stats()
 
 
 """

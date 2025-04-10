@@ -3,9 +3,9 @@ import time
 
 
 class TimeCalc:
-    '''
+    """
     Classe qui calcule le temps d'exécution
-    '''
+    """
 
     def __init__(self, samples_count, algo_type):
         self.samples_count=samples_count
