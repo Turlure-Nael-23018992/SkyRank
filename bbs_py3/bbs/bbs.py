@@ -1,7 +1,6 @@
 #!/usr/bin/python
-
-from .heap import Heap
-
+from bbs_py3.r_tree.rTree import RTree
+from bbs_py3.bbs.heap import Heap
 
 class BBS():
     """BBS Algorithm Class"""
@@ -86,15 +85,29 @@ class BBS():
                 # Case: It's a leaf point -> add it to the skyline
                 skylines.append(key)
 
-        # Return the results
-        return skylines, comparirions, lm, minIdp, see
-
-"""
         print("============================================================")
         print("sp=", sp)
         print("layer=", layer)
         print("lm=", lm)
         print("minIdp=", minIdp)
         print("see=", see)
-        print("\===========================================================")
-"""
+        print("===========================================================")
+        # Return the results
+        # skylines: list of skyline points
+        # comparirions: number of dominance comparisons
+        # lm: dictionary of dominated points
+        # minIdp: updated dictionary of dominated points
+        # see: total number of dominated points
+        return skylines, comparirions, lm, minIdp, see
+
+
+
+if __name__ == "__main__":
+    tree = RTree(M=4, m=2)
+    tree.Insert(tupleId=1, minDim=[1, 2], maxDim=[3, 4])
+    tree.Insert(tupleId=2, minDim=[2, 3], maxDim=[4, 5])
+    tree.Insert(tupleId=3, minDim=[5, 6], maxDim=[7, 8])
+    tree.Insert(tupleId=4, minDim=[6, 7], maxDim=[8, 9])
+    bbs = BBS(tree)
+    bbs.skyline(sp=1, layer=0)
+

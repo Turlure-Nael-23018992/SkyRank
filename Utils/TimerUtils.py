@@ -32,7 +32,7 @@ class TimeCalc:
                 return str(s)+" s"
 
     def get_formated_data(self):
-        return f"\t[{self.algo_type}]:\n\t\t[temps]:{TimeCalc.format_time(round(self.execution_time, 4))}\n\t\t[temps/samples]:{self.ratio}"
+        return f"\t[{self.algo_type}]:\n\t\t[temps]:{TimeCalc.format_time(round(self.execution_time, 10))}\n\t\t[temps/samples]:{self.ratio}"
 
     def stop(self):
         self.stop_time=time.time()

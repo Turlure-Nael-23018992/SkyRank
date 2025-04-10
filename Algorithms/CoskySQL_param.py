@@ -123,13 +123,10 @@ class CoskySQL:
             FROM {self.table_name} INNER JOIN SScore rs ON {self.table_name}.RowId = rs.RowId
             ORDER BY Score DESC;
             """
-        #print(sql_queries)
-        #quit()
 
         cursor.execute(sql_queries)
         # Récupération des résultats de la dernière instruction
         results = cursor.fetchall()
-        #print(100*"*")
         self.rows_res = []
 
         # Affichage des résultats

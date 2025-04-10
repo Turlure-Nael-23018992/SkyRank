@@ -18,7 +18,7 @@ from Database.DatabaseHelpers import  Database
 from Database.SQL_DataMocker import SQL_DataMocker
 from Utils.DataParser import DataParser
 from Utils.TimerUtils import TimeCalc
-from Utils.DisplayHelpers import beauty_print
+from Utils.DisplayHelpers import beauty_print, print_color
 from time import *
 
 #Déclaration des constantes
@@ -101,6 +101,7 @@ def data_normalizer(time_dict, max_rows, max_time, scaleX=280, scaleY=280):
     colors = [f"gray", "brightmaroon", "cyan", "skyblue"]
     #colors=[Fore.LIGHTBLACK_EX, Fore.LIGHTMAGENTA_EX, Fore.CYAN, Fore.BLUE]
     NL = '\n'
+    # calcul des ratios pour les axes du graphique
     ratio_x = scaleX / max_rows
     ratio_y = scaleY / max_time
     dict_ = '\n'.join([f"{k}:{v}" for k, v in time_dict.items()])
@@ -139,7 +140,7 @@ def compare_all():
     """
     db_filepath = f"../Assets/pokemon.db"
     log_filepath = fr"..\Assets\log.txt"
-    algo_types = [SkyIR,CoskyAlgorithme,CoskySQL] #
+    algo_types = [CoskyAlgorithme] #, CoskySQL SkyIR,
     #iterations =[8, 40, 250, 500, 750, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 100000, 200000, 500000]
     rows = ROWS_RATIO  #[10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]
     col_count = 3
@@ -149,14 +150,15 @@ def compare_all():
     max_time = 0
 
     root_databases = fr"..\Assets\databases"
-    for col in [3]:
+    for col in [3,6,9]:
         for row in rows:
             #Permets d'afficher le temps d'éxécution de chaque algo
             database_filepath = fr"{root_databases}\cosky_db_C{col}_R{row}.db" # Récupération du chemin
             iteration_logs = []
-            print(f"[{row}] iterations...")
+            #print(f"[{row}] iterations...")
+            beauty_print("Chemin de la base de données", database_filepath)
             app_run = (AppRun("../Assets/databases/cosky_db_C3_R10.db"))
-            print(app_run.select_all())  # Sélectionne toutes les données de la table
+            #print(app_run.select_all())  # Sélectionne toutes les données de la table
             r = DataParser(app_run.select_all()).r_dict  # Transformation des données en dictionnaire
             #On a transformé les données en dictionnaire Pour les algos qui en ont besoin
             
@@ -164,28 +166,27 @@ def compare_all():
             for idx, algo_type in enumerate(algo_types):
                 # Le nom de la classe de l'algo
                 algo_name = algo_type.__name__
-                print(f"\tALGO [{algo_name}]")
+                #print(f"\tALGO [{algo_name}]")
 
                 time_calc = TimeCalc(row, algo_name)
                 # Pour l'algo SQL on lui rajoute l'objet connection dans les arguments
+
                 if algo_name == "CoskySQL":
                     # a besoin d'un chemin
-                    try:
-                        algo_obj = algo_type(database_filepath)
-                    except sqlite3.Error as e:
-                        print(f"Erreur lors de la création de l'objet {algo_name} :", e)
-                        continue
+                    algo_obj = algo_type(database_filepath)
+
+
                 elif algo_name == "SkyIR":
                     # a besoin d'un dictionnaire de données
                     algo_obj = algo_type(r).skyIR(10)
-                    print("SkyIR instancié")
+
+
                 elif algo_name == "CoskyAlgorithme":
                     # a besoin d'un dictionnaire de données
                     algo_obj = algo_type(r)
-                    print("CoskyAlgorithme instancié ")
+
                 time_calc.stop()  # Arrête le timer
                 iteration_logs.append(time_calc)  # Ajoute le temps d'éxécution à la liste
-
                 current_time = time_calc.execution_time
                 time_dict[row][idx] = current_time  # Ajoute le temps d'éxécution au dictionnaire
 
@@ -212,7 +213,7 @@ def compare_all():
 COMPARE_ALL = "COMPARE_ALL"
 COSKY_ALGO_ = "COSKY_ALGO"
 COSKY_SQL_ = "COSKY_SQL"
-DP_IDP_ = "DP_IDP"
+#DP_IDP_ = "DP_IDP"
 CONFIG_DATA = "CONFIG_DATA"
 
 # MODES Contient tous les algos dont on veut faire la comparaison
@@ -241,4 +242,5 @@ if __name__ == '__main__':
     App = AppRun("")
     #App.mock_data()
     compare_all()
+
     quit()

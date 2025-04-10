@@ -98,12 +98,11 @@ class CoskyAlgorithme:
             self.s[i].append(val)
         if self.is_debug:
             beauty_print("totIdealP", self.totIdealP)
-            beauty_print("s", self.s)
         return self.s
 
 
 if __name__ == '__main__':
-    r_big = {
+    r_petit = {
         1: (5, 20, 0.014285714),
         2: (4, 60,0.02),
         3: (5, 30, 0.016666667),
@@ -120,5 +119,5 @@ if __name__ == '__main__':
         4: (1, 80, 1 / 60)
     }
 
-    cosky = CoskyAlgorithme(r_big)
-    beauty_print("s",cosky.s)
+    cosky = CoskyAlgorithme(r_petit)
+    beauty_print("Algo Cosky",cosky.s)

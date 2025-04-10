@@ -1,17 +1,17 @@
 #!/usr/bin/python
 
-from node import Node
-from Key import Key
-from NodeType import NodeType
-from mbr import MBR
+from .node import Node
+from .Key import Key
+from .NodeType import NodeType
+from .mbr import MBR
 
 
 class RTree():
     """R-Tree Class"""
 
     def __init__(self, M, m):
-        self.M = M
-        self.m = m
+        self.M = M # Maximum number of keys in a node
+        self.m = m # Minimum number of keys in a node
         self.root = Node()
 
     def Insert(self, tupleId, minDim, maxDim):
