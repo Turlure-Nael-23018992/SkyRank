@@ -1,6 +1,6 @@
 import unittest
-from bbs_py3.bbs.Bbs import BBS
-from bbs_py3.r_tree.rTree import RTree
+from BbsPy3.Bbs.Bbs import BBS
+from BbsPy3.RTree.rTree import RTree
 
 class BbsTest(unittest.TestCase):
     def setUp(self):

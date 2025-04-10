@@ -1,9 +1,9 @@
 from Utils.DisplayHelpers import beauty_print
-from bbs_py3.bbs.Bbs import BBS
-from bbs_py3.r_tree.rTree import RTree
+from BbsPy3.Bbs.Bbs import Bbs
+from BbsPy3.RTree.rTree import RTree
 
 
-class BBS_COSKY:
+class BbsCosky:
     '''
     BBS Algorithm
     '''
@@ -20,11 +20,11 @@ class BBS_COSKY:
         self.sp=sp
         self.layer=layer
         # create R-Tree object for M and m
-        self.rTree = RTree(BBS_COSKY.M, BBS_COSKY.M/2)
+        self.rTree = RTree(BbsCosky.M, BbsCosky.M/2)
         # now fill the rTree with data file
         self.fillRTree()
         # create instance of BBS class with rTree
-        self.bbs = BBS(self.rTree)
+        self.bbs = Bbs(self.rTree)
         # get the skyline from rTree
         self.skylines, self.comparisions, self.lm, self.minIdp, self.see = self.bbs.skyline(self.sp, self.layer, self.minIdp)
         self.skyline=self.skylines_to_dict(self.skylines)
@@ -55,5 +55,5 @@ if __name__ == '__main__':
         8: (9, 90, 0.033333333)
     }
 
-    bbs_cosky=BBS_COSKY(r_big, 1, 2)
+    bbs_cosky=BbsCosky(r_big, 1, 2)
     beauty_print("skyline",bbs_cosky.skyline)

@@ -2,7 +2,7 @@ import math
 import time
 import json
 
-from Algorithms.BBS_COSKY import BBS_COSKY
+from Algorithms.BbsCosky import BbsCosky
 from Utils.DisplayHelpers import beauty_print
 
 
@@ -14,7 +14,7 @@ class CoskyAlgorithme:
     def __init__(self, r, is_debug=False):
         self.is_debug=is_debug
         self.r = r
-        self.bbs = BBS_COSKY(r, 1, 2)
+        self.bbs = BbsCosky(r, 1, 2)
         self.s= {k:list(v) for k,v in self.bbs.skyline.items()}
         #beauty_print("s",self.s)
         self.data_keys=self.s.keys()
@@ -115,7 +115,7 @@ if __name__ == '__main__':
         8: (9, 90, 0.033333333)
     }
 
-    with open ("r_big.json", "r") as f:
+    with open ("RBig.json", "r") as f:
         r_big = json.load(f)
 
     r = {

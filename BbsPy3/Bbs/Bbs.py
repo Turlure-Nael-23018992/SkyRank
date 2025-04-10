@@ -1,8 +1,8 @@
 #!/usr/bin/python
-from bbs_py3.r_tree.rTree import RTree
-from bbs_py3.bbs.heap import Heap
+from BbsPy3.RTree.rTree import RTree
+from BbsPy3.Bbs.Heap import Heap
 
-class BBS():
+class Bbs():
     """BBS Algorithm Class"""
 
     def __init__(self, tree):
@@ -84,7 +84,7 @@ class BBS():
             else:
                 # Case: It's a leaf point -> add it to the skyline
                 skylines.append(key)
-
+        """
         print("============================================================")
         print("sp=", sp)
         print("layer=", layer)
@@ -92,6 +92,7 @@ class BBS():
         print("minIdp=", minIdp)
         print("see=", see)
         print("===========================================================")
+        """
         # Return the results
         # skylines: list of skyline points
         # comparirions: number of dominance comparisons

@@ -1,8 +1,8 @@
 import unittest
-from bbs_py3.bbs.Heap import Heap
-from bbs_py3.r_tree.node import Node
-from bbs_py3.r_tree.Key import Key
-from bbs_py3.r_tree.mbr import MBR
+from BbsPy3.Bbs.Heap import Heap
+from BbsPy3.RTree.node import Node
+from BbsPy3.RTree.Key import Key
+from BbsPy3.RTree.mbr import MBR
 
 class HeapTest(unittest.TestCase):
     """

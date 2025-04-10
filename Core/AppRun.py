@@ -15,7 +15,7 @@ from Algorithms.CoskySQL_param import CoskySQL
 #from Algorithms.DP_IDP_cpp import DP_IDP
 from Algorithms.SkyIR import SkyIR
 from Database.DatabaseHelpers import  Database
-from Database.SQL_DataMocker import SQL_DataMocker
+from Database.SqlDataMocker import SqlDataMocker
 from Utils.DataParser import DataParser
 from Utils.TimerUtils import TimeCalc
 from Utils.DisplayHelpers import beauty_print, print_color
@@ -157,7 +157,7 @@ def compare_all():
             iteration_logs = []
             #print(f"[{row}] iterations...")
             beauty_print("Chemin de la base de données", database_filepath)
-            app_run = (AppRun("../Assets/databases/cosky_db_C3_R10.db"))
+            app_run = (AppRun("../Assets/Databases/cosky_db_C3_R10.db"))
             #print(app_run.select_all())  # Sélectionne toutes les données de la table
             r = DataParser(app_run.select_all()).r_dict  # Transformation des données en dictionnaire
             #On a transformé les données en dictionnaire Pour les algos qui en ont besoin

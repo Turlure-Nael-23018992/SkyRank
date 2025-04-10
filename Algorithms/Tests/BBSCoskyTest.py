@@ -1,5 +1,5 @@
 import unittest
-from Algorithms.BBS_COSKY import BBS_COSKY
+from Algorithms.BbsCosky import BBS_COSKY
 
 
 class TestBBSCosky(unittest.TestCase):

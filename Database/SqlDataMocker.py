@@ -1,7 +1,7 @@
 from Database.DatabaseHelpers import Database
 from Utils.DataParser import DataParser
 
-class SQL_DataMocker:
+class SqlDataMocker:
     """
     Class that mock data from the database above
     """

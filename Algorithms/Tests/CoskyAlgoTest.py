@@ -14,7 +14,7 @@ class CoskyAlgoTest(unittest.TestCase):
         """
         Setup method to initialize the CoskyAlgorithme instance.
         """
-        with open('../r_big.json', 'r') as f:
+        with open('../RBig.json', 'r') as f:
             r_big_loaded = json.load(f)
 
         # Convert the loaded dictionary values to tuples

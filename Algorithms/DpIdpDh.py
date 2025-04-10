@@ -499,7 +499,7 @@ def calculScore(sky, domCard, spTot):
 
 
 
-class DP_IDP:
+class DpIdpDh:
     '''
     Classe qui lance l'algo de DP-IDP
     '''
@@ -758,7 +758,7 @@ def dpIdpAvecHierarchieDeDominance():
 if __name__ == '__main__':
     import time
 
-    with open('r_big.json', 'r') as f:
+    with open('RBig.json', 'r') as f:
         r_big = json.load(f)
 
     # Convert the loaded dictionary values to tuples

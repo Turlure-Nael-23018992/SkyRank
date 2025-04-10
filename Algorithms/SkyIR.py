@@ -7,7 +7,7 @@ import json
 
 
 
-from Algorithms.BBS_COSKY import BBS_COSKY
+from Algorithms.BbsCosky import BBS_COSKY
 from Utils.DisplayHelpers import beauty_print
 
 
@@ -258,7 +258,7 @@ if __name__ == '__main__':
 
 
 
-    with open("r_big.json", "r") as f:
+    with open("RBig.json", "r") as f:
         r_big = json.load(f)
     sky_ir = SkyIR(r_big)
     # ------------------------------------------------------------------------------------------------------------------

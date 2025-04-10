@@ -6,8 +6,8 @@ from queue import PriorityQueue
 
 
 
-from CoSky.Algorithms.BBS_COSKY import BBS_COSKY
-from CoSky.Utils.DisplayHelpers import beauty_print
+from Algorithms.BbsCosky import BbsCosky
+from Utils.DisplayHelpers import beauty_print
 
 
 class SkyIR:

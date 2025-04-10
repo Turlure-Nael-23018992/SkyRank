@@ -2,13 +2,13 @@
 
 """
 Skylines using Branch and bound with R-tree as a data structure
-usage: python skyline.py queryFile dataFile
+usage: python Skyline.py queryFile dataFile
 arguments:
 queryFile : file that contains query data for getting skylines
 dataFile  : file from which we want to get skylines
 """
-from r_tree.rTree import RTree
-from bbs.Bbs import BBS
+from RTree.rTree import RTree
+from Bbs.Bbs import Bbs
 import sys
 import getopt
 import time
@@ -81,7 +81,7 @@ def main(argv=None):
 	# to get the skylines
 	
 	# create instance of BBS class with rTree
-	bbs = BBS(rTree)
+	bbs = Bbs(rTree)
 	
 	# get the skyline from rTree
 	skylines, comparisions = bbs.skyline(1, 2)
