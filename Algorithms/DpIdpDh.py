@@ -776,7 +776,7 @@ if __name__ == '__main__':
     }
 
     startTime=time.time()
-    dp_idp = DP_IDP(r_big)
+    dp_idp = DpIdpDh(r_big)
     print(dp_idp.score)
     print(f"temps: {time.time()-startTime}")
 

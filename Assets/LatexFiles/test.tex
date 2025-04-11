@@ -1,0 +1,51 @@
+
+        \documentclass{article}
+
+        % --- PACKAGES NECESSAIRES ---
+        \usepackage[utf8]{inputenc}
+        \usepackage{tikz}
+        \usepackage{xcolor}
+        \usepackage{graphicx}
+
+        % --- COULEURS PERSONNALISÉES ---
+        \definecolor{brightmaroon}{RGB}{195,33,72}
+        \definecolor{cyan}{RGB}{0,255,255}
+        \definecolor{skyblue}{RGB}{135,206,235}
+
+        \begin{figure}[htbp]
+        \centering
+        \resizebox{.45\linewidth}{!}{
+        \begin{tikzpicture}[
+        line join=bevel,
+        biggraynode/.style={shape=circle, fill=gray, draw=black, line width=1pt},
+        bigbrightmaroonnode/.style={shape=circle, fill=brightmaroon, draw=black, line width=1pt},
+        bigcyannode/.style={shape=circle, fill=cyan, draw=black, line width=1pt},
+        bigskybluenode/.style={shape=circle, fill=skyblue, draw=black, line width=1pt}
+        ]
+
+        %% Draws
+        \draw[-stealth] (0pt, 0pt) -- (300pt, 0pt) node[anchor=north west] {Cardinality};
+        \draw[-stealth] (0pt, 0pt) -- (0pt, 340pt) node[anchor=south] {Response time in s};
+    % Lines
+\draw[brightmaroon, line width=2pt](3pt, 0pt) -- (28pt, 1pt) -- (280pt, 23pt);
+\draw[cyan, line width=2pt](3pt, 2pt) -- (28pt, 4pt) -- (280pt, 119pt);
+\draw[skyblue, line width=2pt](3pt, 2pt) -- (28pt, 5pt) -- (280pt, 280pt);
+% Filldraws
+\filldraw[color=black, fill=brightmaroon] (3pt, 0pt) circle (2pt);
+\filldraw[color=black, fill=brightmaroon] (28pt, 1pt) circle (2pt);
+\filldraw[color=black, fill=brightmaroon] (280pt, 23pt) circle (2pt);
+\filldraw[color=black, fill=cyan] (3pt, 2pt) circle (2pt);
+\filldraw[color=black, fill=cyan] (28pt, 4pt) circle (2pt);
+\filldraw[color=black, fill=cyan] (280pt, 119pt) circle (2pt);
+\filldraw[color=black, fill=skyblue] (3pt, 2pt) circle (2pt);
+\filldraw[color=black, fill=skyblue] (28pt, 5pt) circle (2pt);
+\filldraw[color=black, fill=skyblue] (280pt, 280pt) circle (2pt);
+%% Caption
+			\matrix [below left] at (current bounding box.north east) {        \node [bigbrightmaroonnode, label=right:CoSky "SQL query" with 9 attributes] {}; \
+                        \node [bigcyannode, label=right:CoSky "SQL query" with 6 attributes] {}; \
+                        \node [bigskybluenode, label=right:CoSky "SQL query" with 3 attributes] {}; \
+                    };
+                \end{tikzpicture}
+            }
+            \caption{CoSky response time for SQL queries}\label{fig:temps_de_reponse_de_CoSky_en_sql}
+        \end{figure}

@@ -7,7 +7,7 @@ import json
 
 
 
-from Algorithms.BbsCosky import BBS_COSKY
+from Algorithms.BbsCosky import BbsCosky
 from Utils.DisplayHelpers import beauty_print
 
 
@@ -107,7 +107,7 @@ class SkyIR:
         sNextLayer = {key: sLayer[key] for key in sLayer if poi != key}
         rLayer = {key: rLayer[key] for key in rLayer if key not in sNextLayer.keys()}
 
-        bbs = BBS_COSKY(rLayer, poi, layer, minIdp)
+        bbs = BbsCosky(rLayer, poi, layer, minIdp)
         sLayer = {k: list(v) for k, v in bbs.skyline.items()}
         if len(sLayer) == 1:
             return rLayer, sLayer, bbs.lm, bbs.minIdp, bbs.see
