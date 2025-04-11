@@ -1,0 +1,39 @@
+\documentclass[tikz, border=10pt]{standalone}
+        \usepackage{tikz}
+        \usetikzlibrary{arrows.meta, shapes, positioning}
+        \begin{document}\resizebox{.45
+        \linewidth}{!}{
+		\begin{tikzpicture}[
+			line join=bevel,
+			bigcyannode/.style={shape=circle, fill=cyan, draw=black, line width=1pt},
+			bigskybluenode/.style={shape=circle, fill=skyblue, draw=black, line width=1pt}
+			]
+			
+			%% Draws
+			\draw[-stealth] (0pt, 0pt) -- (300pt, 0pt) node[anchor=north west] {Cardinality};
+			\draw[-stealth] (0pt, 0pt) -- (0pt, 310pt) node[anchor=south] {Response time in s};% X-axis ticks and labels
+                    \foreach \x/\xtext in {0pt/$0$, 56pt/$400.0$, 112pt/$800.0$, 168pt/$1200.0$, 224pt/$1600.0$, 280pt/$2000$} {
+                        \draw (\x, 2pt) -- (\x, -2pt) node[below] {\xtext\strut};
+                    }
+                    % Y-axis ticks and labels
+                    \foreach \y/\ytext in {0pt/$0$, 9pt/$0.7$, 55pt/$1.39$, 110pt/$2.09$, 165pt/$2.78$, 220pt/$3.48$} {
+                        \draw (2pt, \y) -- (-2pt, \y) node[left] {\ytext\strut};
+                    }
+        \filldraw[color=black, fill=brightmaroon] (14pt, 0pt) circle (2pt);
+\filldraw[color=black, fill=brightmaroon] (140pt, 2pt) circle (2pt);
+\filldraw[color=black, fill=brightmaroon] (280pt, 4pt) circle (2pt);
+\filldraw[color=black, fill=cyan] (14pt, 0pt) circle (2pt);
+\filldraw[color=black, fill=cyan] (140pt, 49pt) circle (2pt);
+\filldraw[color=black, fill=cyan] (280pt, 124pt) circle (2pt);
+\filldraw[color=black, fill=brightmaroon] (14pt, 0pt) circle (2pt);
+\filldraw[color=black, fill=brightmaroon] (140pt, 11pt) circle (2pt);
+\filldraw[color=black, fill=brightmaroon] (280pt, 40pt) circle (2pt);
+\filldraw[color=black, fill=cyan] (14pt, 0pt) circle (2pt);
+\filldraw[color=black, fill=cyan] (140pt, 67pt) circle (2pt);
+\filldraw[color=black, fill=cyan] (280pt, 195pt) circle (2pt);
+\filldraw[color=black, fill=brightmaroon] (14pt, 1pt) circle (2pt);
+\filldraw[color=black, fill=brightmaroon] (140pt, 26pt) circle (2pt);
+\filldraw[color=black, fill=brightmaroon] (280pt, 85pt) circle (2pt);
+\filldraw[color=black, fill=cyan] (14pt, 1pt) circle (2pt);
+\filldraw[color=black, fill=cyan] (140pt, 83pt) circle (2pt);
+\filldraw[color=black, fill=cyan] (280pt, 280pt) circle (2pt);
