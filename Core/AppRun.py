@@ -227,81 +227,9 @@ def compare_all():
     beauty_print("max_rows", max_rows)
     beauty_print("max_time", max_time)
     '''
-    latexMaker = LatexMaker()
-    latexMaker.coskyComparaisonLatex(time_dict, max_rows, max_time)
     #data_normalizer(time_dict, max_rows, max_time)
 
-def compareExecutionTime(algo):
-    """
-    Compare le temps d'éxécution d'un algo sur plusieurs bases de données de tailles différentes
-    """
-    db_filepath = f"../Assets/pokemon.db"
-    log_filepath = fr"..\Assets\log.txt"
-    algo_types = [CoskySQL]  # SkyIR, CoskyAlgorithme,
-    # iterations =[8, 40, 250, 500, 750, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 100000, 200000, 500000]
-    rows = ROWS_RATIO  # [10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]
-    col_count = 3
-    cols = [3, 6, 9]
-    rows = [10, 100, 1000]
-    time_dict = {k: [0 for i in range(len(cols))] for k in rows}
-    beauty_print("time_dict", time_dict)
 
-    max_rows = 0
-    max_time = 0
-
-    root_databases = fr"..\Assets\databases"
-    i= -1
-    for col in cols:
-        i+=1
-        for row in rows:
-            # beauty_print("Colonne", col)
-            # beauty_print("Ligne", rows)
-            # Permets d'afficher le temps d'éxécution de chaque algo
-            database_filepath = fr"{root_databases}\cosky_db_C{col}_R{row}.db"  # Récupération du chemin
-            iteration_logs = []
-            # print(f"[{row}] iterations...")
-            beauty_print("Chemin de la base de données", database_filepath)
-            app_run = (AppRun(database_filepath))
-            # print(app_run.select_all())  # Sélectionne toutes les données de la table
-            r = DataParser(app_run.select_all()).r_dict  # Transformation des données en dictionnaire
-            # On a transformé les données en dictionnaire Pour les algos qui en ont besoin
-
-            # Pour l'algo donnée mettre dans le dictionnaire le temps d'éxécution
-
-            # Le nom de la classe de l'algo
-            algo_name = algo.__name__
-            print(f"\tALGO [{algo_name}]")
-            time_calc = TimeCalc(row, algo_name)
-            # Pour l'algo SQL on lui rajoute l'objet connection dans les arguments
-            if algo_name == "CoskySQL":
-                # a besoin d'un chemin
-                algo_obj = algo(database_filepath)
-
-            elif algo_name == "SkyIR":
-                # a besoin d'un dictionnaire de données
-                algo_obj = algo(r).skyIR(10)
-
-            elif algo_name == "CoskyAlgorithme":
-                # a besoin d'un dictionnaire de données
-                algo_obj = algo(r)
-            # Récupérer le temps d'éxécution pour chaque bd sur l'algo donné
-            time_calc.stop()
-            #mettre dans le dictionnaire le temps d'éxécution
-            current_time = time_calc.execution_time
-            time_dict[row][i] = current_time
-
-            if row > max_rows:
-                max_rows = row
-
-            if current_time > max_time:
-                max_time = current_time
-
-            #beauty_print("time_dict", time_dict)
-    with open("../Assets/LatexDatas/ExecutionCoskyDatas.json", "w") as f:
-        json.dump(time_dict, f, indent=4)
-
-    latexMaker = LatexMaker()
-    latexMaker.coskyComparaisonLatex(time_dict, max_rows, max_time)
 
 
 # Déclaration des algos
@@ -335,6 +263,4 @@ MODES = {
 
 if __name__ == '__main__':
     App = AppRun("")
-    compareExecutionTime(CoskySQL)
-
     quit()

@@ -11,7 +11,7 @@ class Database:
     Class to manage the database
     """
 
-    def __init__(self, db_filepath, col_len, row_len=0, is_debug=True):
+    def __init__(self, db_filepath, col_len=9, row_len=0, is_debug=True):
         self.is_debug = is_debug
         self.relations = []
         self.conn = sqlite3.connect(db_filepath)
