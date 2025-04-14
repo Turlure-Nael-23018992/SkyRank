@@ -28,7 +28,7 @@ class AlgoCalculator:
         self.tableName = "Pokemon"
         self.conn = sqlite3.connect(fr"..\Assets\databases\{self.tableName}.db")
         self.cols = [3, 6, 9]
-        self.rows = [100, 1000 ,2000, 5000, 10000, 20000]
+        self.rows = [100, 1000 ,2000, 5000, 10000, 20000, 50000, 100000]
 
     def select_all(self):
         """
@@ -59,11 +59,11 @@ class AlgoCalculator:
                 # beauty_print("Row", rows)
                 # Displays the execution time of each algorithm
                 database_filepath = fr"{root_databases}\cosky_db_C{col}_R{row}.db"  # Retrieve the path
+                beauty_print("Database path", database_filepath)
                 sel = AlgoCalculator(database_filepath)
                 r = DataParser(sel.select_all()).r_dict
                 # The name of the algorithm class
                 algo_name = algo.__name__
-                print(f"\tALGO [{algo_name}]")
                 time_calc = TimeCalc(row, algo_name)
                 # For the SQL algorithm, add the connection object to the arguments
                 if algo_name == "CoskySQL":
@@ -191,9 +191,15 @@ class AlgoCalculator:
             if currentTime > maxTime:
                 maxTime = currentTime
 
+        dataToSave = {
+            "timeDict": timeDict,  # The dictionary with execution times
+            "maxRows": maxRows,  # The maximum number of rows
+            "maxTime": maxTime  # The maximum execution time
+        }
+
         with open(self.jsonFilePath, "w") as f:
             # Save everything in the JSON file
-            json.dump(timeDict, f, indent=4)
+            json.dump(dataToSave, f, indent=4)
 
 # Algorithm declarations
 COMPARE_ALL = "COMPARE_ALL"
@@ -215,4 +221,4 @@ if __name__ == "__main__":
     calculator = AlgoCalculator("")
     #calculator.compareExecutionTime(CoskySQL)
     #calculator.compareExecutionTimeSqlAlgo()
-    calculator.compareExecutionTimeCoskySqlColumn(9)
+    calculator.compareExecutionTimeCoskySqlColumn(6)

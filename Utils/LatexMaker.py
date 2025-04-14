@@ -303,21 +303,141 @@ class LatexMaker:
         self.addLatexCode(self.latexCode)
         self.render()
 
-    def CoskyComparaisonNColumn(self, timeDict, n, scaleX=280, scaleY=280):
+    def CoskyComparaisonNColumn(self, column, scaleX=280, scaleY=280):
         """
         Create the latex code for the Cosky comparison for n columns
         """
-        pass
+        self.colors.pop(0)
+        self.colors.pop(0)
+        column = int(column)
+        dataPath = "../Assets/LatexDatas/"
+
+        match column:
+            case 3:
+                print("3")
+                self.path += "CoskySql3.tex"
+                dataPath += "ExecutionCoskySql3.json"
+            case 6:
+                print("6")
+                self.path += "CoskySql6.tex"
+                dataPath += "ExecutionCoskySql6.json"
+            case 9:
+                print("9")
+                self.path += "CoskySql9.tex"
+                dataPath += "ExecutionCoskySql9.json"
+
+        data = self.getData(dataPath)
+        timeDict = data["timeDict"]
+        maxRows = data["maxRows"]
+        maxTime = data["maxTime"]
+
+        ratio_x = scaleX / maxRows
+        ratio_y = scaleY / maxTime
+
+        self.latexCode += r"""
+        \documentclass{article}
+        \usepackage{tikz}
+        \usepackage{xcolor}
+        \usepackage{graphicx}
+        \usepackage{caption}
+
+        \definecolor{skyblue}{RGB}{135,206,235}
+        \definecolor{brightmaroon}{RGB}{195, 33, 72}
+
+        \usetikzlibrary{arrows.meta, shapes, positioning, matrix}
+
+        \begin{document}
+
+        \begin{figure}[htbp]
+        \centering
+        \resizebox{.45\linewidth}{!}{
+        \begin{tikzpicture}[
+        line join=bevel,
+        bigcyannode/.style={shape=circle, fill=cyan, draw=black, line width=1pt},
+        bigskybluenode/.style={shape=circle, fill=skyblue, draw=black, line width=1pt}
+        ]
+
+        % Axes
+        \draw[-stealth] (0pt, 0pt) -- (300pt, 0pt) node[anchor=north west] {Cardinality};
+        \draw[-stealth] (0pt, 0pt) -- (0pt, 300pt) node[anchor=south] {Response time in s};
+        """
+
+        self.latexCode += r"""
+        % X-axis ticks and labels
+        \foreach \x/\xtext in {
+            0pt/$0$,
+            50pt/$""" + str(round(maxRows / 10, 1)) + r"""$,
+            100pt/$""" + str(round(maxRows / 5, 1)) + r"""$,
+            150pt/$""" + str(round(maxRows / 3.33, 1)) + r"""$,
+            200pt/$""" + str(round(maxRows / 2, 1)) + r"""$,
+            250pt/$""" + str(round(maxRows / 1.25, 1)) + r"""$,
+            300pt/$""" + str(round(maxRows, 1)) + r"""$
+        } {
+            \draw (\x, 2pt) -- (\x, -2pt) node[below] {\xtext\strut};
+        }
+
+        % Y-axis ticks and labels
+        \foreach \y/\ytext in {
+            0pt/$0$,
+            40pt/$""" + str(round(maxTime / 10, 1)) + r"""$,
+            80pt/$""" + str(round(maxTime / 5, 1)) + r"""$,
+            120pt/$""" + str(round(maxTime / 3.33, 1)) + r"""$,
+            160pt/$""" + str(round(maxTime / 2, 1)) + r"""$,
+            200pt/$""" + str(round(maxTime / 1.25, 1)) + r"""$,
+            240pt/$""" + str(round(maxTime, 1)) + r"""$
+        } {
+            \draw (2pt, \y) -- (-2pt, \y) node[left] {\ytext\strut};
+        }
+        """
+
+        line2 = ""
+        for i in range(len(timeDict[min(timeDict.keys())])):
+            line1Header = f"\\draw[{self.colors[i]}, line width=2pt]"
+            line1 = ""
+            for k in timeDict.keys():  # Tri des clés pour ordre correct
+                x = int(round(int(k) * ratio_x))
+                y = int(round(timeDict[k][i] * ratio_y))
+                line1 += f"({x}pt, {y}pt) -- "
+                line2 += fr"\filldraw[color=black, fill={self.colors[i]}] ({x}pt, {y}pt) circle (2pt);"
+                line2 += "\n"
+            line1 = line1Header + line1.rstrip(" -- ") + ";\n"
+            self.latexCode += line1
+            self.latexCode += "% Points and labels\n"
+            self.latexCode += line2
 
 
+        self.latexCode += r"""
+            \matrix [below left, draw=none] at (current bounding box.north east) {
+            \node [bigskybluenode, label=right:CoSky "SQL query" with """ + str(column) + r""" attributes] {}; \\
+            };"""
+
+        self.latexCode += r"""
+                \end{tikzpicture}
+            }
+            \caption{CoSky response time for SQL query with """ + str(column) + r""" attributes}
+            \label{fig:temps_de_reponse_de_CoSky_en_sql_avec_""" + str(column) + r"""_dimensions}
+        \end{figure}   
+        \end{document}
+        """
+
+        self.addLatexCode(self.latexCode)
+        self.render()
 
 
 if __name__ == "__main__":
     coskyLatex = LatexMaker()
     path = "../Assets/LatexDatas/"
 
+    """data = coskyLatex.getData("../Assets/LatexDatas/ExecutionCoskySql3.json")
+    timeDict = data["timeDict"]
+    beauty_print("TimeDict", timeDict)
+
+
+    quit()"""
+
     print_red("1./ Comaraison Cosky SQL entre plusieurs colonnes (3, 6, 9)")
     print_red("2./ Comparaison entre SQL et Algo")
+    print_red("3./ Comparaison de Cosky en SQL avec un nombre de colonnes choisi")
     a = input("Choix: ")
     if a == "1":
         path += "ExecutionCoskySql369.json"
@@ -339,3 +459,10 @@ if __name__ == "__main__":
         timeDictSql = {int(key): value for key, value in timeDictSql.items()}
         timeDictAlgo = {int(key): value for key, value in timeDictAlgo.items()}
         coskyLatex.CoskyAlgoSqlComparaisonLatex(timeDictSql, timeDictAlgo, maxRows, maxTime)
+    elif a == "3":
+        print_red("Avec combien de colonnes souhaitez-vous faire la comparaison ? (3, 6, 9):")
+        column = input("Choix: ")
+        if column not in ["3", "6", "9"]:
+            print_red("Erreur, le nombre de colonnes doit être 3, 6 ou 9")
+            exit(1)
+        coskyLatex.CoskyComparaisonNColumn(column)
