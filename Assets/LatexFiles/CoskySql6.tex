@@ -1,0 +1,73 @@
+
+        \documentclass{article}
+        \usepackage{tikz}
+        \usepackage{xcolor}
+        \usepackage{graphicx}
+        \usepackage{caption}
+
+        \definecolor{skyblue}{RGB}{135,206,235}
+        \definecolor{brightmaroon}{RGB}{195, 33, 72}
+
+        \usetikzlibrary{arrows.meta, shapes, positioning, matrix}
+
+        \begin{document}
+
+        \begin{figure}[htbp]
+        \centering
+        \resizebox{.45\linewidth}{!}{
+        \begin{tikzpicture}[
+        line join=bevel,
+        bigcyannode/.style={shape=circle, fill=cyan, draw=black, line width=1pt},
+        bigskybluenode/.style={shape=circle, fill=skyblue, draw=black, line width=1pt}
+        ]
+
+        % Axes
+        \draw[-stealth] (0pt, 0pt) -- (300pt, 0pt) node[anchor=north west] {Cardinality};
+        \draw[-stealth] (0pt, 0pt) -- (0pt, 300pt) node[anchor=south] {Response time in s};
+        
+        % X-axis ticks and labels
+        \foreach \x/\xtext in {
+            0pt/$0$,
+            50pt/$10000.0$,
+            100pt/$20000.0$,
+            150pt/$30030.0$,
+            200pt/$50000.0$,
+            250pt/$80000.0$,
+            300pt/$100000$
+        } {
+            \draw (\x, 2pt) -- (\x, -2pt) node[below] {\xtext\strut};
+        }
+
+        % Y-axis ticks and labels
+        \foreach \y/\ytext in {
+            0pt/$0$,
+            40pt/$12.3$,
+            80pt/$24.6$,
+            120pt/$36.9$,
+            160pt/$61.5$,
+            200pt/$98.4$,
+            240pt/$123.0$
+        } {
+            \draw (2pt, \y) -- (-2pt, \y) node[left] {\ytext\strut};
+        }
+        \draw[skyblue, line width=2pt](0pt, 0pt) -- (3pt, 0pt) -- (6pt, 1pt) -- (14pt, 4pt) -- (28pt, 9pt) -- (56pt, 27pt) -- (140pt, 110pt) -- (280pt, 280pt);
+% Points and labels
+\filldraw[color=black, fill=skyblue] (0pt, 0pt) circle (2pt);
+\filldraw[color=black, fill=skyblue] (3pt, 0pt) circle (2pt);
+\filldraw[color=black, fill=skyblue] (6pt, 1pt) circle (2pt);
+\filldraw[color=black, fill=skyblue] (14pt, 4pt) circle (2pt);
+\filldraw[color=black, fill=skyblue] (28pt, 9pt) circle (2pt);
+\filldraw[color=black, fill=skyblue] (56pt, 27pt) circle (2pt);
+\filldraw[color=black, fill=skyblue] (140pt, 110pt) circle (2pt);
+\filldraw[color=black, fill=skyblue] (280pt, 280pt) circle (2pt);
+
+            \matrix [below left, draw=none] at (current bounding box.north east) {
+            \node [bigskybluenode, label=right:CoSky "SQL query" with 6 attributes] {}; \\
+            };
+                \end{tikzpicture}
+            }
+            \caption{CoSky response time for SQL query with 6 attributes}
+            \label{fig:temps_de_reponse_de_CoSky_en_sql_avec_6_dimensions}
+        \end{figure}   
+        \end{document}
+        
