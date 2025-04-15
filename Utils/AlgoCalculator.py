@@ -9,6 +9,8 @@ from Utils.DisplayHelpers import beauty_print
 from Utils.DataParser import DataParser
 from Database.DatabaseHelpers import Database
 from Utils.TimerUtils import TimeCalc
+from Algorithms.RankSky import RankSky
+from Utils.Preference import Preference
 
 ROWS_RATIO_MULT = pow(10, 3)
 ROWS_RATIO_UNITS = [1, 2, 5, 10]
@@ -27,8 +29,8 @@ class AlgoCalculator:
         self.jsonFilePath = "../Assets/LatexDatas/"
         self.tableName = "Pokemon"
         self.conn = sqlite3.connect(fr"..\Assets\databases\{self.tableName}.db")
-        self.cols = [3, 6, 9]
-        self.rows = [100, 1000 ,2000, 5000, 10000, 20000, 50000, 100000]
+        self.cols = [3,6,9]
+        self.rows = [100, 1000 ,2000,5000]
 
     def select_all(self):
         """
@@ -46,9 +48,10 @@ class AlgoCalculator:
         # iterations = [8, 40, 250, 500, 750, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 100000, 200000, 500000]
         # rows = ROWS_RATIO  # [10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]
         time_dict = {k: [0 for i in range(len(self.cols))] for k in self.rows}
-        self.jsonFilePath += "ExecutionCoskySql369.json"
+        self.jsonFilePath += "ExecutionRankSky369.json"
         max_rows = 0
         max_time = 0
+        pref = [Preference.MIN, Preference.MIN, Preference.MIN]
 
         root_databases = fr"..\Assets\databases"
         i = -1
@@ -59,11 +62,12 @@ class AlgoCalculator:
                 # beauty_print("Row", rows)
                 # Displays the execution time of each algorithm
                 database_filepath = fr"{root_databases}\cosky_db_C{col}_R{row}.db"  # Retrieve the path
-                beauty_print("Database path", database_filepath)
                 sel = AlgoCalculator(database_filepath)
                 r = DataParser(sel.select_all()).r_dict
                 # The name of the algorithm class
                 algo_name = algo.__name__
+                beauty_print("Algorithm name ", algo_name)
+                beauty_print("Database path ", database_filepath)
                 time_calc = TimeCalc(row, algo_name)
                 # For the SQL algorithm, add the connection object to the arguments
                 if algo_name == "CoskySQL":
@@ -77,6 +81,9 @@ class AlgoCalculator:
                 elif algo_name == "CoskyAlgorithme":
                     # Needs a data dictionary
                     algo_obj = algo(r)
+
+                elif algo_name == "RankSky":
+                    algo_obj = algo(r,pref)
                 # Retrieve the execution time for each database on the given algorithm
                 time_calc.stop()
                 # Add the execution time to the dictionary
@@ -207,12 +214,14 @@ COSKY_ALGO_ = "COSKY_ALGO"
 COSKY_SQL_ = "COSKY_SQL"
 # DP_IDP_ = "DP_IDP"
 CONFIG_DATA = "CONFIG_DATA"
+RANK_SKY = "RANK_SKY"
 
 # MODES contains all the algorithms to be compared
 MODES = {
     COSKY_ALGO_: CoskyAlgorithme,
     COSKY_SQL_: CoskySQL,
     # DP_IDP_: DP_IDP,
+    RANK_SKY : RankSky,
 }
 
 
@@ -221,4 +230,4 @@ if __name__ == "__main__":
     calculator = AlgoCalculator("")
     #calculator.compareExecutionTime(CoskySQL)
     #calculator.compareExecutionTimeSqlAlgo()
-    calculator.compareExecutionTimeCoskySqlColumn(6)
+    calculator.compareExecutionTime(RankSky)

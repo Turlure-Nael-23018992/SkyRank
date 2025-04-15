@@ -8,7 +8,7 @@ class DpIdpDhTest(unittest.TestCase):
 
     def setUp(self):
         """Set up the test case"""
-        with open('../RBig.json', 'r') as f:
+        with open('../Datas/RBig.json', 'r') as f:
             self.r_big = json.load(f)
 
         # Excepted values for Dp_IDP algorithm

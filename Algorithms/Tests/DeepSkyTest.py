@@ -5,7 +5,7 @@ from Algorithms.DeepSky import DeepSky
 
 class DeepSkyTest(unittest.TestCase):
     def setUp(self):
-        with open('../RBig.json', 'r') as f:
+        with open('../Datas/RBig.json', 'r') as f:
             r_big_loaded = json.load(f)
         # Convert the loaded dictionary values to tuples
         print(r_big_loaded)

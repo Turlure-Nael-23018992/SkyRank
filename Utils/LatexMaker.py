@@ -11,6 +11,9 @@ class LatexMaker:
         self.latexFinal =""
         self.colors = ["brightmaroon", "cyan", "skyblue"]
         self.path = "../Assets/LatexFiles/"
+        self.defineColor = """\\definecolor{aliceblue}{rgb}{0.94, 0.97, 1.0}
+                                \\definecolor{skyblue}{rgb}{0.53, 0.81, 0.92}
+                                \\definecolor{brightmaroon}{rgb}{0.95, 0.82, 0.85}"""
 
     def addLatexCode(self, latexCode):
         """Add the latex code to the final document"""
@@ -109,12 +112,11 @@ class LatexMaker:
         self.addLatexCode(self.latexCode)
         self.render()
 
-
-    def CoskyAlgoSqlComparaisonLatex(self, timeDictSql, timeDictAlgo, maxRows, maxTime, scaleX=280, scaleY=280):
+    def twoAlgoComparaison369Latex(self, timeDict1, timeDict2, maxRows, maxTime,latexFilePath,  scaleX=280, scaleY=280):
         """
         Create the latex code for the Cosky Sql and Algo comparison
         """
-        self.path += "CoskySqlAlgo.tex"
+        self.path += latexFilePath
         ratioX = scaleX / maxRows
         ratioY = scaleY / maxTime
 
@@ -134,15 +136,15 @@ class LatexMaker:
         drawAlgo = []
         filldrawSql = []
         filldrawAlgo = []
-        for i in range(len(timeDictSql[min(timeDictSql.keys())])):
+        for i in range(len(timeDict1[min(timeDict1.keys())])):
             # Sql part
             line2Sql = ""
             line1HeaderSql = f"\\draw[{self.colors[0]}, line width=2pt]"
             line1Sql = ""
-            for k in timeDictSql.keys():
+            for k in timeDict1.keys():
                 k = int(k)
                 x = int(round(k * ratioX))
-                y = int(round(timeDictSql[k][i] * ratioY))
+                y = int(round(timeDict1[k][i] * ratioY))
                 line1Sql += f"({x}pt, {y}pt) -- "
                 line2Sql += fr"\filldraw[color=black, fill={self.colors[0]}] ({x}pt, {y}pt) circle (2pt);"
                 line2Sql += "\n"
@@ -154,10 +156,10 @@ class LatexMaker:
             line2Algo = ""
             line1HeaderAlgo = f"\\draw[{self.colors[1]}, line width=2pt]"
             line1Algo = ""
-            for k in timeDictAlgo.keys():
+            for k in timeDict2.keys():
                 k = int(k)
                 x = int(round(k * ratioX))
-                y = int(round(timeDictAlgo[k][i] * ratioY))
+                y = int(round(timeDict2[k][i] * ratioY))
                 line1Algo += f"({x}pt, {y}pt) -- "
                 line2Algo += fr"\filldraw[color=black, fill={self.colors[1]}] ({x}pt, {y}pt) circle (2pt);"
                 line2Algo += "\n"
@@ -424,6 +426,7 @@ class LatexMaker:
         self.render()
 
 
+
 if __name__ == "__main__":
     coskyLatex = LatexMaker()
     path = "../Assets/LatexDatas/"
@@ -457,7 +460,7 @@ if __name__ == "__main__":
         maxTime = coskyData["maxTime"]
         timeDictSql = {int(key): value for key, value in timeDictSql.items()}
         timeDictAlgo = {int(key): value for key, value in timeDictAlgo.items()}
-        coskyLatex.CoskyAlgoSqlComparaisonLatex(timeDictSql, timeDictAlgo, maxRows, maxTime)
+        coskyLatex.twoAlgoComparaison369Latex(timeDictSql, timeDictAlgo, maxRows, maxTime)
     elif a == "3":
         print_red("Avec combien de colonnes souhaitez-vous faire la comparaison ? (3, 6, 9):")
         column = input("Choix: ")
@@ -465,3 +468,22 @@ if __name__ == "__main__":
             print_red("Erreur, le nombre de colonnes doit être 3, 6 ou 9")
             exit(1)
         coskyLatex.CoskyComparaisonNColumn(column)
+    elif a == "4":
+        path = "../Assets/LatexDatas/ExecutionRankSky369.json"
+        with open(path, "r") as f:
+            data = f.read()
+        timeDict1 = json.loads(data)
+        timeDictRankSky = timeDict1["time_data"]
+
+        path = "../Assets/LatexDatas/ExecutionCoskyAlgo369.json"
+        with open(path, "r") as f:
+            data = f.read()
+        timeDictAlgo = json.loads(data)
+        timeDictAlgo = timeDictAlgo["time_data"]
+        maxRows = timeDict1["max_rows"]
+        maxTime = max(timeDict1["max_time"], timeDict1["max_time"])
+        timeDictRankSky = {int(key): value for key, value in timeDictRankSky.items()}
+        timeDictAlgo = {int(key): value for key, value in timeDictAlgo.items()}
+
+
+        coskyLatex.twoAlgoComparaison369Latex(timeDictRankSky, timeDictAlgo, maxRows, maxTime, "RanksyCoskyAlgo.tex")

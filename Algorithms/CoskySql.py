@@ -3,8 +3,6 @@ import sqlite3, math
 import string
 import time
 
-
-
 class CoskySQL:
     '''
     Classe qui lance l'algo en SQL
@@ -120,7 +118,7 @@ class CoskySQL:
             SP AS (SELECT RowId, {sp} FROM SN, SW),
             Ideal AS (SELECT {ideal} FROM SP),
             SScore AS (SELECT RowId, ({scoreNum}) / (SQRT({pp}) * SQRT({ii})) AS Score FROM Ideal, SP)
-            SELECT {self.table_name}.RowId, {proj}, coalesce(Score,1) AS Score
+            SELECT {self.table_name}.RowId, {proj}, Score AS Score
             FROM {self.table_name} INNER JOIN SScore rs ON {self.table_name}.RowId = rs.RowId
             ORDER BY Score DESC;
             """
@@ -136,8 +134,8 @@ class CoskySQL:
         return self.rows_res
 
 if __name__ == '__main__':
-    db_filepath= f"../Assets/databases/cosky_db_C6_R50000.db"
+    db_filepath= "../Assets/RankSkyTest.db"
     startTime = time.time()
-    cosky_sql = CoskySQL(db_filepath, is_debug=True)
+    cosky_sql = CoskySQL(db_filepath)
     print("cosky_sql:",cosky_sql.rows_res)
     print(f"temps: {time.time() - startTime}")

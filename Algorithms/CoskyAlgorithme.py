@@ -102,6 +102,9 @@ class CoskyAlgorithme:
             beauty_print("totIdealP", self.totIdealP)
         return self.s
 
+    def sort(self,rev):
+        reverse = True if rev == "Desc" else False
+        self.s = dict(sorted(self.s.items(), key=lambda item: item[1][-1], reverse=reverse))
 
 if __name__ == '__main__':
     r_petit = {
@@ -115,7 +118,7 @@ if __name__ == '__main__':
         8: (9, 90, 0.033333333)
     }
 
-    with open ("RBig.json", "r") as f:
+    with open ("Datas/RBig.json", "r") as f:
         r_big = json.load(f)
 
     r = {
@@ -126,6 +129,10 @@ if __name__ == '__main__':
 
 
     startTime = time.time()
-    cosky = CoskyAlgorithme(r_big)
+    cosky = CoskyAlgorithme(r_petit)
+    print("-----------------Avant-----------------")
     print(cosky.s)
     print(f"temps: {time.time() - startTime}")
+    print("-----------------Apres-----------------")
+    cosky.sort("Desc")
+    print(cosky.s)

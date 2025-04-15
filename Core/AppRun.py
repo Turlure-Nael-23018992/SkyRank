@@ -262,5 +262,5 @@ MODES = {
 
 
 if __name__ == '__main__':
-    App = AppRun("")
-    quit()
+    """App = AppRun("")
+    quit()"""

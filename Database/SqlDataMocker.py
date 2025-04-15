@@ -35,5 +35,5 @@ if __name__ == '__main__':
 
             col_len=col
             row_len=row
-            dict_data = SQL_DataMocker(col_len, row_len,db_filepath).dict_data
+            dict_data = SqlDataMocker(col_len, row_len,db_filepath).dict_data
     print(dict_data)

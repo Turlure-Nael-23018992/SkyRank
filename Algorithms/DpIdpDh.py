@@ -698,6 +698,10 @@ class DpIdpDh:
             score[i] = tot
         return score
 
+    def sort(self,rev):
+        reverse = True if rev == "Desc" else False
+        self.score = dict(sorted(self.score.items(), key=lambda item: item[1], reverse=reverse))
+
 
 
 
@@ -758,7 +762,7 @@ def dpIdpAvecHierarchieDeDominance():
 if __name__ == '__main__':
     import time
 
-    with open('RBig.json', 'r') as f:
+    with open('Datas/RBig.json', 'r') as f:
         r_big = json.load(f)
 
     # Convert the loaded dictionary values to tuples
@@ -777,8 +781,12 @@ if __name__ == '__main__':
 
     startTime=time.time()
     dp_idp = DpIdpDh(r_big)
+    print("--------------Avant--------------")
     print(dp_idp.score)
     print(f"temps: {time.time()-startTime}")
+    print("--------------Apres--------------")
+    dp_idp.sort("Desc")
+    print(dp_idp.score)
 
 
 
