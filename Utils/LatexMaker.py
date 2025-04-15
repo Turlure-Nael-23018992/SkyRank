@@ -432,7 +432,6 @@ if __name__ == "__main__":
     timeDict = data["timeDict"]
     beauty_print("TimeDict", timeDict)
 
-
     quit()"""
 
     print_red("1./ Comaraison Cosky SQL entre plusieurs colonnes (3, 6, 9)")

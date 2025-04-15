@@ -109,6 +109,6 @@ if __name__ == "__main__":
     tree.Insert(tupleId=2, minDim=[2, 3], maxDim=[4, 5])
     tree.Insert(tupleId=3, minDim=[5, 6], maxDim=[7, 8])
     tree.Insert(tupleId=4, minDim=[6, 7], maxDim=[8, 9])
-    bbs = BBS(tree)
+    bbs = Bbs(tree)
     bbs.skyline(sp=1, layer=0)
 
