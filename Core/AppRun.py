@@ -1,7 +1,5 @@
 import sys
 import os
-import textwrap
-import json
 
 # Ajoute le chemin du répertoire parent de Core au chemin de recherche des modules
 
@@ -10,19 +8,14 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 
 #Importation des librairies
 import sqlite3
-from colorama import Back, Fore, Style
 from Algorithms.CoskyAlgorithme import CoskyAlgorithme
 from Algorithms.CoskySql import CoskySQL
 #from Algorithms.DP_IDP import DP_IDP
 #from Algorithms.DP_IDP_cpp import DP_IDP
-from Algorithms.SkyIR import SkyIR
-from Database.DatabaseHelpers import  Database
 from Database.SqlDataMocker import SqlDataMocker
 from Utils.DataParser import DataParser
 from Utils.TimerUtils import TimeCalc
-from Utils.DisplayHelpers import beauty_print, print_color
-from time import *
-from Utils.LatexMaker import LatexMaker
+from Utils.DisplayHelpers import beauty_print
 
 #Déclaration des constantes
 ROWS_RATIO_MULT = pow(10, 3)

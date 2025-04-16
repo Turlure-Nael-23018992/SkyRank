@@ -1,13 +1,18 @@
 import json
 import sqlite3
 
+import sys
+import os
+
+# Add the parent directory to the Python module search path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
 from Algorithms import CoskySql
 from Algorithms.CoskySql import CoskySQL
-from Utils.LatexMaker import LatexMaker
+from Utils.Latex.LatexMaker import LatexMaker
 from Algorithms.CoskyAlgorithme import CoskyAlgorithme
 from Utils.DisplayHelpers import beauty_print
 from Utils.DataParser import DataParser
-from Database.DatabaseHelpers import Database
 from Utils.TimerUtils import TimeCalc
 from Algorithms.RankSky import RankSky
 from Utils.Preference import Preference
@@ -28,9 +33,9 @@ class AlgoCalculator:
         self.latexMaker = LatexMaker()
         self.jsonFilePath = "../Assets/LatexDatas/"
         self.tableName = "Pokemon"
-        self.conn = sqlite3.connect(fr"..\Assets\databases\{self.tableName}.db")
-        self.cols = [3,6,9]
-        self.rows = [100, 1000 ,2000,5000]
+        self.conn = sqlite3.connect(fr"..\..\Assets\databases\{self.tableName}.db")
+        self.cols = [3]
+        self.rows = [100000]# 20, 100, 1000, 2000, 5000, 10000, 20000, 50000 , 5000, 10000, 20000, 50000, 100000, 200000
 
     def select_all(self):
         """
@@ -41,7 +46,7 @@ class AlgoCalculator:
         self.cursor.execute(sql_query)
         return self.cursor.fetchall()
 
-    def compareExecutionTime(self, algo):
+    def compareExecutionTime(self, algo, fp):
         """
         Compare the execution time of an algorithm on several databases of different sizes
         """
@@ -53,7 +58,7 @@ class AlgoCalculator:
         max_time = 0
         pref = [Preference.MIN, Preference.MIN, Preference.MIN]
 
-        root_databases = fr"..\Assets\databases"
+        root_databases = fr"..\..\Assets\databases"
         i = -1
         for col in self.cols:
             i += 1
@@ -88,8 +93,8 @@ class AlgoCalculator:
                 time_calc.stop()
                 # Add the execution time to the dictionary
                 current_time = time_calc.execution_time
-                time_dict[row][i] = current_time
-
+                if algo_name == "RankSky":
+                    time_dict[row][i] = algo_obj.time
                 if row > max_rows:
                     max_rows = row
 
@@ -97,16 +102,17 @@ class AlgoCalculator:
                     max_time = current_time
 
                 # beauty_print("time_dict", time_dict)
-        dataToSave = {
-            "time_data": time_dict,  # The dictionary with execution times
-            "max_rows": max_rows,  # The maximum number of rows
-            "max_time": max_time  # The maximum execution time
-        }
-        beauty_print("time_dict", time_dict)
 
-        with open(self.jsonFilePath, "w") as f:
-            # Save everything in the JSON file
-            json.dump(dataToSave, f, indent=4)
+                dataToSave = {
+                    "time_data": time_dict,  # The dictionary with execution times
+                    "max_rows": max_rows,  # The maximum number of rows
+                    "max_time": max_time  # The maximum execution time
+                }
+                beauty_print("time_dict", time_dict)
+
+                with open(fp, "w") as f:
+                    # Save everything in the JSON file
+                    json.dump(dataToSave, f, indent=4)
 
     def compareExecutionTimeSqlAlgo(self):
         """
@@ -230,4 +236,5 @@ if __name__ == "__main__":
     calculator = AlgoCalculator("")
     #calculator.compareExecutionTime(CoskySQL)
     #calculator.compareExecutionTimeSqlAlgo()
-    calculator.compareExecutionTime(RankSky)
+    #calculator.compareExecutionTime(CoskyAlgorithme, "../Assets/LatexDatas/ExecutionCoskyAlgo3.json")
+    calculator.compareExecutionTime(RankSky, "../../Assets/LatexDatas/ExecutionRankSky3.json")

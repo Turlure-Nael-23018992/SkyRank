@@ -31,6 +31,7 @@ class RankSky:
         self.vk = None # Score's vector
         self.alpha = 0.85 # Damping factor
         self.score = {}
+        self.time = 0
         self.run()
 
     def unifyPreferences(r, pref, prefNext):
@@ -148,14 +149,19 @@ class RankSky:
         print("Score's vector : \n", self.score)
 
     def run(self):
+        time1 = TimeCalc(100, "RankSky")
         self.skylineComputation()
+        time1.stop()
         self.unifyPreferencesMax(self.sky, self.pref)
         self.initMatrix()
+        time2 = TimeCalc(100, "RankSky")
         self.squareMatrix()
         self.stochasticMatrix()
         self.googlePageRank()
         self.Ipl()
         self.sort()
+        time2.stop()
+        self.time = time1.execution_time + time2.execution_time
 
 if __name__ == "__main__":
     """r = {
