@@ -32,7 +32,7 @@ class RankSky:
         self.alpha = 0.85 # Damping factor
         self.score = {}
         self.time = 0
-        #self.run()
+        self.run()
 
     def unifyPreferences(r, pref, prefNext):
         for i in range(len(pref)):
@@ -115,7 +115,7 @@ class RankSky:
         while True:
             vknorm = zknorm
             zk = np.dot(self.vk, self.g)
-            zknorm = np.linalg.norm(zk)
+            zknorm = np.linalg.norm(zk, ord=1)
             self.vk = zk / zknorm
             if abs(zknorm - vknorm) < eps:
                 break
@@ -139,14 +139,26 @@ class RankSky:
             i += 1
         self.score = dict(sorted(self.score.items(), key=lambda item: item[1][-1], reverse=reverse))
 
-
     def printOutcomes(self):
-        print("Skyline matrix : \n", self.sky)
-        print("Transposed matrix : \n", self.rt)
-        print("Square matrix : \n", self.a)
-        print("Stochastic matrix : \n", self.s)
-        print("Google PageRank matrix : \n", self.g)
-        print("Score's vector : \n", self.score)
+        print("=" * 40)
+        print("📌 Skyline Matrix:")
+        print(self.sky)
+        print("=" * 40)
+        print("📌 Transposed Matrix:")
+        print(self.rt)
+        print("=" * 40)
+        print("📌 Square Matrix:")
+        print(self.a)
+        print("=" * 40)
+        print("📌 Stochastic Matrix:")
+        print(self.s)
+        print("=" * 40)
+        print("📌 Google PageRank Matrix:")
+        print(self.g)
+        print("=" * 40)
+        print("📌 Score Vector:")
+        print(self.score)
+        print("=" * 40)
 
     def run(self):
         time1 = TimeCalc(100, "RankSky")

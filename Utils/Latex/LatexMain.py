@@ -15,14 +15,33 @@ def compareAlgos(coskyLatex, algos, outputFile, basePath=""):
     timeDicts, maxRowsList, maxTimeList = coskyLatex.prepareComparisonData(json_paths)
 
     if len(algos) == 2:
-        folder = "../../Assets/LatexFiles/TwoAlgosComparaison/"
-        fullPath = os.path.join(folder, outputFile)
-        coskyLatex.twoAlgoComparaison369Latex(
-            timeDicts[0], timeDicts[1],
-            maxRowsList, maxTimeList,
-            algos[0], algos[1],
-            latexFilePath=fullPath
-        )
+        print_red("Voulez vous comparer 2 algorithmes en linéaires ? (OUI/NON)")
+        answer = input().strip().lower()
+        if answer == "oui":
+            folder = "../../Assets/LatexFiles/TwoAlgosComparaison/"
+            fullPath = os.path.join(folder, outputFile)
+            coskyLatex.twoAlgoComparaison369Latex(
+                timeDicts[0], timeDicts[1],
+                maxRowsList, maxTimeList,
+                algos[0], algos[1],
+                latexFilePath=fullPath
+            )
+        elif answer == "non":
+            print_red("Quel axe X voulez-vous ? (Lin/Log)")
+            axisX = input().strip()
+            print_red("Quel axis Y voulez-vous ? (Lin/Log)")
+            axisY = input().strip()
+            folder = "../../Assets/LatexFiles/TwoAlgosComparaison/"
+            fullPath = os.path.join(folder, outputFile)
+            axysType = axisX + "X" + axisY + "Y"
+            coskyLatex.twoAlgoComparaison369LatexLog(
+                timeDicts[0], timeDicts[1],
+                maxRowsList, maxTimeList,
+                algos[0], algos[1],
+                latexFilePath=fullPath,
+                scaleType=axysType
+            )
+
     elif len(algos) == 3:
         folder = "../../Assets/LatexFiles/ThreeAlgosComparaison/"
         fullPath = os.path.join(folder, outputFile)
@@ -33,7 +52,7 @@ def compareAlgos(coskyLatex, algos, outputFile, basePath=""):
             latexFilePath=fullPath
         )
     else:
-        print("❌ Comparaison disponible uniquement pour 2 ou 3 algorithmes.")
+        print("Comparaison disponible uniquement pour 2 ou 3 algorithmes.")
 
 def getAlgoByName(name):
     """
@@ -52,14 +71,14 @@ def promptAlgos():
         print(f"- {algo.name} ({algo.label})")
 
     nb = int(input("\nCombien d'algorithmes voulez-vous comparer ? (2 ou 3) : "))
-    assert nb in [2, 3], "❌ Veuillez entrer 2 ou 3." # Return an error if not 2 or 3
+    assert nb in [2, 3], "Veuillez entrer 2 ou 3." # Return an error if not 2 or 3
 
     algos = []
     for i in range(nb):
         name = input(f"Nom de l'algorithme {i+1} : ")
         algo = getAlgoByName(name)
         if not algo:
-            raise ValueError(f"❌ Algorithme '{name}' introuvable.") # Return an error if algo not found
+            raise ValueError(f"Algorithme '{name}' introuvable.") # Return an error if algo not found
         algos.append(algo)
 
     output = input("Nom du fichier LaTeX de sortie (avec .tex) : ")

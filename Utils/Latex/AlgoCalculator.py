@@ -15,7 +15,9 @@ from Utils.DisplayHelpers import beauty_print
 from Utils.DataParser import DataParser
 from Utils.TimerUtils import TimeCalc
 from Algorithms.RankSky import RankSky
+from Algorithms.DpIdpDh import DpIdpDh
 from Utils.Preference import Preference
+from Utils.JsonUtils import read_json, write_json, update_json, prettyPrintTimeData, sortJson
 
 ROWS_RATIO_MULT = pow(10, 3)
 ROWS_RATIO_UNITS = [1, 2, 5, 10]
@@ -35,7 +37,7 @@ class AlgoCalculator:
         self.tableName = "Pokemon"
         self.conn = sqlite3.connect(fr"..\..\Assets\databases\{self.tableName}.db")
         self.cols = [3,6,9]
-        self.rows = [10,20,50,100,200,500, 1000, 2000,5000, 10000, 20000, 50000, 100000, 200000]#20, 100, 1000, 2000, 5000, 10000, 20000, 50000 , 5000, 10000, 20000, 50000, 100000, 200000
+        self.rows = [10,20,50,100,200,500, 1000, 2000,5000]#20, 100, 1000, 2000, 5000, 10000, 20000, 50000 , 5000, 10000, 20000, 50000, 100000, 200000
         #
     def select_all(self):
         """
@@ -45,18 +47,6 @@ class AlgoCalculator:
         sql_query = f"SELECT * FROM {self.tableName}"
         self.cursor.execute(sql_query)
         return self.cursor.fetchall()
-
-    def sortJson(self, fp):
-        with open(fp, "r") as f:
-            data = json.load(f)
-
-        time_data = data.get("time_data", {})
-        sorted_time_data = dict(sorted(time_data.items(), key=lambda item: int(item[0])))
-
-        data["time_data"] = sorted_time_data
-
-        with open(fp, "w") as f:
-            json.dump(data, f, indent=4)
 
     def compareExecutionTime(self, algo, fp):
         """
@@ -85,25 +75,37 @@ class AlgoCalculator:
                 algo_name = algo.__name__
                 beauty_print("Algorithm name ", algo_name)
                 beauty_print("Database path ", database_filepath)
-                time_calc = TimeCalc(row, algo_name)
                 # For the SQL algorithm, add the connection object to the arguments
+                time_calc = None
                 if algo_name == "CoskySQL":
                     # Need a database path
-                    print("zzzzz")
+                    time_calc = TimeCalc(row, algo_name)
                     algo_obj = algo(database_filepath)
+                    time_calc.stop()
 
                 elif algo_name == "SkyIR":
                     # Needs a data dictionary
+                    time_calc = TimeCalc(row, algo_name)
                     algo_obj = algo(r).skyIR(10)
+                    time_calc.stop()
 
                 elif algo_name == "CoskyAlgorithme":
                     # Needs a data dictionary
+                    time_calc = TimeCalc(row, algo_name)
                     algo_obj = algo(r)
+                    time_calc.stop()
 
                 elif algo_name == "RankSky":
+                    time_calc = TimeCalc(row, algo_name)
                     algo_obj = algo(r,pref)
+                    time_calc.stop()
+
+                elif algo_name == "DpIdpDh":
+                    time_calc = TimeCalc(row, algo_name)
+                    print("zzz")
+                    algo_obj = algo(r)
+                    time_calc.stop()
                 # Retrieve the execution time for each database on the given algorithm
-                time_calc.stop()
                 # Add the execution time to the dictionary
                 current_time = time_calc.execution_time
 
@@ -115,8 +117,7 @@ class AlgoCalculator:
                     max_time = current_time
                 row_str = str(row)
                 try:
-                    with open(fp, "r") as f:
-                        savedDatas = json.load(f)
+                    savedDatas = read_json(fp)
                 except (FileNotFoundError, json.JSONDecodeError):
                     savedDatas = {}
 
@@ -145,10 +146,9 @@ class AlgoCalculator:
                     "max_rows": max_rows,
                     "max_time": max_time
                 }
-                with open(fp, "w") as f:
-                    json.dump(dataToSave, f, indent=4)
+                write_json(fp, dataToSave)
 
-                self.sortJson(fp)
+                sortJson(fp)
 
     def compareExecutionTimeSqlAlgo(self):
         """
@@ -254,7 +254,6 @@ class AlgoCalculator:
 COMPARE_ALL = "COMPARE_ALL"
 COSKY_ALGO_ = "COSKY_ALGO"
 COSKY_SQL_ = "COSKY_SQL"
-# DP_IDP_ = "DP_IDP"
 CONFIG_DATA = "CONFIG_DATA"
 RANK_SKY = "RANK_SKY"
 
@@ -262,8 +261,8 @@ RANK_SKY = "RANK_SKY"
 MODES = {
     COSKY_ALGO_: CoskyAlgorithme,
     COSKY_SQL_: CoskySQL,
-    # DP_IDP_: DP_IDP,
-    RANK_SKY : RankSky,
+    "DpIdpDh": DpIdpDh,
+    RANK_SKY: RankSky,
 }
 
 
@@ -272,8 +271,7 @@ if __name__ == "__main__":
     calculator = AlgoCalculator("")
     #calculator.compareExecutionTime(CoskySQL)
     #calculator.compareExecutionTimeSqlAlgo()
-    #calculator.compareExecutionTime(CoskyAlgorithme, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskySql369.json")
-    calculator.compareExecutionTime(RankSky, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionRankSky369.json")
-    calculator.compareExecutionTime(CoskySQL, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskySql369.json")
-    calculator.compareExecutionTime(CoskyAlgorithme, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskyAlgo369.json")
-    #calculator.compareExecutionTime(CoskySQL, "../../Assets/LatexDatas/OneAlgoDatas/TestExecution.json")
+    #calculator.compareExecutionTime(RankSky, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionRankSky369.json")
+    #calculator.compareExecutionTime(CoskySQL, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskySql369.json")
+    #calculator.compareExecutionTime(CoskyAlgorithme, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskyAlgo369.json")
+    calculator.compareExecutionTime(DpIdpDh, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionDpIdpDh369.json")

@@ -5,6 +5,7 @@ from Algorithms.CoskyAlgorithme import CoskyAlgorithme
 from Algorithms.CoskySql import CoskySQL
 from Utils.DisplayHelpers import beauty_print, print_red
 from AlgoEnum import AlgoEnum
+import math
 
 
 class LatexMaker:
@@ -15,11 +16,13 @@ class LatexMaker:
     def __init__(self):
         self.latexCode = ""
         self.latexFinal = ""
-        self.colors = ["brightmaroon", "cyan", "skyblue"]
+        self.colors = ["skyblue", "cyan", "brightmaroon"]
         self.path = "../../Assets/LatexFiles/"
-        self.defineColor = """\\definecolor{aliceblue}{rgb}{0.94, 0.97, 1.0}
-                                \\definecolor{skyblue}{rgb}{0.53, 0.81, 0.92}
-                                \\definecolor{brightmaroon}{rgb}{0.95, 0.82, 0.85}"""
+        self.defineColor = """\\definecolor{skyblue}{rgb}{0.53, 0.81, 0.92}
+                                \\definecolor{brightmaroon}{rgb}{0.95, 0.82, 0.85}
+                                \\definecolor{SQLCodeGreen}{rgb}{0,0.6,0}
+                                \\definecolor{SQLcodegray}{rgb}{0.5,0.5,0.5}
+                                \\definecolor{SQLCodePurple}{HTML}{C42043}"""
 
     def addLatexCode(self, latexCode):
         """Add the latex code to the final document"""
@@ -361,214 +364,367 @@ class LatexMaker:
     def twoAlgoComparaison369Latex(self, timeDict1, timeDict2, maxRowsList, maxTimeList, algo1, algo2,
                                    latexFilePath="", scaleX=280, scaleY=280, attributes=[3, 6, 9]):
         """
-        Generate LaTeX code to compare two algorithms for 3, 6, and 9 attributes,
-        with dynamic scaling per graph based on local maxRows and maxTime.
+        Generate clean and well-indented LaTeX code to compare two algorithms for multiple attributes.
         """
         self.path += latexFilePath
-
-        algo1_name = algo1.value
-        algo2_name = algo2.value
+        algo1_name = algo1.value[0]
+        algo2_name = algo2.value[0]
 
         # Define color styles
-        color_styles = ""
+        color_styles = []
         for i, color in enumerate(self.colors[:2]):
             rgb = self.get_rgb_value(color)
-            color_styles += f"\\definecolor{{{color}}}{{RGB}}{{{rgb}}}\n"
-            color_styles += f"\\tikzset{{big{color}node/.style={{circle, fill={color}, draw=black, line width=1pt}},\n"
-            color_styles += f"small{color}node/.style={{circle, fill={color}, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}}}}\n"
+            color_styles.append(f"\\definecolor{{{color}}}{{RGB}}{{{rgb}}}")
+            color_styles.append(
+                f"\\tikzset{{big{color}node/.style={{circle, fill={color}, draw=black, line width=1pt}},"
+                f"\nsmall{color}node/.style={{circle, fill={color}, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}}}}"
+            )
 
-        self.latexCode = f"""
-    \\documentclass[tikz, border=10pt]{{standalone}}
-    \\usepackage{{tikz}}
-    \\usetikzlibrary{{arrows.meta, shapes, positioning}}
-    \\usepackage{{xcolor}}
-    {color_styles}
-    \\begin{{document}}"""
+        latex_lines = [
+            r"\documentclass[tikz, border=10pt]{standalone}",
+            r"\usepackage{tikz}",
+            r"\usetikzlibrary{arrows.meta, shapes, positioning}",
+            r"\usepackage{xcolor}",
+            *color_styles,
+            r"\begin{document}"
+        ]
 
         for i in range(len(attributes)):
-            ratioX = scaleX / maxRowsList[i]
-            ratioY = scaleY / maxTimeList[i]
+            maxTime = roundtoNearestThousand(maxTimeList[i])  # Round maxTime to nearest thousand
+            print(maxTime)
 
-            # Algo 1
+            ratioX = scaleX / maxRowsList[i]
+            ratioY = scaleY / maxTime
+
+            # Algo 1 line and points
             line1 = f"\\draw[{self.colors[0]}, line width=2pt]"
-            points1 = ""
+            points1 = []
             for k in sorted(timeDict1.keys()):
                 x = int(round(k * ratioX))
-                y = int(round(timeDict1[k][i] * ratioY))
+                y = int(round(timeDict1[k][i] * ratioY * 0.8))
                 line1 += f"({x}pt, {y}pt) -- "
-                points1 += f"\\filldraw[color=black, fill={self.colors[0]}] ({x}pt, {y}pt) circle (2pt);\n"
-            line1 = line1.rstrip(" -- ") + ";\n"
+                points1.append(f"\\filldraw[color=black, fill={self.colors[0]}] ({x}pt, {y}pt) circle (2pt);")
+            line1 = line1.rstrip(" -- ") + ";"
 
-            # Algo 2
+            # Algo 2 line and points
             line2 = f"\\draw[{self.colors[1]}, line width=2pt]"
-            points2 = ""
+            points2 = []
             for k in sorted(timeDict2.keys()):
                 x = int(round(k * ratioX))
-                y = int(round(timeDict2[k][i] * ratioY))
+                y = int(round(timeDict2[k][i] * ratioY * 0.8))
                 line2 += f"({x}pt, {y}pt) -- "
-                points2 += f"\\filldraw[color=black, fill={self.colors[1]}] ({x}pt, {y}pt) circle (2pt);\n"
-            line2 = line2.rstrip(" -- ") + ";\n"
+                points2.append(f"\\filldraw[color=black, fill={self.colors[1]}] ({x}pt, {y}pt) circle (2pt);")
+            line2 = line2.rstrip(" -- ") + ";"
 
             # Axes graduations
-            x_axis = "\\foreach \\x/\\xtext in {"
+            x_axis = "        \\foreach \\x/\\xtext in {\n"
             for step in [scaleX * s / 5 for s in range(6)]:
-                value = round(maxRowsList[i] * (step / scaleX), 1)
-                x_axis += f"{int(step)}pt/${value}$, "
-            x_axis = x_axis.rstrip(", ") + "} {\n\\draw (\\x, 2pt) -- (\\x, -2pt) node[below] {\\xtext\\strut};\n}"
+                value = roundtoNearestTen(maxRowsList[i] * (step / scaleX))
+                x_axis += f"            {int(step)}pt/${value}$, \n"
+            x_axis = (x_axis.rstrip(", \n")
+                      + "} {\n"
+                      + "            \\draw (\\x, 2pt) -- (\\x, -2pt) node[below] {\\xtext\\strut};\n"
+                      + "        }")
 
-            y_axis = "\\foreach \\y/\\ytext in {"
-            for step in [scaleY * s / 5 for s in range(6)]:
-                value = round(maxTimeList[i] * (step / scaleY), 2)
-                y_axis += f"{int(step)}pt/${value}$, "
-            y_axis = y_axis.rstrip(", ") + "} {\n\\draw (2pt, \\y) -- (-2pt, \\y) node[left] {\\ytext\\strut};\n}"
+            y_axis = "        \\foreach \\y/\\ytext in {\n"
+            for step in [scaleY * s / 5 for s in range(5)]:
+                adjusted_value = roundtoNearestTen(maxTime * (step / (scaleY * 0.8)))
+                y_axis += f"            {int(step)}pt/${adjusted_value}$, \n"
+            y_axis = (y_axis.rstrip(", \n")
+                      + "} {\n"
+                      + "            \\draw (2pt, \\y) -- (-2pt, \\y) node[left] {\\ytext\\strut};\n"
+                      + "        }")
 
-            # TikZ picture
-            self.latexCode += f"""
-    % Graph for {attributes[i]} attributes
-    \\begin{{tikzpicture}}[
-        line join=bevel,
-        big{self.colors[0]}node/.style={{shape=circle, fill={self.colors[0]}, draw=black, line width=1pt}},
-        big{self.colors[1]}node/.style={{shape=circle, fill={self.colors[1]}, draw=black, line width=1pt}},
-        small{self.colors[0]}node/.style={{circle, fill={self.colors[0]}, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}},
-        small{self.colors[1]}node/.style={{circle, fill={self.colors[1]}, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}}
-    ]
-        % Axes
-        \\draw[-stealth] (0pt, 0pt) -- ({scaleX}pt, 0pt) node[anchor=north west] {{Cardinality}};
-        \\draw[-stealth] (0pt, 0pt) -- (0pt, {scaleY}pt) node[anchor=south] {{Response time in s}};
+            tikz_block = [
+                f"    % Graph for {attributes[i]} attributes",
+                r"    \begin{tikzpicture}[",
+                f"        line join=bevel,",
+                f"        big{self.colors[0]}node/.style={{shape=circle, fill={self.colors[0]}, draw=black, line width=1pt}},",
+                f"        big{self.colors[1]}node/.style={{shape=circle, fill={self.colors[1]}, draw=black, line width=1pt}},",
+                f"        small{self.colors[0]}node/.style={{circle, fill={self.colors[0]}, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}},",
+                f"        small{self.colors[1]}node/.style={{circle, fill={self.colors[1]}, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}}",
+                r"    ]",
+                r"        % Axes",
+                f"        \\draw[-stealth] (0pt, 0pt) -- ({scaleX}pt, 0pt) node[anchor=north west] {{Cardinality}};",
+                f"        \\draw[-stealth] (0pt, 0pt) -- (0pt, {scaleY}pt) node[anchor=south] {{Response time in s}};",
+                r"        % Axis graduation",
+                x_axis,
+                y_axis,
+                r"        % Lines",
+                f"        {line1}",
+                f"        {line2}",
+                r"        % Points",
+                *["        " + pt for pt in points1],
+                *["        " + pt for pt in points2],
+                r"        % Caption",
+                r"        \matrix [below left] at (current bounding box.north east) {",
+                f"            \\node [small{self.colors[0]}node, label=right:{algo1_name} with {attributes[i]} attributes] {{}}; \\\\",
+                f"            \\node [small{self.colors[1]}node, label=right:{algo2_name} with {attributes[i]} attributes] {{}}; \\\\",
+                r"        };",
+                r"    \end{tikzpicture}"
+            ]
 
-        % Axis graduation
-        {x_axis}
-        {y_axis}
+            latex_lines.extend(tikz_block)
 
-        % Lines
-        {line1}
-        {line2}
-
-        % Points
-        {points1}
-        {points2}
-
-        % Caption
-        \\matrix [below left] at (current bounding box.north east) {{
-            \\node [small{self.colors[1]}node, label=right:{algo2_name} with {attributes[i]} attributes] {{}}; \\\\
-            \\node [small{self.colors[0]}node, label=right:{algo1_name} with {attributes[i]} attributes] {{}}; \\\\
-        }};
-    \\end{{tikzpicture}}
-    """
-
-        self.latexCode += "\n\\end{document}"
+        latex_lines.append(r"\end{document}")
+        self.latexCode = "\n".join(latex_lines)
         self.addLatexCode(self.latexCode)
         self.render()
 
     def threeAlgoComparaison369Latex(self, timeDict1, timeDict2, timeDict3, maxRowsList, maxTimeList, algo1, algo2,
-                                     algo3,
-                                     latexFilePath="", scaleX=280, scaleY=280, attributes=[3, 6, 9]):
+                                     algo3, latexFilePath="", scaleX=280, scaleY=280, attributes=[3, 6, 9],
+                                     rounding_multiple=10):
         """
         Create LaTeX code for comparing three algorithms across 3, 6, 9 attributes,
         with separate scaling per graph.
-
-        Args:
-            timeDict1, timeDict2, timeDict3: Time dictionaries for each algorithm
-            maxRowsList: List of max cardinalities per attribute setting
-            maxTimeList: List of max times per attribute setting
-            algo1, algo2, algo3: AlgoEnum or similar (should have `.value` for names)
-            latexFilePath: Output file path
-            scaleX, scaleY: Dimensions in pt for the TikZ graph
-            attributes: List of attribute counts (default: [3, 6, 9])
         """
         self.path += latexFilePath
-
-        algo_names = [algo1.value, algo2.value, algo3.value]
+        algo_names = [algo1.value[0], algo2.value[0], algo3.value[0]]
         timeDicts = [timeDict1, timeDict2, timeDict3]
 
-        color_styles = ""
-        for i, color in enumerate(self.colors[:len(attributes)]):
+        # Define color styles
+        color_styles = []
+        for i, color in enumerate(self.colors[:3]):
             rgb = self.get_rgb_value(color)
-            color_styles += f"\\definecolor{{{color}}}{{RGB}}{{{rgb}}}\n"
-            color_styles += f"\\tikzset{{big{color}node/.style={{circle, fill={color}, draw=black, line width=1pt}},\n"
-            color_styles += f"small{color}node/.style={{circle, fill={color}, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}}}}\n"
+            color_styles.append(f"\\definecolor{{{color}}}{{RGB}}{{{rgb}}}")
+            color_styles.append(
+                f"\\tikzset{{big{color}node/.style={{circle, fill={color}, draw=black, line width=1pt}},"
+                f"\nsmall{color}node/.style={{circle, fill={color}, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}}}}"
+            )
 
-        self.latexCode = f"""
-        \\documentclass[tikz, border=10pt]{{standalone}}
-        \\usepackage{{tikz}}
-        \\usetikzlibrary{{arrows.meta, shapes, positioning}}
-        \\usepackage{{xcolor}}
-        {color_styles}
-        \\begin{{document}}"""
+        latex_lines = [
+            r"\documentclass[tikz, border=10pt]{standalone}",
+            r"\usepackage{tikz}",
+            r"\usetikzlibrary{arrows.meta, shapes, positioning}",
+            r"\usepackage{xcolor}",
+            *color_styles,
+            r"\begin{document}"
+        ]
 
         for i, attr in enumerate(attributes):
             maxRows = maxRowsList[i]
             maxTime = maxTimeList[i]
+
+            maxTime = roundtoNearestThousand(maxTime)
+
+
             ratioX = scaleX / maxRows
             ratioY = scaleY / maxTime
 
+            # Build the lines and points for each algorithm
             lines = []
             points = []
-
             for j, timeDict in enumerate(timeDicts):
                 color = self.colors[j]
+                print(color)
                 line = f"\\draw[{color}, line width=2pt]"
-                point_str = ""
+                point_set = []
                 for k in sorted(timeDict.keys()):
-                    k = int(k)
                     x = int(round(k * ratioX))
-                    y = int(round(timeDict[k][i] * ratioY))
+                    y = int(round(timeDict[k][i] * ratioY * 0.8))
                     line += f"({x}pt, {y}pt) -- "
-                    point_str += fr"\filldraw[color=black, fill={color}] ({x}pt, {y}pt) circle (2pt);" + "\n"
-                line = line.rstrip(" -- ") + ";\n"
+                    point_set.append(f"\\filldraw[color=black, fill={color}] ({x}pt, {y}pt) circle (2pt);")
+                line = line.rstrip(" -- ") + ";"
                 lines.append(line)
-                points.append(point_str)
+                points.append(point_set)
 
-            # Axis
-            x_axis = "\\foreach \\x/\\xtext in {"
-            for step in [scaleX * x / 5 for x in range(6)]:
+            x_axis = "        \\foreach \\x/\\xtext in {\n"
+            for step in [scaleX * s / 5 for s in range(6)]:
                 value = round(maxRows * (step / scaleX), 1)
-                x_axis += f"{int(step)}pt/${value}$, "
-            x_axis = x_axis.rstrip(", ") + "} {\n\\draw (\\x, 2pt) -- (\\x, -2pt) node[below] {\\xtext\\strut};\n}"
+                x_axis += f"            {int(step)}pt/${value}$, \n"
+            x_axis = (
+                    x_axis.rstrip(", \n")
+                    + "} {\n"
+                    + "            \\draw (\\x, 2pt) -- (\\x, -2pt) node[below] {\\xtext\\strut};\n"
+                    + "        }"
+            )
 
-            y_axis = "\\foreach \\y/\\ytext in {"
-            for step in [scaleY * y / 5 for y in range(6)]:
-                value = round(maxTime * (step / scaleY), 2)
-                y_axis += f"{int(step)}pt/${value}$, "
-            y_axis = y_axis.rstrip(", ") + "} {\n\\draw (2pt, \\y) -- (-2pt, \\y) node[left] {\\ytext\\strut};\n}"
+            y_axis = "        \\foreach \\y/\\ytext in {\n"
+            # On ajuste les graduations Y pour que la plus haute soit à 80% de la hauteur du graphique
+            for step in [scaleY * s / 5 for s in range(5)]:
+                value = round(maxTime * (step / scaleY), 2)  # Calculer les valeurs réelles
+                adjusted_value = round(maxTime * (step / (scaleY * 0.8)), 2)  # Ajuster pour l'échelle à 80%
+                y_axis += f"            {int(step)}pt/${adjusted_value}$, \n"
+            y_axis = (
+                    y_axis.rstrip(", \n")
+                    + "} {\n"
+                    + "            \\draw (2pt, \\y) -- (-2pt, \\y) node[left] {\\ytext\\strut};\n"
+                    + "        }"
+            )
 
-            self.latexCode += f"""
-            % Graph for {attr} attributes
-            \\begin{{tikzpicture}}[
-                line join=bevel,
-                small{self.colors[0]}node/.style={{circle, fill={self.colors[0]}, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}},
-                small{self.colors[1]}node/.style={{circle, fill={self.colors[1]}, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}},
-                small{self.colors[2]}node/.style={{circle, fill={self.colors[2]}, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}}
+            tikz_block = [
+                f"    % Graph for {attr} attributes",
+                r"    \begin{tikzpicture}[",
+                f"        line join=bevel,",
+                f"        small{self.colors[0]}node/.style={{circle, fill={self.colors[0]}, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}},",
+                f"        small{self.colors[1]}node/.style={{circle, fill={self.colors[1]}, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}},",
+                f"        small{self.colors[2]}node/.style={{circle, fill={self.colors[2]}, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}}",
+                r"    ]",
+                r"        % Axes",
+                f"        \\draw[-stealth] (0pt, 0pt) -- ({scaleX}pt, 0pt) node[anchor=north west, yshift=15pt] {{Cardinality}};",
+                f"        \\draw[-stealth] (0pt, 0pt) -- (0pt, {scaleY}pt) node[anchor=south] {{Response time in s}};",
+                # Garde l'échelle Y totale
+                r"        % Axis graduation",
+                x_axis,
+                y_axis,
+                r"        % Lines",
+                f"        {lines[0]}",
+                f"        {lines[1]}",
+                f"        {lines[2]}",
+                r"        % Points",
+                *["        " + pt for pt in points[0]],
+                *["        " + pt for pt in points[1]],
+                *["        " + pt for pt in points[2]],
+                r"        % Caption",
+                r"        \matrix [left=0cm of current bounding box.north east] at (current bounding box.north east) {",
+                f"            \\node [small{self.colors[0]}node, label=right:{algo_names[0]} with {attr} attributes] {{}}; \\\\",
+                f"            \\node [small{self.colors[1]}node, label=right:{algo_names[1]} with {attr} attributes] {{}}; \\\\",
+                f"            \\node [small{self.colors[2]}node, label=right:{algo_names[2]} with {attr} attributes] {{}}; \\\\",
+                r"        };",
+                r"    \end{tikzpicture}"
             ]
-                \\draw[-stealth] (0pt, 0pt) -- ({scaleX}pt, 0pt) node[anchor=north west] {{Cardinality}};
-                \\draw[-stealth] (0pt, 0pt) -- (0pt, {scaleY}pt) node[anchor=south] {{Response time in s}};
 
-                % Axis graduations
-                {x_axis}
-                {y_axis}
+            latex_lines.extend(tikz_block)
 
-                % Curves
-                {lines[0]}
-                {lines[1]}
-                {lines[2]}
+        latex_lines.append(r"\end{document}")
+        self.latexCode = "\n".join(latex_lines)
+        self.addLatexCode(self.latexCode)
+        self.render()
 
-                % Points
-                {points[0]}
-                {points[1]}
-                {points[2]}
+    def twoAlgoComparaison369LatexLog(self, timeDict1, timeDict2, maxRowsList, maxTimeList, algo1, algo2,
+                                      latexFilePath="", scaleX=280, scaleY=280, attributes=[3, 6, 9],
+                                      scaleType="LinX/LinY"):
+        """
+        Generate LaTeX code to compare two algorithms for multiple attributes, with options for linear or logarithmic scaling.
+        """
+        self.path += latexFilePath
+        algo1_name = algo1.value[0]
+        algo2_name = algo2.value[0]
 
-                % Caption
-                \\matrix [below left] at (current bounding box.north east) {{
-                    \\node [small{self.colors[2]}node, label=right:{algo_names[2]} with {attr} attributes] {{}}; \\\\
-                    \\node [small{self.colors[1]}node, label=right:{algo_names[1]} with {attr} attributes] {{}}; \\\\
-                    \\node [small{self.colors[0]}node, label=right:{algo_names[0]} with {attr} attributes] {{}}; \\\\
-                }};
-            \\end{{tikzpicture}}
-            """
+        # Define color styles
+        color_styles = []
+        for i, color in enumerate(self.colors[:2]):
+            rgb = self.get_rgb_value(color)
+            color_styles.append(f"\\definecolor{{{color}}}{{RGB}}{{{rgb}}}")
+            color_styles.append(
+                f"\\tikzset{{big{color}node/.style={{circle, fill={color}, draw=black, line width=1pt}},"
+                f"small{color}node/.style={{circle, fill={color}, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}}}}"
+            )
 
-        self.latexCode += """
-        \\end{document}"""
+        latex_lines = [
+            r"\documentclass[tikz, border=10pt]{standalone}",
+            r"\usepackage{tikz}",
+            r"\usetikzlibrary{arrows.meta, shapes, positioning}",
+            r"\usepackage{xcolor}",
+            *color_styles,
+            r"\begin{document}"
+        ]
 
+        for i in range(len(attributes)):
+            maxTime = roundtoNearestThousand(maxTimeList[i])  # Round maxTime to nearest thousand
+            print(maxTime)
+
+            # Set the scaling type
+            is_log_x = 'LogX' in scaleType
+            is_log_y = 'LogY' in scaleType
+
+            # Calculate scaling ratios based on the chosen scale type
+            if is_log_x:
+                ratioX = scaleX / math.log(maxRowsList[i] + 1)  # Logarithmic scale for X
+            else:
+                ratioX = scaleX / maxRowsList[i]  # Linear scale for X
+
+            if is_log_y:
+                ratioY = scaleY / math.log(maxTime + 1)  # Logarithmic scale for Y
+            else:
+                ratioY = scaleY / maxTime  # Linear scale for Y
+
+            # Algo 1 line and points
+            line1 = f"\\draw[{self.colors[0]}, line width=2pt]"
+            points1 = []
+            for k in sorted(timeDict1.keys()):
+                x = int(round(math.log(k + 1) * ratioX)) if is_log_x else int(round(k * ratioX))
+                y = int(round(math.log(timeDict1[k][i] + 1) * ratioY)) if is_log_y else int(
+                    round(timeDict1[k][i] * ratioY))
+                line1 += f"({x}pt, {y}pt) -- "
+                points1.append(f"\\filldraw[color=black, fill={self.colors[0]}] ({x}pt, {y}pt) circle (2pt);")
+            line1 = line1.rstrip(" -- ") + ";"
+
+            # Algo 2 line and points
+            line2 = f"\\draw[{self.colors[1]}, line width=2pt]"
+            points2 = []
+            for k in sorted(timeDict2.keys()):
+                x = int(round(math.log(k + 1) * ratioX)) if is_log_x else int(round(k * ratioX))
+                y = int(round(math.log(timeDict2[k][i] + 1) * ratioY)) if is_log_y else int(
+                    round(timeDict2[k][i] * ratioY))
+                line2 += f"({x}pt, {y}pt) -- "
+                points2.append(f"\\filldraw[color=black, fill={self.colors[1]}] ({x}pt, {y}pt) circle (2pt);")
+            line2 = line2.rstrip(" -- ") + ";"
+
+            # Axes graduations
+            x_axis = "        \\foreach \\x/\\xtext in {\n"
+            if is_log_x:
+                log_steps = [math.log(s + 1) for s in range(0, maxRowsList[i] + 1, maxRowsList[i] // 5)]
+                for step in log_steps:
+                    value = roundtoNearestTen(math.exp(step))
+                    x_axis += f"            {int(step * ratioX)}pt/${value}$, \n"
+            else:
+                for step in [scaleX * s / 5 for s in range(6)]:
+                    value = roundtoNearestTen(maxRowsList[i] * (step / scaleX))
+                    x_axis += f"            {int(step)}pt/${value}$, \n"
+            x_axis = (x_axis.rstrip(", \n")
+                      + "} {\n"
+                      + "            \\draw (\\x, 2pt) -- (\\x, -2pt) node[below, font=\\small] {\\xtext\\strut};\n"
+                      + "        }")
+
+            y_axis = "        \\foreach \\y/\\ytext in {\n"
+            if is_log_y:
+                log_steps = [math.log(s + 1) for s in range(0, maxTime + 1, maxTime // 5)]
+                for step in log_steps:
+                    adjusted_value = roundtoNearestTen(math.exp(step))
+                    y_axis += f"            {int(step * ratioY)}pt/${adjusted_value}$, \n"
+            else:
+                for step in [scaleY * s / 5 for s in range(5)]:
+                    adjusted_value = round(maxTime * (step / (scaleY * 0.8)), 2)
+                    y_axis += f"            {int(step)}pt/${adjusted_value}$, \n"
+            y_axis = (y_axis.rstrip(", \n")
+                      + "} {\n"
+                      + "            \\draw (2pt, \\y) -- (-2pt, \\y) node[left, font=\\small] {\\ytext\\strut};\n"
+                      + "        }")
+
+            tikz_block = [
+                f"    % Graph for {attributes[i]} attributes",
+                r"    \begin{tikzpicture}[",
+                f"        line join=bevel,",
+                f"        big{self.colors[0]}node/.style={{shape=circle, fill={self.colors[0]}, draw=black, line width=1pt}},",
+                f"        big{self.colors[1]}node/.style={{shape=circle, fill={self.colors[1]}, draw=black, line width=1pt}},",
+                f"        small{self.colors[0]}node/.style={{circle, fill={self.colors[0]}, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}},",
+                f"        small{self.colors[1]}node/.style={{circle, fill={self.colors[1]}, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}}",
+                r"    ]",
+                r"        % Axes",
+                f"        \\draw[-stealth] (0pt, 0pt) -- ({scaleX}pt, 0pt) node[anchor=north west, font=\\large] {{Cardinality}};",
+                f"        \\draw[-stealth] (0pt, 0pt) -- (0pt, {scaleY}pt) node[anchor=south, font=\\large] {{Response time in s}};",
+                r"        % Axis graduation",
+                x_axis,
+                y_axis,
+                r"        % Lines",
+                f"        {line1}",
+                f"        {line2}",
+                r"        % Points",
+                *["        " + pt for pt in points1],
+                *["        " + pt for pt in points2],
+                r"        % Caption",
+                r"        \matrix [below left] at (current bounding box.north east) {",
+                f"            \\node [small{self.colors[0]}node, label=right:{algo1_name} with {attributes[i]} attributes] {{}}; \\\\",
+                f"            \\node [small{self.colors[1]}node, label=right:{algo2_name} with {attributes[i]} attributes] {{}}; \\\\",
+                r"        };",
+                r"    \end{tikzpicture}"
+            ]
+
+            latex_lines.extend(tikz_block)
+
+        latex_lines.append(r"\end{document}")
+        self.latexCode = "\n".join(latex_lines)
         self.addLatexCode(self.latexCode)
         self.render()
 
@@ -773,6 +929,15 @@ def CoskyComparaisonNColumn(self, column, scaleX=280, scaleY=280):
         self.addLatexCode(self.latexCode)
         self.render()
 
+def roundtoNearestThousand(value):
+    if value == 0:
+        return 0
+    return round(value / 1000) * 1000
+
+def roundtoNearestTen(value):
+    if value == 0:
+        return 0
+    return round(value / 10) * 10
 
 if __name__ == "__main__":
     coskyLatex = LatexMaker()
@@ -783,13 +948,14 @@ if __name__ == "__main__":
     timeDict = {int(key): value for key, value in timeDict.items()}
     coskyLatex.oneAlgoComparaison(timeDict, maxRows, maxTime, AlgoEnum.CoskyAlgorithme, latexFilePath="OneAlgoComparaison/CoskyAlgo369.tex")"""
 
-    print_red("1./ Comparaison de deux algorithmes")
-    print_red("2./ Comparaison de trois algorithmes")
+    print_red("1./ Comparaison de trois algorithmes")
+    print_red("2./ Comparaison de deux algorithmes")
+
     a = input("Choix: ")
     if a == "1":
         json_paths = [
             path + "OneAlgoDatas/ExecutionCoskySql369.json",
-            path + "OneAlgoDatas/CoskyAlgoTemp.json",
+            path + "OneAlgoDatas/ExecutionCoskyAlgo369.json",
             path + "OneAlgoDatas/ExecutionRankSky369.json"
         ]
         timeDicts, maxRowsList, maxTimeList = coskyLatex.prepareComparisonData(json_paths)
@@ -805,7 +971,7 @@ if __name__ == "__main__":
     elif a == "2":
         json_paths = [
             path + "OneAlgoDatas/ExecutionCoskySql369.json",
-            path + "OneAlgoDatas/CoskyAlgoTemp.json"
+            path + "OneAlgoDatas/ExecutionCoskyAlgo369.json"
         ]
 
         # Appelle ta méthode utilitaire
@@ -820,6 +986,28 @@ if __name__ == "__main__":
             AlgoEnum.CoskySql,
             AlgoEnum.CoskyAlgorithme,
             latexFilePath="TwoAlgosComparaison/CoskySqlAlgo369.tex"
+        )
+    if a == "3":
+        json_paths = [
+            path + "OneAlgoDatas/ExecutionCoskySql369.json",
+            path + "OneAlgoDatas/ExecutionCoskyAlgo369.json"
+        ]
+
+        # Appelle ta méthode utilitaire
+        timeDicts, maxRowsList, maxTimeList = coskyLatex.prepareComparisonData(json_paths)
+        timeDict1 = timeDicts[0]
+        timeDict2 = timeDicts[1]
+        algo1 = AlgoEnum.CoskySql
+        algo2 = AlgoEnum.CoskyAlgorithme
+        coskyLatex.twoAlgoComparaison369LatexLog(
+            timeDict1,
+            timeDict2,
+            maxRowsList,
+            maxTimeList,
+            algo1,
+            algo2,
+            latexFilePath="twoAlgosComparaison/CoskySqlAlgo369LogLogAxes.tex",
+            scaleType="LinX/LogY",
         )
 
     """path = "../../Assets/LatexDatas/ExecutionRankSky369.json"
