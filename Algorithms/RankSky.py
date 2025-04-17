@@ -32,7 +32,7 @@ class RankSky:
         self.alpha = 0.85 # Damping factor
         self.score = {}
         self.time = 0
-        self.run()
+        #self.run()
 
     def unifyPreferences(r, pref, prefNext):
         for i in range(len(pref)):
@@ -141,11 +141,11 @@ class RankSky:
 
 
     def printOutcomes(self):
-        """print("Skyline matrix : \n", self.sky)
+        print("Skyline matrix : \n", self.sky)
         print("Transposed matrix : \n", self.rt)
         print("Square matrix : \n", self.a)
         print("Stochastic matrix : \n", self.s)
-        print("Google PageRank matrix : \n", self.g)"""
+        print("Google PageRank matrix : \n", self.g)
         print("Score's vector : \n", self.score)
 
     def run(self):
@@ -182,9 +182,10 @@ if __name__ == "__main__":
     }
     pref = [Preference.MIN,Preference.MIN,Preference.MIN]
 
-    db = DatabaseToDict("../Assets/Databases/cosky_db_C3_R10000.db")
+    db = DatabaseToDict("../Assets/CoskySqlTest.db")
     db.toDict()
     r = db.data
+    print(r)
 
     print("1./ Utiliser rankSky avec ipl")
     print("2./ Utiliser rankSky avec iplDom")
@@ -203,7 +204,7 @@ if __name__ == "__main__":
         rankSky.Ipl()
         rankSky.sort()
         time2.stop()
-        #rankSky.printOutcomes()
+        rankSky.printOutcomes()
         print("Execution time : ", time1.execution_time + time2.execution_time)
 
     elif i== "2":

@@ -156,7 +156,7 @@ def compare_all():
     max_rows = 0
     max_time = 0
 
-    root_databases = fr"..\Assets\databases"
+    root_databases = fr"..\Assets\databasesGenerated"
     for col in cols:
         for row in rows:
             #beauty_print("Colonne", col)

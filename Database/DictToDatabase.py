@@ -48,7 +48,17 @@ class DictToDatabase:
         print("Connection closed.")
 
 if __name__ == "__main__":
-    databaseFilepath = "test.db"
+    print("SQlite3 version:", sqlite3.version)
+    databaseFilepath = "../Assets/CoskySqlTest.db"
     db = DictToDatabase(databaseFilepath)
-    data = {1: (1, 2, 3), 2: (4, 5, 6), 3: (7, 8, 9)}
-    db.toDatabase(data)
+    r = {
+        1: (5, 20, 1/70),
+        2: (4, 60, 1/50),
+        3: (5, 30, 1/60),
+        4: (1, 80, 1/60),
+        5: (5, 90, 1/40),
+        6: (9, 30, 1/50),
+        7: (7, 80, 1/40),
+        8: (9, 90, 1/30)
+    }
+    db.toDatabase(r)

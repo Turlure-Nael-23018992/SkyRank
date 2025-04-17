@@ -76,7 +76,7 @@ class CoskySQL:
         s2 = " OR ".join([f"R2.{name} < R1.{name}" for name in col_offset])
 
         # N de SN.
-        snn = ", ".join([f"{name} / T{name} AS N{name}" for name in col_offset])
+        snn = ", ".join([f"CAST({name} AS REAL) / T{name} AS N{name}" for name in col_offset])
 
         # T de SN.
         snt = ", ".join([f"SUM({name}) AS T{name}" for name in col_offset])
@@ -123,6 +123,8 @@ class CoskySQL:
             ORDER BY Score DESC;
             """
 
+        #print(sql_queries)
+
         cursor.execute(sql_queries)
         # Récupération des résultats de la dernière instruction
         results = cursor.fetchall()
@@ -134,8 +136,9 @@ class CoskySQL:
         return self.rows_res
 
 if __name__ == '__main__':
-    db_filepath= "../Assets/RankSkyTest.db"
-    startTime = time.time()
+    #print("Sqlite version : ", sqlite3.sqlite_version)
+    db_filepath= "../Assets/CoskySqlTest.db"
+    #startTime = time.time()
     cosky_sql = CoskySQL(db_filepath)
-    print("cosky_sql:",cosky_sql.rows_res)
-    print(f"temps: {time.time() - startTime}")
+    #print("cosky_sql:",cosky_sql.rows_res)
+    #print(f"temps: {time.time() - startTime}")
