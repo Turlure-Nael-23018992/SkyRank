@@ -17,7 +17,7 @@ from Utils.TimerUtils import TimeCalc
 from Algorithms.RankSky import RankSky
 from Algorithms.DpIdpDh import DpIdpDh
 from Utils.Preference import Preference
-from Utils.JsonUtils import read_json, write_json, update_json, prettyPrintTimeData, sortJson
+from Utils.JsonUtils import readJson, writeJson, updateJson, prettyPrintTimeData, sortJson
 
 ROWS_RATIO_MULT = pow(10, 3)
 ROWS_RATIO_UNITS = [1, 2, 5, 10]
@@ -37,7 +37,7 @@ class AlgoCalculator:
         self.tableName = "Pokemon"
         self.conn = sqlite3.connect(fr"..\..\Assets\databases\{self.tableName}.db")
         self.cols = [3,6,9]
-        self.rows = [10,20,50,100,200,500, 1000, 2000,5000]#20, 100, 1000, 2000, 5000, 10000, 20000, 50000 , 5000, 10000, 20000, 50000, 100000, 200000
+        self.rows = [10,20,50,100,200,500, 1000, 2000,5000, 10000, 20000, 50000, 100000, 200000]#20, 100, 1000, 2000, 5000, 10000, 20000, 50000 , 5000, 10000, 20000, 50000, 100000, 200000
         #
     def select_all(self):
         """
@@ -117,7 +117,7 @@ class AlgoCalculator:
                     max_time = current_time
                 row_str = str(row)
                 try:
-                    savedDatas = read_json(fp)
+                    savedDatas = readJson(fp)
                 except (FileNotFoundError, json.JSONDecodeError):
                     savedDatas = {}
 
@@ -146,7 +146,7 @@ class AlgoCalculator:
                     "max_rows": max_rows,
                     "max_time": max_time
                 }
-                write_json(fp, dataToSave)
+                writeJson(fp, dataToSave)
 
                 sortJson(fp)
 
@@ -203,9 +203,7 @@ class AlgoCalculator:
             "maxTime": maxTime  # The maximum execution time
         }
 
-        with open(self.jsonFilePath, "w") as f:
-            # Save everything in the JSON file
-            json.dump(dataToSave, f, indent=4)
+        writeJson(self.jsonFilePath, dataToSave)
 
     def compareExecutionTimeCoskySqlColumn(self, col):
         """
@@ -246,9 +244,7 @@ class AlgoCalculator:
             "maxTime": maxTime  # The maximum execution time
         }
 
-        with open(self.jsonFilePath, "w") as f:
-            # Save everything in the JSON file
-            json.dump(dataToSave, f, indent=4)
+        writeJson(self.jsonFilePath, dataToSave)
 
 # Algorithm declarations
 COMPARE_ALL = "COMPARE_ALL"
@@ -271,7 +267,7 @@ if __name__ == "__main__":
     calculator = AlgoCalculator("")
     #calculator.compareExecutionTime(CoskySQL)
     #calculator.compareExecutionTimeSqlAlgo()
-    #calculator.compareExecutionTime(RankSky, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionRankSky369.json")
+    calculator.compareExecutionTime(RankSky, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionRankSky369.json")
+    calculator.compareExecutionTime(DpIdpDh, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionDpIdpDh369.json")
     #calculator.compareExecutionTime(CoskySQL, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskySql369.json")
     #calculator.compareExecutionTime(CoskyAlgorithme, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskyAlgo369.json")
-    calculator.compareExecutionTime(DpIdpDh, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionDpIdpDh369.json")

@@ -1,5 +1,5 @@
 import unittest
-import json
+from Utils.JsonUtils import readJson, writeJson, updateJson, sortJson, prettyPrintTimeData
 from collections import OrderedDict
 
 from Algorithms.CoskyAlgorithme import CoskyAlgorithme
@@ -14,8 +14,7 @@ class CoskyAlgoTest(unittest.TestCase):
         """
         Setup method to initialize the CoskyAlgorithme instance.
         """
-        with open('../Datas/RBig.json', 'r') as f:
-            r_big_loaded = json.load(f)
+        r_big_loaded = readJson("../Datas/RBig.json")
 
         # Convert the loaded dictionary values to tuples
         self.r_big_reloaded = {key: tuple(value) for key, value in r_big_loaded.items()}

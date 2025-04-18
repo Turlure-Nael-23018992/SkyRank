@@ -4,9 +4,9 @@ from BbsPy3.RTree.rTree import RTree
 
 
 class BbsCosky:
-    '''
+    """
     BBS Algorithm
-    '''
+    """
     DISK_PAGE_SIZE=2048
     POINTER=4
     KEYS=8
@@ -15,6 +15,13 @@ class BbsCosky:
     # so value of M for a given disk access
     M=DISK_PAGE_SIZE/(POINTER+KEYS)
     def __init__(self, relation, sp, layer, minIdp={}):
+        """
+        Initialize the BBS algorithm with the given relation, sp, layer, and minIdp.
+        :param relation: the relation to be processed
+        :param sp: the skyline point
+        :param layer: the layer of the skyline
+        :param minIdp: the minimum idp
+        """
         self.relation=relation
         self.minIdp=minIdp
         self.sp=sp
@@ -31,10 +38,17 @@ class BbsCosky:
 
     # function to fill the rTree with dictionnary
     def fillRTree(self):
+        """
+        Fill the R-Tree with the relation data.
+        """
         for k,v in self.relation.items():
             self.rTree.Insert(k, v, v)
 
     def skylines_to_dict(self, skylines):
+        """
+        Convert the list of skylines to a dictionary.
+        :param skylines: the list of skylines
+        """
         # sort the skylines by tupleId
         skylines.sort(key=lambda item: item.tupleId)
         sky_dict = {sky.tupleId:self.relation[sky.tupleId] for sky in skylines}

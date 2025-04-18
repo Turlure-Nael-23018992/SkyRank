@@ -1,5 +1,5 @@
 import unittest
-import json
+from Utils.JsonUtils import readJson, writeJson, updateJson, sortJson, prettyPrintTimeData
 
 from Algorithms.DpIdpDh import DpIdpDh
 
@@ -8,8 +8,7 @@ class DpIdpDhTest(unittest.TestCase):
 
     def setUp(self):
         """Set up the test case"""
-        with open('../Datas/RBig.json', 'r') as f:
-            self.r_big = json.load(f)
+        self.r_big = readJson("../Datas/RBig.json")
 
         # Excepted values for Dp_IDP algorithm
         self.exceptedOutput = {31: 100.12794123202812,

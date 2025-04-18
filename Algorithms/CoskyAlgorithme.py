@@ -4,12 +4,13 @@ import json
 
 from Algorithms.BbsCosky import BbsCosky
 from Utils.DisplayHelpers import beauty_print
+from Utils.JsonUtils import readJson, writeJson, updateJson, sortJson, prettyPrintTimeData
 
 
 class CoskyAlgorithme:
-    '''
-    Classe qui utilise l'algorithme Cosky en version algorithme
-    '''
+    """
+    Class to implement the Cosky algorithm for ranking and sorting data based on multiple criteria.
+    """
 
     def __init__(self, r, is_debug=False):
         self.is_debug=is_debug
@@ -38,6 +39,9 @@ class CoskyAlgorithme:
 
 
     def run(self):
+        """
+        Run the Cosky algorithm to compute the ranking and sorting of data based on multiple criteria.
+        """
         # for each key (row) of s
         for i in self.data_keys:
             # for each element of s's values (column)
@@ -103,6 +107,9 @@ class CoskyAlgorithme:
         return self.s
 
     def sort(self,rev):
+        """
+        Sort the data based on the last column of the dictionary which is the score.
+        """
         reverse = True if rev == "Desc" else False
         self.s = dict(sorted(self.s.items(), key=lambda item: item[1][-1], reverse=reverse))
 
@@ -118,8 +125,7 @@ if __name__ == '__main__':
         8: (9, 90, 0.033333333)
     }
 
-    with open ("Datas/RBig.json", "r") as f:
-        r_big = json.load(f)
+    r_big = readJson("Datas/RBig.json")
 
     r = {
         1: (5, 20, 1 / 70),

@@ -9,6 +9,7 @@ import json
 
 from Algorithms.BbsCosky import BbsCosky
 from Utils.DisplayHelpers import beauty_print
+from Utils.JsonUtils import readJson
 
 
 class SkyIR:
@@ -258,8 +259,7 @@ if __name__ == '__main__':
 
 
 
-    with open("Datas/RBig.json", "r") as f:
-        r_big = json.load(f)
+    r_big = readJson("Datas/RBig.json")
     sky_ir = SkyIR(r_big)
     # ------------------------------------------------------------------------------------------------------------------
     # ---------------------------------------calculSkylineEtNbDominants-------------------------------------------------

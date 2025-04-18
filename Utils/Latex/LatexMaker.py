@@ -4,6 +4,7 @@ import textwrap
 from Algorithms.CoskyAlgorithme import CoskyAlgorithme
 from Algorithms.CoskySql import CoskySQL
 from Utils.DisplayHelpers import beauty_print, print_red
+from Utils.JsonUtils import readJson, writeJson, updateJson, sortJson, prettyPrintTimeData
 from AlgoEnum import AlgoEnum
 import math
 
@@ -30,13 +31,11 @@ class LatexMaker:
 
     def render(self):
         """Render the latex code to a file"""
-        with open(self.path, "w") as f:
-            f.write(self.latexFinal)
+        writeJson(self.path, self.latexFinal)
 
     def getData(self, path):
         """Get the data from the json file"""
-        with open(path, "r") as f:
-            data = f.read()
+        data = readJson(path)
         data = json.loads(data)
         timeDict = data["time_data"]
         maxRows = data["max_rows"]

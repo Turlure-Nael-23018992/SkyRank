@@ -255,9 +255,14 @@ ORDER BY Score DESC;"
 from colorama import Fore, Style
 import math
 import json
+from Utils.JsonUtils import readJson, writeJson, updateJson, sortJson, prettyPrintTimeData
 
 
 def display_matrice(matrice):
+    """
+    Display a matrix or a dictionary in a formatted way.
+    :param matrice: the matrix or dictionary to display
+    """
     if type(matrice[0])==list:
         for row in matrice:
             row = [int(x) if x != "/" else "/" for x in row ]
@@ -305,6 +310,11 @@ sp=[0,0,1,0,1,1,1,1]
 #r = db_obj.select_all_until_id(8)
 
 def calculMatriceDesDominants(r):
+    """
+    Calculate the dominance matrix and the skyline points.
+    :param r: the relation
+    :return: the dominance matrix and the skyline points
+    """
     len_ = len(r)
     dom = [["/" if x == y else False for y in range(len_)] for x in range(len_)]
     sp = [True] * len_
@@ -339,6 +349,13 @@ def calculMatriceDesDominants(r):
 
 
 def calculGrapheDeCouverture(dom, sp, display_graph=False):
+    """
+    Calculate the coverage graph of the dominance matrix.
+    :param dom: the dominance matrix
+    :param sp: the skyline points
+    :param display_graph: the flag to display the graphS
+    :return: the dominance matrix, the skyline points, the total skyline points, the skyline cardinality, and the dominance cardinality
+    """
     import networkx as nx
     import matplotlib.pyplot as plt
 
@@ -413,44 +430,44 @@ def calculGrapheDeCouverture(dom, sp, display_graph=False):
 # ---------------------------------------------------------------------------------------------
 
 def print_color(color, text):
-    '''
-    Print dans la couleur voulue
-    :param color: La couleur (formatée pour colorama) Fore.GREEN / Fore.BLUE etc...
-    :param text: Le texte à afficher
+    """
+    Print in the desired color
+    :param color: The color (formatted for colorama) Fore.GREEN / Fore.BLUE etc...
+    :param text: The text to display
     :return: None
-    '''
+    """
     print(f"{color} {text} {Style.RESET_ALL}")
 
 
 def print_green(text):
-    '''
-    Print en vert
-    :param text: Le texte à afficher
+    """
+    Print in green
+    :param text: The text to display
     :return: None
-    '''
+    """
     print_color(Fore.GREEN, text)
 
 
 def print_red(text):
-    '''
-    Print en rouge
-    :param text: Le texte à afficher
+    """
+    Print in red
+    :param text: The text to display
     :return: None
-    '''
+    """
     print_color(Fore.RED, text)
 
 
 
 def lm(dom, sky, skyCard, i,j, prof):
-    '''
-    Calcul de lm
-    :param dom: La matrice
-    :param sky:
-    :param skyCard:
-    :param i:
-    :param prof: La profondeur
-    :return: Le sky
-    '''
+    """
+    Function to calculate the lm of the skyline points.
+    :param dom: the dominance matrix
+    :param sky: the skyline points
+    :param skyCard: the skyline cardinality
+    :param i: the index of the skyline point
+    :param prof: the current depth
+    :return: the skyline points with the lm
+    """
     n=len(dom)
     if skyCard[i]==0:
         #print_red(f"fin...i:{i+1} / j:{j+1} / prof:{prof}")
@@ -469,6 +486,13 @@ def lm(dom, sky, skyCard, i,j, prof):
 
 
 def calculLm(dom, sky, skyCard):
+    """
+    Calculate the lm of the skyline points.
+    :param dom: the dominance matrix
+    :param sky: the skyline points
+    :param skyCard: the skyline cardinality
+    :return: the skyline points with the lm
+    """
     for k,v in sky.items():
         sky = lm(dom, sky, skyCard, k, k, 1)
     return sky
@@ -487,6 +511,13 @@ def calculLm(dom, sky, skyCard):
 
 
 def calculScore(sky, domCard, spTot):
+    """
+    Calculate the score of the skyline points.
+    :param sky: the skyline points
+    :param domCard: the dominance cardinality
+    :param spTot: the total skyline points
+    :return: the score of the skyline points
+    """
     score = {}
     for i in sky:
         tot=0
@@ -500,16 +531,23 @@ def calculScore(sky, domCard, spTot):
 
 
 class DpIdpDh:
-    '''
-    Classe qui lance l'algo de DP-IDP
-    '''
+    """
+    Class to implement the dp-idp-dh algorithm for ranking and sorting data based on multiple criteria.
+    """
 
     def __init__(self, r):
+        """
+        Constructor to initialize the dp-idp-dh algorithm.
+        :param r: the relation
+        """
         self.r=r
 
         self.run()
 
     def run(self):
+        """
+        Run the dp-idp-dh algorithm to compute the ranking and sorting of data based on multiple criteria.
+        """
         self.dom, self.sp = self.calculMatriceDesDominants(self.r)
         self.dom, self.sky, self.spTot, self.skyCard, self.domCard = self.calculGrapheDeCouverture(self.dom, self.sp)
         self.sky = self.calculLm(self.dom, self.sky, self.skyCard)
@@ -518,6 +556,11 @@ class DpIdpDh:
 
 
     def calculMatriceDesDominants(self, r):
+        """
+        Calculate the dominance matrix and the skyline points.
+        :param r: the relation
+        :return: the dominance matrix and the skyline points
+        """
         len_ = len(r)
         dom = [["/" if x == y else False for y in range(len_)] for x in range(len_)]
         sp = [True] * len_
@@ -542,6 +585,13 @@ class DpIdpDh:
         return dom, sp
 
     def calculGrapheDeCouverture(self, dom, sp, display_graph=False):
+        """
+        Calculate the coverage graph of the dominance matrix.
+        :param dom: the dominance matrix
+        :param sp: the skyline points
+        :param display_graph: flag to display the graph
+        :return: the dominance matrix, the skyline points, the total skyline points, the skyline cardinality, and the dominance cardinality
+        """
 
         n = len(dom)
         sky = {}
@@ -573,6 +623,13 @@ class DpIdpDh:
 
 
     def calculGrapheDeCouverture1(self, dom, sp, display_graph=False):
+        """
+        Calculate the coverage graph of the dominance matrix.
+        :param dom: the dominance matrix
+        :param sp: the skyline points
+        :param display_graph: flag to display the graph
+        :return: the dominance matrix, the skyline points, the total skyline points, the skyline cardinality, and the dominance cardinality
+        """
         import networkx as nx
         import matplotlib.pyplot as plt
         G, nodes = None, None
@@ -632,6 +689,16 @@ class DpIdpDh:
         return dom, sky, spTot, skyCard, domCard
 
     def lm_jf(self, dom, sky, skyCard, i, j, prof):
+        """
+        Function to calculate the lm of the skyline points using a stack instead of recursion.
+        :param dom: the dominance matrix
+        :param sky: the skyline points
+        :param skyCard: the skyline cardinality
+        :param i: the index of the skyline point
+        :param j: the index of the skyline point
+        :param prof: the current depth
+        :return: the skyline points with the lm
+        """
         n = len(dom)
         stack = [(i, j, prof)]  # Utilisation d'une pile au lieu de la récursion
         while stack:
@@ -651,37 +718,75 @@ class DpIdpDh:
 
 
     def lm(self, dom, sky, skyCard, i, j, prof):
+        """
+        Recursive function to calculate and update the dominance levels (lm)
+        of skyline points.
+
+        When a point j is dominated by another point k, this function updates
+        the 'sky' structure and decrements the corresponding cardinality.
+        The update is propagated recursively with an incremented dominance level.
+
+        :param dom: list[list[bool]] - dominance matrix (dom[k][j] == True means k dominates j)
+        :param sky: dict - structure representing the skyline points
+        :param skyCard: dict - dictionary containing the remaining dominance count for each point
+        :param i: int - index of the current point being processed in sky
+        :param j: int - target index in sky
+        :param prof: int - current dominance level
+        :yield: dict - updated version of the sky structure
+        """
         n = len(dom)
 
         for k in range(n):
-
-            if dom[k][j] == True:
+            if dom[k][j]:
                 if sky[i][k] > 0 and skyCard[i] > 0:
                     dom[k][j] = False
-                    # Stocker sky[i][k] dans une variable temporaire
                     value = sky[i][k]
-                    # Réorganiser les conditions pour vérifier d'abord la condition la plus probable
+
+                    # Prioritize the most probable condition first
                     if value == 1 or value > prof:
                         sky[i][k] = prof
+
                     skyCard[i] -= 1
+
                     if skyCard[i] == 0:
                         yield sky
-                        return  # Ajoutez un retour pour arrêter l'exécution une fois qu'un yield est atteint
+                        return  # Stop recursion once all dominances are handled
+
                     new_prof = prof + 1
-                    # Appeler récursivement lm et itérer sur les résultats
+
+                    # Recursive call and iteration over updated skyline states
                     for updated_sky in self.lm(dom, sky, skyCard, i, k, new_prof):
                         yield updated_sky
+
         yield sky
 
 
     def calculLm(self, dom, sky, skyCard):
+        """
+        Initializes and calls the 'lm' function for each point in the skyline.
+        Updates the sky structure incrementally using intermediate results from 'lm'.
+
+        :param dom: list[list[bool]] - dominance matrix
+        :param sky: dict - skyline point structure
+        :param skyCard: dict - remaining dominance count for each point
+        :return: dict - final updated sky structure
+        """
         for k in sky.keys():
             for updated_sky in self.lm(dom, sky, skyCard, k, k, 2):
-                sky = updated_sky  # Met à jour sky avec l'état intermédiaire
+                sky = updated_sky  # Apply intermediate update to the sky
         return sky
 
     def calculLm1(self, dom, sky, skyCard):
-        # Clone the original sky structure to avoid mutating input during iteration
+        """
+        Alternative version of 'calculLm' that calls 'lm' but returns the generator
+        directly instead of consuming it. This version does NOT process the yielded values,
+        which may lead to unexpected results.
+
+        :param dom: list[list[bool]] - dominance matrix
+        :param sky: dict - skyline point structure
+        :param skyCard: dict - remaining dominance count for each point
+        :return: generator - the generator returned by 'lm'
+        """
         for k in sky.keys():
             sky= self.lm(dom, sky, skyCard, k, k, 2)
         return sky
@@ -689,6 +794,17 @@ class DpIdpDh:
 
 
     def calculScore(self, sky, domCard, spTot):
+        """
+        Calculates a score for each skyline entry based on dominance levels and frequency.
+
+        The score is computed as a sum over all dimensions where the skyline value > 0:
+        (1 / level) * log10(total support / cardinality of dominators)
+
+        :param sky: dict - skyline structure (matrix-like: sky[i][j] gives dominance level of j for skyline i)
+        :param domCard: dict - number of dominators for each point
+        :param spTot: int - total number of support points
+        :return: dict - scores per skyline index
+        """
         score = {}
         for i in sky:
             tot = 0
@@ -699,6 +815,11 @@ class DpIdpDh:
         return score
 
     def sort(self,rev):
+        """
+        Sorts the internal score dictionary in ascending or descending order.
+
+        :param rev: str - sorting order, either "Asc" or "Desc"
+        """
         reverse = True if rev == "Desc" else False
         self.score = dict(sorted(self.score.items(), key=lambda item: item[1], reverse=reverse))
 
@@ -706,8 +827,18 @@ class DpIdpDh:
 
 
 
-
 def dpIdpAvecHierarchieDeDominance():
+    """
+    Demonstration of skyline processing using dominance hierarchy.
+
+    This function performs the following steps:
+    1. Constructs a set of items with 3D values.
+    2. Computes the dominance matrix.
+    3. Builds the skyline graph.
+    4. Computes the dominance levels (lm).
+    5. Calculates scores for each skyline node.
+    6. Displays results at each step.
+    """
 
     r={
     1:(5, 20, 1/70),
@@ -762,8 +893,7 @@ def dpIdpAvecHierarchieDeDominance():
 if __name__ == '__main__':
     import time
 
-    with open('Datas/RBig.json', 'r') as f:
-        r_big = json.load(f)
+    r_big = readJson("Datas/RBig.json")
 
     # Convert the loaded dictionary values to tuples
     r_big = {key: tuple(value) for key, value in r_big.items()}

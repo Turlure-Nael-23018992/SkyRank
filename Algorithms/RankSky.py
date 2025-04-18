@@ -11,7 +11,17 @@ import json
 
 class RankSky:
 
-    def __init__(self, rTuple, pref):  # [[5,1],[2,3],[3,2]]
+    def __init__(self, rTuple, pref):
+        """
+        Constructor for the RankSky class.
+
+        Initializes the RankSky ranking process using skyline computation and PageRank.
+        It prepares the input data, unifies preferences, computes the skyline, and triggers
+        matrix construction and scoring.
+
+        :param rTuple: dict - the input relation as a dictionary of tuples (for exemple : {1: (val1, val2, ...), ...})
+        :param pref: list[Preference] - a list of Preference enums (MIN or MAX) corresponding to each dimension
+        """
         self.rTupleInit = rTuple
         self.prefInit = pref
         self.r = self.rTupleInit.copy()
@@ -34,23 +44,45 @@ class RankSky:
         self.time = 0
         self.run()
 
-    def unifyPreferences(r, pref, prefNext):
+    def unifyPreferences(self, r, pref, prefNext):
+        """
+        Static method to unify preferences in a relation by transforming values accordingly.
+
+        For each dimension, if the preference has changed, the corresponding values in the
+        relation are inverted (1 / value) to switch between MIN and MAX logic.
+
+        :param r: dict - the relation structure to update
+        :param pref: list[Preference] - current preference list
+        :param prefNext: list[Preference] - updated preference list to unify against
+        """
+
         for i in range(len(pref)):
             if prefNext[i] != pref[i]:
                 pref[i] = prefNext[i]
                 for val in r.values():
                     val[i] = 1 / val[i]
 
-
     def unifyPreferencesMax(self, r, pref):
+        """
+        Converts all preferences in the relation to MAX by inverting MIN dimensions.
+
+        :param r: dict - the relation data to modify (values are updated in place)
+        :param pref: list[Preference] - list of current preferences, which will be updated to MAX
+        """
         for i in range(len(pref)):
             if pref[i] == Preference.MIN:
                 pref[i] = Preference.MAX
                 for val in r.values():
                     val[i] = 1 / val[i]
 
-
     def unifyPreferencesMin(self, r, pref):
+        """
+        Converts all preferences in the relation to MIN by inverting MAX dimensions.
+
+        :param r: dict - the relation data to modify (values are updated in place)
+        :param pref: list[Preference] - list of current preferences, which will be updated to MIN
+        """
+
         for i in range(len(pref)):
             if pref[i] == Preference.MAX:
                 pref[i] = Preference.MIN
@@ -59,21 +91,33 @@ class RankSky:
 
     def tupleToTab(self, rTuple):
         """
-        Convert the tuples in the relation matrix to a list
+        Converts all tuple values in the relation dictionary to lists.
+
+        This is used to allow in-place modification of the data (since lists are mutable,
+        unlike tuples).
+
+        :param rTuple: dict - the relation dictionary with tuple values to be converted
         """
         for key, val in rTuple.items():
             rTuple[key] = list(val)
 
     def tabToTuple(self, rTab):
         """
-        Convert the relation matrix to a tuple
+        Converts all list values in the relation dictionary back to tuples.
+
+        This is typically used after data processing to restore the original tuple format.
+
+        :param rTab: dict - the relation dictionary with list values to be converted
         """
         for key, val in rTab.items():
             rTab[key] = tuple(val)
 
     def initMatrix(self):
         """
-        Initialize the data
+        Initializes the relation matrix (self.rm) from the current skyline.
+
+        It extracts the list of values for each skyline point and builds a matrix
+        representation for further processing (exemple : matrix multiplication).
         """
         tab = []
         for val in self.sky.values():
@@ -81,13 +125,22 @@ class RankSky:
         self.rm = tab
 
     def skylineComputation(self):
+        """
+        Computes the skyline of the current dataset using the BBS (Branch and Bound Skyline) algorithm.
+
+        The result is stored in self.sky as a dictionary of non-dominated tuples.
+        This is a key step before performing any ranking or PageRank-based processing.
+        """
         bbs = BbsCosky(self.r, 1, 2)  # Create BBS object
         self.sky = {k: list(v) for k, v in bbs.skyline.items()}
 
-
     def squareMatrix(self):
         """
-        Create the square matrix from the relation matrix
+        Constructs the square matrix used for ranking.
+
+        It transposes the relation matrix (self.rm), then multiplies the original
+        matrix with its transpose to form a square similarity matrix (self.a),
+        which will later be used to compute the stochastic matrix.
         """
         self.rt = np.transpose(self.rm)
         self.a = np.dot(self.rm, self.rt)
@@ -103,11 +156,18 @@ class RankSky:
                 self.s[i][j] = self.s[i][j] / tot
 
     def googlePageRank(self):
+        """
+        Constructs the Google PageRank matrix (self.g) from the stochastic matrix (self.s).
+        """
         dim = (self.n, self.n)
         e = np.ones(dim)
         self.g = self.alpha * self.s + (1 - self.alpha) / self.n * e
 
     def Ipl(self, p=3):
+        """
+        Computes the PageRank vector using the Ipl method.
+        :param p: int - precision for convergence (default is 3)
+        """
         eps = math.pow(10, -p)
         self.vk = [1 / self.n] * self.n
         zk = [0] * self.n
@@ -132,6 +192,10 @@ class RankSky:
                 break
 
     def sort(self,rev="Desc"):
+        """
+        Sorts the score vector based on the last column of the matrix which is the score.
+        :param rev: str - "Asc" for ascending order, "Desc" for descending order, default is "Desc"
+        """
         reverse = False if rev == "Asc" else True
         i = 0
         for key in self.sky.keys():
@@ -140,6 +204,9 @@ class RankSky:
         self.score = dict(sorted(self.score.items(), key=lambda item: item[1][-1], reverse=reverse))
 
     def printOutcomes(self):
+        """
+        Prints the outcomes of the ranking process, including the skyline matrix,
+        """
         print("=" * 40)
         print("📌 Skyline Matrix:")
         print(self.sky)
@@ -161,6 +228,9 @@ class RankSky:
         print("=" * 40)
 
     def run(self):
+        """
+        Executes the entire ranking process, including skyline computation, including a timer for performance measurement.
+        """
         time1 = TimeCalc(100, "RankSky")
         self.skylineComputation()
         time1.stop()

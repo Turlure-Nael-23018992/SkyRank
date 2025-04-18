@@ -12,20 +12,32 @@ ffi.cdef("""
 C = ffi.dlopen(r"\Core\liblm.so")
 
 class DP_IDP:
-    '''
-    Classe qui lance l'algo de DP-IDP
-    '''
+    """
+    Class to implement the DP_IDP algorithm for ranking and sorting data based on multiple criteria.
+    """
     def __init__(self, r):
+        """
+        Initialize the DP_IDP algorithm with the given relation.
+        :param r: the relation to be processed
+        """
         self.r = r
         self.run()
 
     def run(self):
+        """
+        Run the DP_IDP algorithm to compute the ranking and sorting of data based on multiple criteria.
+        """
         self.dom, self.sp = self.calculMatriceDesDominants(self.r)
         self.dom, self.sky, self.spTot, self.skyCard, self.domCard = self.calculGrapheDeCouverture(self.dom, self.sp)
         self.sky = self.calculLm(self.dom, self.sky, self.skyCard)
         self.score = self.calculScore(self.sky, self.domCard, self.spTot)
 
     def calculMatriceDesDominants(self, r):
+        """
+        Calculate the dominance matrix and the skyline points.
+        :param r: the relation to be processed
+        :return: dominance matrix and skyline points
+        """
         len_ = len(r)
         dom = [[False for y in range(len_)] for x in range(len_)]
         sp = [True] * len_
@@ -49,6 +61,13 @@ class DP_IDP:
         return dom, sp
 
     def calculGrapheDeCouverture(self, dom, sp, display_graph=False):
+        """
+        Calculate the coverage graph and the skyline points.
+        :param dom: dominance matrix
+        :param sp: skyline points
+        :param display_graph: display the graph if True
+        :return: dominance matrix, coverage graph, total skyline points, skyline cardinality, and dominance cardinality
+        """
         n = len(dom)
         sky = {}
         skyCard = {}

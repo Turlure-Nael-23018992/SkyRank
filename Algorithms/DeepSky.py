@@ -102,6 +102,12 @@ print(res)
 
 
 def DeepSky(r,k):
+    """
+    DeepSky algorithm to find the top-k tuples with the best scores.
+    :param r: the relation
+    :param k: the number of top tuples to find
+    :return: the top-k tuples
+    """
     topK={}
     tot=0
     rl=r

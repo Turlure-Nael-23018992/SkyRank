@@ -4,11 +4,15 @@ import string
 import time
 
 class CoskySQL:
-    '''
-    Classe qui lance l'algo en SQL
-    '''
-
+    """
+    Class to implement the Cosky algorithm for ranking and sorting data based on multiple criteria using SQLite.
+    """
     def __init__(self, db_filepath,is_debug=False):
+        """
+        Initialize the Cosky algorithm with the given database file path and debug flag.
+        :param db_filepath: the path to the SQLite database file
+        :param is_debug: flag to enable debug mode
+        """
         self.is_debug=is_debug
         self.relations = []
         self.conn=sqlite3.connect(db_filepath)
@@ -26,11 +30,11 @@ class CoskySQL:
         self.run()
 
     def get_column_names(self, nom_table):
-        '''
+        """
         Get the column's names of the table
         :param nom_table: the table name
         :return: The column's names in a list
-        '''
+        """
         try:
             # Get the column's names of the table
             self.cursor.execute(f"PRAGMA table_info({nom_table})")
@@ -44,15 +48,15 @@ class CoskySQL:
 
 
     def nombre_colonnes_table(self, nom_table=None):
-        '''
+        """
         Get the columns length
         :param nom_table: Le name of the table
         :return: Le number of column into the table (int)
-        '''
-        if nom_table==None:
+        """
+        if nom_table is None:
             nom_table=self.table_name
         try:
-            # Get informations about the table
+            # Get information about the table
             self.cursor.execute(f"PRAGMA table_info({nom_table})")
             self.colonnes = self.cursor.fetchall()
             # Get the columns length (count)
@@ -64,6 +68,10 @@ class CoskySQL:
 
 
     def run(self):
+        """
+        Run the Cosky algorithm to compute the ranking and sorting of data based on multiple criteria.
+        :return: The result of the Cosky algorithm
+        """
         cursor = self.conn.cursor()
         #self.colonne_len=self.nombre_colonnes_table("Pokemon")
 
