@@ -62,6 +62,7 @@ class RankSky:
                 for val in r.values():
                     val[i] = 1 / val[i]
 
+
     def unifyPreferencesMax(self, r, pref):
         """
         Converts all preferences in the relation to MAX by inverting MIN dimensions.
@@ -70,10 +71,12 @@ class RankSky:
         :param pref: list[Preference] - list of current preferences, which will be updated to MAX
         """
         for i in range(len(pref)):
+
             if pref[i] == Preference.MIN:
                 pref[i] = Preference.MAX
                 for val in r.values():
                     val[i] = 1 / val[i]
+                    print(val[i])
 
     def unifyPreferencesMin(self, r, pref):
         """
@@ -208,6 +211,14 @@ class RankSky:
         Prints the outcomes of the ranking process, including the skyline matrix,
         """
         print("=" * 40)
+        print("📌 Initial Relation:")
+        print(self.rTupleInit)
+        print("=" * 40)
+        print("📌 Preference List:")
+        print(self.prefInit)
+        print("=" * 40)
+        print("📌 Maximized Skyline:")
+        print(self.rm)
         print("📌 Skyline Matrix:")
         print(self.sky)
         print("=" * 40)

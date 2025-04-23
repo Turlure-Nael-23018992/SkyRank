@@ -18,6 +18,7 @@ from Algorithms.RankSky import RankSky
 from Algorithms.DpIdpDh import DpIdpDh
 from Utils.Preference import Preference
 from Utils.JsonUtils import readJson, writeJson, updateJson, prettyPrintTimeData, sortJson
+from Algorithms.SkyIR import SkyIR
 
 ROWS_RATIO_MULT = pow(10, 3)
 ROWS_RATIO_UNITS = [1, 2, 5, 10]
@@ -48,10 +49,16 @@ class AlgoCalculator:
         self.cursor.execute(sql_query)
         return self.cursor.fetchall()
 
-    def compareExecutionTime(self, algo, fp):
+    def compareExecutionTime(self, algo, fp, cols=[], rows =[]):
         """
         Compare the execution time of an algorithm on several databases of different sizes
         """
+        if cols == []:
+            cols = self.cols
+        if rows == []:
+            rows = self.rows
+        print("row : ", rows)
+        print("cols : ", cols)
         # iterations = [8, 40, 250, 500, 750, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 100000, 200000, 500000]
         # rows = ROWS_RATIO  # [10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]
         time_dict = {k: [0 for i in range(len(self.cols))] for k in self.rows}
@@ -62,15 +69,13 @@ class AlgoCalculator:
 
         root_databases = fr"..\..\Assets\databases"
         i = -1
-        for col in self.cols:
+        for col in cols:
             i += 1
-            for row in self.rows:
+            for row in rows:
                 # beauty_print("Column", col)
                 # beauty_print("Row", rows)
                 # Displays the execution time of each algorithm
                 database_filepath = fr"{root_databases}\cosky_db_C{col}_R{row}.db"  # Retrieve the path
-                sel = AlgoCalculator(database_filepath)
-                r = DataParser(sel.select_all()).r_dict
                 # The name of the algorithm class
                 algo_name = algo.__name__
                 beauty_print("Algorithm name ", algo_name)
@@ -85,22 +90,32 @@ class AlgoCalculator:
 
                 elif algo_name == "SkyIR":
                     # Needs a data dictionary
+                    sel = AlgoCalculator(database_filepath)
+                    r = DataParser(sel.select_all()).r_dict
                     time_calc = TimeCalc(row, algo_name)
                     algo_obj = algo(r).skyIR(10)
                     time_calc.stop()
 
                 elif algo_name == "CoskyAlgorithme":
                     # Needs a data dictionary
+                    sel = AlgoCalculator(database_filepath)
+                    r = DataParser(sel.select_all()).r_dict
                     time_calc = TimeCalc(row, algo_name)
                     algo_obj = algo(r)
                     time_calc.stop()
 
                 elif algo_name == "RankSky":
+                    sel = AlgoCalculator(database_filepath)
+                    r = DataParser(sel.select_all()).r_dict
+                    print("algo lancé")
                     time_calc = TimeCalc(row, algo_name)
                     algo_obj = algo(r,pref)
                     time_calc.stop()
 
                 elif algo_name == "DpIdpDh":
+                    sel = AlgoCalculator(database_filepath)
+                    r = DataParser(sel.select_all()).r_dict
+                    print("algo lancé")
                     time_calc = TimeCalc(row, algo_name)
                     print("zzz")
                     algo_obj = algo(r)
@@ -108,6 +123,7 @@ class AlgoCalculator:
                 # Retrieve the execution time for each database on the given algorithm
                 # Add the execution time to the dictionary
                 current_time = time_calc.execution_time
+                print(current_time)
 
                 if algo_name == "RankSky":
                     time_dict[row][i] = algo_obj.time
@@ -214,7 +230,7 @@ class AlgoCalculator:
         timeDict = {k: [0 for i in [col]] for k in self.rows}
         match col:
             case 3:
-                self.jsonFilePath += "ExecutionCoskySql3.json"
+                self.jsonFilePath += "ExecutionCoskySql310^9.json"
             case 6:
                 self.jsonFilePath += "ExecutionCoskySql6.json"
             case 9:
@@ -259,7 +275,9 @@ MODES = {
     COSKY_SQL_: CoskySQL,
     "DpIdpDh": DpIdpDh,
     RANK_SKY: RankSky,
+    "SkyIR": SkyIR,
 }
+
 
 
 if __name__ == "__main__":
@@ -267,7 +285,15 @@ if __name__ == "__main__":
     calculator = AlgoCalculator("")
     #calculator.compareExecutionTime(CoskySQL)
     #calculator.compareExecutionTimeSqlAlgo()
-    calculator.compareExecutionTime(RankSky, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionRankSky369.json")
-    calculator.compareExecutionTime(DpIdpDh, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionDpIdpDh369.json")
+    #calculator.compareExecutionTime(SkyIR, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionSkyIR369.json", cols=[3], rows=[10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000])
+    #calculator.compareExecutionTime(RankSky, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionRankSky369.json")
+    #calculator.compareExecutionTime(DpIdpDh, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionDpIdpDh369.json")
     #calculator.compareExecutionTime(CoskySQL, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskySql369.json")
     #calculator.compareExecutionTime(CoskyAlgorithme, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskyAlgo369.json")
+
+    #calculator.compareExecutionTime(CoskySQL, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskySql369.json", cols=[3], rows=[50000000, 100000000, 200000000, 500000000, 1000000000])
+    #calculator.compareExecutionTime(CoskyAlgorithme, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskyAlgo369.json", cols=[3,6,9], rows=[10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000])
+    #calculator.compareExecutionTime(RankSky, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionRankSky369.json", cols=[3], rows=[10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000])
+    #calculator.compareExecutionTime(CoskySQL, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskySql369.json", cols=[3], rows=[200000000])
+    calculator.compareExecutionTime(SkyIR, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionSkyIR369.json", cols=[3], rows=[10000, 20000, 50000])
+    calculator.compareExecutionTime(DpIdpDh, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionDpIdpDh369.json", cols=[3],rows=[20000, 50000])

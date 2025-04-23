@@ -68,6 +68,7 @@ class CoskySQL:
 
 
     def run(self):
+        print("dans le run")
         """
         Run the Cosky algorithm to compute the ranking and sorting of data based on multiple criteria.
         :return: The result of the Cosky algorithm

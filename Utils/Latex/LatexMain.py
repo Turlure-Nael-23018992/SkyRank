@@ -34,13 +34,21 @@ def compareAlgos(coskyLatex, algos, outputFile, basePath=""):
             folder = "../../Assets/LatexFiles/TwoAlgosComparaison/"
             fullPath = os.path.join(folder, outputFile)
             axysType = axisX + "X" + axisY + "Y"
-            coskyLatex.twoAlgoComparaison369LatexLog(
-                timeDicts[0], timeDicts[1],
-                maxRowsList, maxTimeList,
-                algos[0], algos[1],
-                latexFilePath=fullPath,
-                scaleType=axysType
-            )
+            if axysType == "LinXLinY":
+                coskyLatex.twoAlgoComparaison369Latex(
+                    timeDicts[0], timeDicts[1],
+                    maxRowsList, maxTimeList,
+                    algos[0], algos[1],
+                    latexFilePath=fullPath
+                )
+            else :
+                coskyLatex.twoAlgoComparaison369LatexLog(
+                    timeDicts[0], timeDicts[1],
+                    maxRowsList, maxTimeList,
+                    algos[0], algos[1],
+                    latexFilePath=fullPath,
+                    scaleType=axysType
+                )
 
     elif len(algos) == 3:
         folder = "../../Assets/LatexFiles/ThreeAlgosComparaison/"

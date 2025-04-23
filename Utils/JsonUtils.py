@@ -1,4 +1,6 @@
 import json
+import sys
+
 
 def readJson(filePath):
     """
@@ -50,6 +52,25 @@ def prettyPrintTimeData(filePath):
         print("Error: Failed to decode JSON. Please check the file format.")
 
 
+def toOneColumn(fp, idx, outputFile):
+    """
+    Converts the time_data in a JSON file to a single column format.
+    """
+    data = readJson(fp)
+
+    time_data = data.get("time_data", {})
+    new_time_data = {}
+
+    for key, value in time_data.items():
+        if isinstance(value, list) and len(value) > idx:
+            new_time_data[key] = [value[idx]]
+
+    data["time_data"] = new_time_data
+    print("New time_data:", [new_time_data])
+
+    writeJson(outputFile, data)
+
+
 def sortJson(fp):
     """
     Sorts the time_data in a JSON file by the first column.
@@ -66,4 +87,11 @@ def sortJson(fp):
 
 
 if __name__ == "__main__":
-    prettyPrintTimeData("../Assets/LatexDatas/OneAlgoDatas/ExecutionAncienRankSky369.json")
+    #("../Assets/LatexDatas/OneAlgoDatas/ExecutionAncienRankSky369.json")
+    #toOneColumn("../Assets/LatexDatas/OneAlgoDatas/ExecutionDpIdpDh369.json", 0, "../Assets/LatexDatas/OneAlgoDatas/OneColumnData/ExecutionDpIdpDh3.json")
+    #toOneColumn("../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskyAlgo369.json", 0, "../Assets/LatexDatas/OneAlgoDatas/OneColumnData/ExecutionCoskyAlgo3.json")
+    #toOneColumn("../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskySql369.json", 0, "../Assets/LatexDatas/OneAlgoDatas/OneColumnData/ExecutionCoskySql310^9.json")
+    #toOneColumn("../Assets/LatexDatas/OneAlgoDatas/ExecutionRankSky369.json", 0, "../Assets/LatexDatas/OneAlgoDatas/OneColumnData/ExecutionRankSky3.json")
+    toOneColumn("../Assets/LatexDatas/OneAlgoDatas/ExecutionSkyIR369.json", 0, "../Assets/LatexDatas/OneAlgoDatas/OneColumnData/ExecutionSkyIR3.json")
+    #toOneColumn("../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskySql369.json", 0, "../Assets/LatexDatas/OneAlgoDatas/OneColumnData/ExecutionCoskySql3.json")
+    pass

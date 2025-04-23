@@ -1,144 +1,214 @@
-\documentclass{standalone}
-\usepackage{pgfplots}
-\pgfplotsset{compat=newest}
+\documentclass[tikz, border=10pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, shapes, positioning}
 \usepackage{xcolor}
 \definecolor{skyblue}{RGB}{135,206,235}
+\tikzset{bigskybluenode/.style={circle, fill=skyblue, draw=black, line width=1pt},smallskybluenode/.style={circle, fill=skyblue, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}}
 \definecolor{cyan}{RGB}{0,255,255}
+\tikzset{bigcyannode/.style={circle, fill=cyan, draw=black, line width=1pt},smallcyannode/.style={circle, fill=cyan, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}}
 \begin{document}
     % Graph for 3 attributes
-    \begin{tikzpicture}
-        \begin{axis}[
-            width=10cm, height=7cm,
-            xlabel={Cardinality},
-            ylabel={Response time (s)},
-            legend pos=north west,
-            grid=both,
-            xmode=normal, ymode=log, log basis y=10
-        ]
-            \addplot+[mark=*, color=skyblue] coordinates {
-                (10, 0.0020008087158203125)
-                (20, 0.0009996891021728516)
-                (50, 0.0009996891021728516)
-                (100, 0.0020008087158203125)
-                (200, 0.0020012855529785156)
-                (500, 0.003001689910888672)
-                (1000, 0.006001472473144531)
-                (2000, 0.009002923965454102)
-                (5000, 0.019004344940185547)
-                (10000, 0.03900861740112305)
-                (20000, 0.09502124786376953)
-                (50000, 0.17303895950317383)
-                (100000, 0.6831531524658203)
-                (200000, 1.2941527366638184)
-            };
-            \addlegendentry{("CoSky 'Sql Querry'", 'OneAlgoDatas/ExecutionCoskySql369.json') (3 attr)}
-            \addplot+[mark=*, color=cyan] coordinates {
-                (10, 0.0019996166229248047)
-                (20, 0.0029997825622558594)
-                (50, 0.008001327514648438)
-                (100, 0.010001659393310547)
-                (200, 0.011000871658325195)
-                (500, 0.023004770278930664)
-                (1000, 0.059012413024902344)
-                (2000, 0.13302874565124512)
-                (5000, 1.0372321605682373)
-                (10000, 3.774567127227783)
-                (20000, 23.747731685638428)
-                (50000, 136.30413150787354)
-                (100000, 817.7972321510315)
-                (200000, 2715.5107221603394)
-            };
-            \addlegendentry{("CoSky 'Algorithm'", 'OneAlgoDatas/CoskyAlgoTemp.json') (3 attr)}
-        \end{axis}
+    \begin{tikzpicture}[
+        line join=bevel,
+        bigskybluenode/.style={shape=circle, fill=skyblue, draw=black, line width=1pt},
+        bigcyannode/.style={shape=circle, fill=cyan, draw=black, line width=1pt},
+        smallskybluenode/.style={circle, fill=skyblue, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt},
+        smallcyannode/.style={circle, fill=cyan, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}
+    ]
+        % Axes
+        \draw[-stealth] (0pt, 0pt) -- (280pt, 0pt) node[anchor=north west, font=\large] {Cardinality};
+        \draw[-stealth] (0pt, 0pt) -- (0pt, 280pt) node[anchor=south, font=\large] {Response time in s};
+        % Axis graduation
+        \foreach \x/\xtext in {
+            0pt/$0$, 
+            56pt/$40000$, 
+            112pt/$80000$, 
+            168pt/$120000$, 
+            224pt/$160000$, 
+            280pt/$200000$} {
+            \draw (\x, 2pt) -- (\x, -2pt) node[below, font=\small] {\xtext\strut};
+        }
+        \foreach \y/\ytext in {
+            0pt/$0$, 
+            223pt/$600$, 
+            247pt/$1200$, 
+            262pt/$1800$, 
+            272pt/$2400$, 
+            280pt/$3000$} {
+            \draw (2pt, \y) -- (-2pt, \y) node[left, font=\small] {\ytext\strut};
+        }
+        % Lines
+        \draw[skyblue, line width=2pt](0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (1pt, 0pt) -- (1pt, 0pt) -- (3pt, 0pt) -- (7pt, 1pt) -- (14pt, 1pt) -- (28pt, 3pt) -- (70pt, 6pt) -- (140pt, 18pt) -- (280pt, 29pt);
+        \draw[cyan, line width=2pt](0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (1pt, 1pt) -- (1pt, 2pt) -- (3pt, 4pt) -- (7pt, 23pt) -- (14pt, 55pt) -- (28pt, 112pt) -- (70pt, 172pt) -- (140pt, 235pt) -- (280pt, 277pt);
+        % Points
+        \filldraw[color=black, fill=skyblue] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (3pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (7pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (14pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (28pt, 3pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (70pt, 6pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (140pt, 18pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (280pt, 29pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (1pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (1pt, 2pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (3pt, 4pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (7pt, 23pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (14pt, 55pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (28pt, 112pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (70pt, 172pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (140pt, 235pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (280pt, 277pt) circle (2pt);
+        % Caption
+        \matrix [below left] at (current bounding box.north east) {
+            \node [smallskybluenode, label=right:CoSky 'Sql Querry' with 3 attributes] {}; \\
+            \node [smallcyannode, label=right:CoSky 'Algorithm' with 3 attributes] {}; \\
+        };
     \end{tikzpicture}
     % Graph for 6 attributes
-    \begin{tikzpicture}
-        \begin{axis}[
-            width=10cm, height=7cm,
-            xlabel={Cardinality},
-            ylabel={Response time (s)},
-            legend pos=north west,
-            grid=both,
-            xmode=normal, ymode=log, log basis y=10
-        ]
-            \addplot+[mark=*, color=skyblue] coordinates {
-                (10, 0.00400090217590332)
-                (20, 0.002000093460083008)
-                (50, 0.0019996166229248047)
-                (100, 0.0019998550415039062)
-                (200, 0.005002021789550781)
-                (500, 0.008001089096069336)
-                (1000, 0.02200484275817871)
-                (2000, 0.07801628112792969)
-                (5000, 0.2470548152923584)
-                (10000, 0.6061348915100098)
-                (20000, 1.7700819969177246)
-                (50000, 7.338424921035767)
-                (100000, 18.768980503082275)
-                (200000, 59.70103192329407)
-            };
-            \addlegendentry{("CoSky 'Sql Querry'", 'OneAlgoDatas/ExecutionCoskySql369.json') (6 attr)}
-            \addplot+[mark=*, color=cyan] coordinates {
-                (20, 0.0009996891021728516)
-                (50, 0.0010004043579101562)
-                (100, 0.0020003318786621094)
-                (200, 0.01000213623046875)
-                (500, 0.01800394058227539)
-                (1000, 0.08101940155029297)
-                (2000, 0.22905254364013672)
-                (5000, 1.6401422023773193)
-                (10000, 6.911449909210205)
-                (20000, 29.74956703186035)
-                (50000, 180.91098952293396)
-                (100000, 888.8759789466858)
-                (200000, 4219.048284292221)
-            };
-            \addlegendentry{("CoSky 'Algorithm'", 'OneAlgoDatas/CoskyAlgoTemp.json') (6 attr)}
-        \end{axis}
+    \begin{tikzpicture}[
+        line join=bevel,
+        bigskybluenode/.style={shape=circle, fill=skyblue, draw=black, line width=1pt},
+        bigcyannode/.style={shape=circle, fill=cyan, draw=black, line width=1pt},
+        smallskybluenode/.style={circle, fill=skyblue, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt},
+        smallcyannode/.style={circle, fill=cyan, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}
+    ]
+        % Axes
+        \draw[-stealth] (0pt, 0pt) -- (280pt, 0pt) node[anchor=north west, font=\large] {Cardinality};
+        \draw[-stealth] (0pt, 0pt) -- (0pt, 280pt) node[anchor=south, font=\large] {Response time in s};
+        % Axis graduation
+        \foreach \x/\xtext in {
+            0pt/$0$, 
+            56pt/$40000$, 
+            112pt/$80000$, 
+            168pt/$120000$, 
+            224pt/$160000$, 
+            280pt/$200000$} {
+            \draw (\x, 2pt) -- (\x, -2pt) node[below, font=\small] {\xtext\strut};
+        }
+        \foreach \y/\ytext in {
+            0pt/$0$, 
+            225pt/$800$, 
+            249pt/$1600$, 
+            262pt/$2400$, 
+            272pt/$3200$, 
+            280pt/$4000$} {
+            \draw (2pt, \y) -- (-2pt, \y) node[left, font=\small] {\ytext\strut};
+        }
+        % Lines
+        \draw[skyblue, line width=2pt](0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (1pt, 0pt) -- (1pt, 1pt) -- (3pt, 3pt) -- (7pt, 7pt) -- (14pt, 16pt) -- (28pt, 34pt) -- (70pt, 72pt) -- (140pt, 101pt) -- (280pt, 139pt);
+        \draw[cyan, line width=2pt](0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (1pt, 0pt) -- (1pt, 2pt) -- (3pt, 5pt) -- (7pt, 27pt) -- (14pt, 70pt) -- (28pt, 116pt) -- (70pt, 176pt) -- (140pt, 229pt) -- (280pt, 282pt);
+        % Points
+        \filldraw[color=black, fill=skyblue] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (1pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (3pt, 3pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (7pt, 7pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (14pt, 16pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (28pt, 34pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (70pt, 72pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (140pt, 101pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (280pt, 139pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (1pt, 2pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (3pt, 5pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (7pt, 27pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (14pt, 70pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (28pt, 116pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (70pt, 176pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (140pt, 229pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (280pt, 282pt) circle (2pt);
+        % Caption
+        \matrix [below left] at (current bounding box.north east) {
+            \node [smallskybluenode, label=right:CoSky 'Sql Querry' with 6 attributes] {}; \\
+            \node [smallcyannode, label=right:CoSky 'Algorithm' with 6 attributes] {}; \\
+        };
     \end{tikzpicture}
     % Graph for 9 attributes
-    \begin{tikzpicture}
-        \begin{axis}[
-            width=10cm, height=7cm,
-            xlabel={Cardinality},
-            ylabel={Response time (s)},
-            legend pos=north west,
-            grid=both,
-            xmode=normal, ymode=log, log basis y=10
-        ]
-            \addplot+[mark=*, color=skyblue] coordinates {
-                (10, 0.003000020980834961)
-                (20, 0.0019998550415039062)
-                (50, 0.002000093460083008)
-                (100, 0.004000186920166016)
-                (200, 0.0050008296966552734)
-                (500, 0.01800394058227539)
-                (1000, 0.051011085510253906)
-                (2000, 0.16303586959838867)
-                (5000, 0.7971785068511963)
-                (10000, 2.5085935592651367)
-                (20000, 8.583139657974243)
-                (50000, 50.3441858291626)
-                (100000, 141.07687616348267)
-                (200000, 481.98572540283203)
-            };
-            \addlegendentry{("CoSky 'Sql Querry'", 'OneAlgoDatas/ExecutionCoskySql369.json') (9 attr)}
-            \addplot+[mark=*, color=cyan] coordinates {
-                (10, 0.0010001659393310547)
-                (50, 0.00099945068359375)
-                (100, 0.002000093460083008)
-                (200, 0.0041010379791259766)
-                (500, 0.025005817413330078)
-                (1000, 0.1148684024810791)
-                (2000, 0.3670659065246582)
-                (5000, 2.9933440685272217)
-                (10000, 10.759534358978271)
-                (20000, 59.248377084732056)
-                (50000, 257.83980226516724)
-                (100000, 2127.3088569641113)
-                (200000, 7000.0)
-            };
-            \addlegendentry{("CoSky 'Algorithm'", 'OneAlgoDatas/CoskyAlgoTemp.json') (9 attr)}
-        \end{axis}
+    \begin{tikzpicture}[
+        line join=bevel,
+        bigskybluenode/.style={shape=circle, fill=skyblue, draw=black, line width=1pt},
+        bigcyannode/.style={shape=circle, fill=cyan, draw=black, line width=1pt},
+        smallskybluenode/.style={circle, fill=skyblue, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt},
+        smallcyannode/.style={circle, fill=cyan, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}
+    ]
+        % Axes
+        \draw[-stealth] (0pt, 0pt) -- (280pt, 0pt) node[anchor=north west, font=\large] {Cardinality};
+        \draw[-stealth] (0pt, 0pt) -- (0pt, 280pt) node[anchor=south, font=\large] {Response time in s};
+        % Axis graduation
+        \foreach \x/\xtext in {
+            0pt/$0$, 
+            56pt/$40000$, 
+            112pt/$80000$, 
+            168pt/$120000$, 
+            224pt/$160000$, 
+            280pt/$200000$} {
+            \draw (\x, 2pt) -- (\x, -2pt) node[below, font=\small] {\xtext\strut};
+        }
+        \foreach \y/\ytext in {
+            0pt/$0$, 
+            229pt/$1600$, 
+            251pt/$3200$, 
+            264pt/$4800$, 
+            273pt/$6400$, 
+            280pt/$8000$} {
+            \draw (2pt, \y) -- (-2pt, \y) node[left, font=\small] {\ytext\strut};
+        }
+        % Lines
+        \draw[skyblue, line width=2pt](0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (1pt, 1pt) -- (1pt, 2pt) -- (3pt, 5pt) -- (7pt, 18pt) -- (14pt, 39pt) -- (28pt, 70pt) -- (70pt, 123pt) -- (140pt, 154pt) -- (280pt, 193pt);
+        \draw[cyan, line width=2pt](0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (1pt, 1pt) -- (1pt, 2pt) -- (3pt, 7pt) -- (7pt, 43pt) -- (14pt, 77pt) -- (28pt, 128pt) -- (70pt, 173pt) -- (140pt, 239pt) -- (280pt, 281pt);
+        % Points
+        \filldraw[color=black, fill=skyblue] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (1pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (1pt, 2pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (3pt, 5pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (7pt, 18pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (14pt, 39pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (28pt, 70pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (70pt, 123pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (140pt, 154pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (280pt, 193pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (1pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (1pt, 2pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (3pt, 7pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (7pt, 43pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (14pt, 77pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (28pt, 128pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (70pt, 173pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (140pt, 239pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (280pt, 281pt) circle (2pt);
+        % Caption
+        \matrix [below left] at (current bounding box.north east) {
+            \node [smallskybluenode, label=right:CoSky 'Sql Querry' with 9 attributes] {}; \\
+            \node [smallcyannode, label=right:CoSky 'Algorithm' with 9 attributes] {}; \\
+        };
     \end{tikzpicture}
 \end{document}

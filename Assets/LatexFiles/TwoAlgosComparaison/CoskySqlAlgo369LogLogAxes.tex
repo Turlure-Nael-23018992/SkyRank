@@ -16,7 +16,7 @@
         smallcyannode/.style={circle, fill=cyan, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}
     ]
         % Axes
-        \draw[-stealth] (0pt, 0pt) -- (280pt, 0pt) node[anchor=north west, font=\large] {Cardinality};
+        \draw[-stealth] (0pt, 0pt) -- (280pt, 0pt) node[anchor=north west, yshift=15pt] {Cardinality};
         \draw[-stealth] (0pt, 0pt) -- (0pt, 280pt) node[anchor=south, font=\large] {Response time in s};
         % Axis graduation
         \foreach \x/\xtext in {
@@ -69,8 +69,10 @@
         \filldraw[color=black, fill=cyan] (70pt, 172pt) circle (2pt);
         \filldraw[color=black, fill=cyan] (140pt, 235pt) circle (2pt);
         \filldraw[color=black, fill=cyan] (280pt, 277pt) circle (2pt);
-        % Caption
-        \matrix [below left] at (current bounding box.north east) {
+        % Caption -
+        \matrix [draw=none, fill=white, fill opacity=0.7, text opacity=1,
+                 above right=0.5cm and 0cm of current bounding box.north west,
+                 nodes={font=\small, anchor=west}] {
             \node [smallskybluenode, label=right:CoSky 'Sql Querry' with 3 attributes] {}; \\
             \node [smallcyannode, label=right:CoSky 'Algorithm' with 3 attributes] {}; \\
         };
@@ -84,7 +86,7 @@
         smallcyannode/.style={circle, fill=cyan, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}
     ]
         % Axes
-        \draw[-stealth] (0pt, 0pt) -- (280pt, 0pt) node[anchor=north west, font=\large] {Cardinality};
+        \draw[-stealth] (0pt, 0pt) -- (280pt, 0pt) node[anchor=north west, yshift=15pt] {Cardinality};
         \draw[-stealth] (0pt, 0pt) -- (0pt, 280pt) node[anchor=south, font=\large] {Response time in s};
         % Axis graduation
         \foreach \x/\xtext in {
@@ -137,8 +139,10 @@
         \filldraw[color=black, fill=cyan] (70pt, 176pt) circle (2pt);
         \filldraw[color=black, fill=cyan] (140pt, 229pt) circle (2pt);
         \filldraw[color=black, fill=cyan] (280pt, 282pt) circle (2pt);
-        % Caption
-        \matrix [below left] at (current bounding box.north east) {
+        % Caption -
+        \matrix [draw=none, fill=white, fill opacity=0.7, text opacity=1,
+                 above right=0.5cm and 0cm of current bounding box.north west,
+                 nodes={font=\small, anchor=west}] {
             \node [smallskybluenode, label=right:CoSky 'Sql Querry' with 6 attributes] {}; \\
             \node [smallcyannode, label=right:CoSky 'Algorithm' with 6 attributes] {}; \\
         };
@@ -152,7 +156,7 @@
         smallcyannode/.style={circle, fill=cyan, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}
     ]
         % Axes
-        \draw[-stealth] (0pt, 0pt) -- (280pt, 0pt) node[anchor=north west, font=\large] {Cardinality};
+        \draw[-stealth] (0pt, 0pt) -- (280pt, 0pt) node[anchor=north west, yshift=15pt] {Cardinality};
         \draw[-stealth] (0pt, 0pt) -- (0pt, 280pt) node[anchor=south, font=\large] {Response time in s};
         % Axis graduation
         \foreach \x/\xtext in {
@@ -205,8 +209,10 @@
         \filldraw[color=black, fill=cyan] (70pt, 173pt) circle (2pt);
         \filldraw[color=black, fill=cyan] (140pt, 239pt) circle (2pt);
         \filldraw[color=black, fill=cyan] (280pt, 281pt) circle (2pt);
-        % Caption
-        \matrix [below left] at (current bounding box.north east) {
+        % Caption -
+        \matrix [draw=none, fill=white, fill opacity=0.7, text opacity=1,
+                 above right=0.5cm and 0cm of current bounding box.north west,
+                 nodes={font=\small, anchor=west}] {
             \node [smallskybluenode, label=right:CoSky 'Sql Querry' with 9 attributes] {}; \\
             \node [smallcyannode, label=right:CoSky 'Algorithm' with 9 attributes] {}; \\
         };
