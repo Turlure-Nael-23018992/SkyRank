@@ -25,7 +25,6 @@ class DataNormalizer:
         Convert the json to a relation
         """
         self.relation = readJson(self.filepath, asTuple=True)
-        print(self.relation)
 
     def deleteLineDb(self, line):
         """
@@ -75,11 +74,23 @@ class DataNormalizer:
         print("Longueur de la relation:", len(r))
         print("========================================")
 
+    @staticmethod
+    def sortArr(arr):
+        """
+        Sort the array in ascending order (in-place).
+        :param arr: The array to sort
+        :return: The sorted array
+        """
+        return arr.sort()
+
 
 
 if __name__ == "__main__":
-    fp = "../../Assets/CoskySqlTestDel.db"
+    """fp = "../../Assets/DeepSkyTest.db"
     jsonfp = "../../Algorithms/Datas/RTuples8.json"
     r = readJson(jsonfp, asTuple=True)
     dataNorm = DataNormalizer(r, fp)
-    dataNorm.refreshDb()
+    dataNorm.refreshDb()"""
+    tab = [3,1,5,7]
+    print(DataNormalizer.sortArr(tab))
+

@@ -29,6 +29,8 @@ retourner topk
 import os
 import sys
 
+from Utils.DatasModifier.DatabaseToDict import DatabaseToDict
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from Algorithms.CoskyAlgorithme import CoskyAlgorithme
@@ -37,6 +39,7 @@ from Algorithms.DpIdpDh import DpIdpDh
 from Algorithms.RankSky import RankSky
 from Algorithms.SkyIR import SkyIR
 from Utils.DatasModifier.DataNormalizer import DataNormalizer
+from Utils.Preference import Preference
 
 
 
@@ -136,72 +139,105 @@ def addBest(k, topK, s):
 
     return topK
 
-fp = "../Assets/cosky_db_C3_R20000.db"
+class DeepSky:
+    """
+    Class to implement the DeepSky algorithm with SQL.
+    """
+    def __init__(self, fp, k, algo, pref=[Preference.MIN, Preference.MIN, Preference.MIN]):
+        """
+        Initialize the DeepSky algorithm with the given database file path and relation.
+        :param fp: the path to the SQLite database file
+        :param k: the number of top tuples to find
+        :param algo: the algorithm to use (CoskySQL, CoskyAlgorithme, DpIdpDh, RankSky, SkyIR)
+        """
+        self.dbToDict = DatabaseToDict(fp)
+        self.fp = fp
+        self.r = self.dbToDict.toDict()
+        self.k = k
+        self.algo = algo.__name__
+        self.topK = {}
+        self.dataNorm = DataNormalizer(self.r, self.fp)
+        self.lineToInsertBack = []
+        self.preference = pref
+        self.run()
 
-dataNorm = DataNormalizer(r, fp)
+    def DeepSkyCoskySql(self):
+        linesToSave = []
+        tot = 0
+        rl = self.r
+        while tot < self.k and rl != {}:
+            cosky = CoskySQL(self.fp)
+            linesToSave.append(cosky.rows_res)
+            s = cosky.dict
+
+            tot += len(s)
+            if tot <= self.k:
+                self.topK.update(s)
+                #rl = {k: v for k, v in rl.items() if self.k not in s.keys()}
+                linesToSave = self.delLines(linesToSave)
+            else:
+                print("2")
+                addBest(self.k, self.topK, s)
+                return self.topK
+        return self.topK
 
 
-def DeepSkyCoskySql(r,k):
-    linesToSave = []
-    topK = {}
-    tot = 0
-    rl = r
-    while tot < k and rl != {}:
-        cosky = CoskySQL(fp)
-        linesToSave.append(cosky.rows_res)
-        s = cosky.dict
-        tot += len(s)
-        if tot <= k:
-            topK.update(s)
-            rl = {k: v for k, v in rl.items() if k not in s.keys()}
-            linesToSave = delLines(linesToSave)
+    def DeepSky(self):
+        """
+        DeepSky algorithm to find the top-k tuples with the best scores.
+        :param r: the relation
+        :param k: the number of top tuples to find
+        :return: the top-k tuples
+        """
+        tot=0
+        rl=self.r
+        while tot<self.k and rl!={}:
+            if self.algo == "CoskyAlgorithme":
+                s = CoskyAlgorithme(rl).r
+            elif self.algo == "DpIdpDh":
+                s = DpIdpDh(rl).r
+            elif self.algo == "RankSky":
+                s = RankSky(rl, self.preference).sky
+            elif self.algo == "SkyIR":
+                s = SkyIR(rl).r
+            tot+=len(s)
+            if tot<=self.k:
+                self.topK.update(s)
+                rl = {k:v for k,v in rl.items() if k not in s.keys()}
+            else:
+                self.topK.update({x:s[x] for x in list(s.keys())[:self.k]})
+                return self.topK
+        return self.topK
+
+
+    def delLines(self, linesToSave):
+        """
+        Delete the lines from the database.
+        :param linesToSave: the lines to delete
+        """
+        linesToSave = linesToSave[0]
+        for i in range(len(linesToSave)):
+            self.dataNorm.deleteLineDb(linesToSave[i][0])
+            self.lineToInsertBack.append(linesToSave[i])
+        return []
+
+    def run(self):
+        """
+        Run the DeepSky algorithm.
+        :return: the top-k tuples
+        """
+        print(self.algo)
+        if self.algo == "CoskySQL":
+            self.DeepSkyCoskySql()
+            self.dataNorm.addLinesDb(self.lineToInsertBack)
         else:
-            addBest(k, topK, s)
-            return topK
-    return topK
-
-def delLines(linesToSave):
-    """
-    Delete the lines from the database.
-    :param linesToSave: the lines to delete
-    """
-    linesToSave = linesToSave[0]
-    for i in range(len(linesToSave)):
-        dataNorm.deleteLineDb(linesToSave[i][0])
-        linesToInsertBack.append(linesToSave[i])
-    return []
-
-def DeepSky(r,k, algo):
-    """
-    DeepSky algorithm to find the top-k tuples with the best scores.
-    :param r: the relation
-    :param k: the number of top tuples to find
-    :return: the top-k tuples
-    """
-    algo = algo.__name__
-    topK={}
-    tot=0
-    rl=r
-    while tot<k and rl!={}:
-        if algo == "CoskyAlgorithme":
-            s = CoskyAlgorithme(rl).r
-        elif algo == "DpIdpDh":
-            s = DpIdpDh(rl).r
-        tot+=len(s)
-        if tot<=k:
-            topK.update(s)
-            rl = {k:v for k,v in rl.items() if k not in s.keys()}
-        else:
-            topK.update({x:s[x] for x in list(s.keys())[:k]})
-            return topK
-    return topK
+            self.DeepSky()
+        return self.topK
 
 if __name__ == "__main__":
-    """linesToInsertBack = []
-    k = 20
-    res = DeepSkyCoskySql(r, k)
-    dataNorm.addLinesDb(linesToInsertBack)
-    dataNorm.beautyPrintSkylinePoint(res)"""
+    linesToInsertBack = []
     k = 4
-    res = DeepSky(r, k, CoskyAlgorithme)
-    dataNorm.beautyPrintDict(res)
+    algos = [CoskySQL, CoskyAlgorithme, DpIdpDh, RankSky, SkyIR]
+    deepSky = DeepSky("../Assets/DeepSkyTest.db", k, RankSky)
+    print(deepSky.topK)
+

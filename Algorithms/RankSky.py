@@ -73,7 +73,6 @@ class RankSky:
                 pref[i] = Preference.MAX
                 for val in r.values():
                     val[i] = 1 / val[i]
-                    print(val[i])
 
     def unifyPreferencesMin(self, r, pref):
         """
@@ -272,10 +271,10 @@ if __name__ == "__main__":
     }
     pref = [Preference.MIN,Preference.MIN,Preference.MIN]
 
-    db = DatabaseToDict("../Assets/CoskySqlTest.db")
+    db = DatabaseToDict("../Assets/DeepSkyTest.db")
     db.toDict()
     r = db.data
-    print(r)
+    #print(r)
 
     print("1./ Utiliser rankSky avec ipl")
     print("2./ Utiliser rankSky avec iplDom")

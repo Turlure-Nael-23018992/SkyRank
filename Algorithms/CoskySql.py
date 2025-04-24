@@ -166,13 +166,12 @@ class CoskySQL:
         for row in results:
             dict[row[0]] = row[1:]
         self.dict = dict
-        #print(self.rows_res)
 
         return self.rows_res
 
 if __name__ == '__main__':
     #print("Sqlite version : ", sqlite3.sqlite_version)
-    db_filepath= "../Assets/CoskySqlTest.db"
+    db_filepath= "../Assets/DeepSkyTest.db"
     #startTime = time.time()
     cosky_sql = CoskySQL(db_filepath)
     #print("cosky_sql:",cosky_sql.rows_res)

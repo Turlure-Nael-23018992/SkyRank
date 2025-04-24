@@ -49,7 +49,7 @@ class DictToDatabase:
 
 if __name__ == "__main__":
     print("SQlite3 version:", sqlite3.version)
-    databaseFilepath = "../Assets/CoskySqlTest.db"
+    databaseFilepath = "../Assets/DeepSkyTest.db"
     db = DictToDatabase(databaseFilepath)
     r = {
         1: (5, 20, 1/70),
