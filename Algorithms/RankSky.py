@@ -1,12 +1,9 @@
 import numpy as np
-from fractions import Fraction
 import math
 from Utils.Preference import Preference
 from Utils.TimerUtils import TimeCalc
 from Algorithms.BbsCosky import BbsCosky
-from Database.DatabaseToDict import DatabaseToDict
-import json
-
+from Utils.DatasModifier.DatabaseToDict import DatabaseToDict
 
 
 class RankSky:

@@ -1,7 +1,6 @@
 import unittest
-from Utils.JsonUtils import readJson, writeJson, updateJson, sortJson, prettyPrintTimeData
+from Utils.DatasModifier.JsonUtils import readJson
 
-from Algorithms.DeepSky import DeepSky
 
 class DeepSkyTest(unittest.TestCase):
     def setUp(self):

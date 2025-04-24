@@ -29,6 +29,7 @@ class DatabaseToDict:
             values = tuple(row[1:])
             result[row_id] = values
         self.data = result
+        return result
 
 
 if __name__ == "__main__":

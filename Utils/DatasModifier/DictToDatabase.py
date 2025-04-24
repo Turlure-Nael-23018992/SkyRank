@@ -21,7 +21,7 @@ class DictToDatabase:
         :param data: The dictionary to convert
         """
         self.data = data
-        print(f"Data received: {self.data}")  # Check the received data
+        #print(f"Data received: {self.data}")
 
         try:
             self.cursor.execute(f"DROP TABLE IF EXISTS {self.tableName}") # Drop the table if it exists

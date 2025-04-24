@@ -2,6 +2,18 @@ import random
 import sqlite3, math
 import string
 import time
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from typing import AnyStr
+
+from Utils.TimerUtils import TimeCalc
+
+def safe_sqrt(x):
+    try:
+        return math.sqrt(float(x)) if x is not None and float(x) >= 0 else 0.0
+    except:
+        return 0.0
 
 class CoskySQL:
     """
@@ -16,10 +28,11 @@ class CoskySQL:
         self.is_debug=is_debug
         self.relations = []
         self.conn=sqlite3.connect(db_filepath)
-        self.conn.create_function('sqrt', 1, math.sqrt)
+        self.conn.create_function('sqrt', 1, safe_sqrt)
         self.cursor =self.conn.cursor()
         self.table_name="Pokemon"
         self.colonnes_initiales_str = []
+        self.dict = {}
         try:
             self.colonne_len=self.nombre_colonnes_table()
         except Exception as e:
@@ -68,7 +81,6 @@ class CoskySQL:
 
 
     def run(self):
-        print("dans le run")
         """
         Run the Cosky algorithm to compute the ranking and sorting of data based on multiple criteria.
         :return: The result of the Cosky algorithm
@@ -135,12 +147,26 @@ class CoskySQL:
         #print(sql_queries)
 
         cursor.execute(sql_queries)
-        # Récupération des résultats de la dernière instruction
-        results = cursor.fetchall()
-        self.rows_res = []
 
-        # Affichage des résultats
+        results = cursor.fetchall()
+        if len(results) == 1:
+            row = results[0]
+            #print("Un seul point Skyline trouvé – attribution automatique du score 1.0")
+            row_with_score = row + (1.0,)
+            self.rows_res = [row_with_score]
+            self.dict = {row_with_score[0]: row_with_score[1:]}
+            #print(self.rows_res)
+            #print(self.dict)
+            return self.rows_res
+
+        # Récupération des résultats de la dernière instruction
+
         self.rows_res = [row for row in results]
+        dict = {}
+        for row in results:
+            dict[row[0]] = row[1:]
+        self.dict = dict
+        #print(self.rows_res)
 
         return self.rows_res
 

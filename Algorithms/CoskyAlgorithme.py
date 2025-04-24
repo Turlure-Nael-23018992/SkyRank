@@ -1,10 +1,9 @@
 import math
 import time
-import json
 
 from Algorithms.BbsCosky import BbsCosky
 from Utils.DisplayHelpers import beauty_print
-from Utils.JsonUtils import readJson, writeJson, updateJson, sortJson, prettyPrintTimeData
+from Utils.DatasModifier.JsonUtils import readJson
 
 
 class CoskyAlgorithme:

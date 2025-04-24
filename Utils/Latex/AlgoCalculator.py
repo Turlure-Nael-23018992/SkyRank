@@ -17,7 +17,7 @@ from Utils.TimerUtils import TimeCalc
 from Algorithms.RankSky import RankSky
 from Algorithms.DpIdpDh import DpIdpDh
 from Utils.Preference import Preference
-from Utils.JsonUtils import readJson, writeJson, updateJson, prettyPrintTimeData, sortJson
+from Utils.DatasModifier.JsonUtils import readJson, writeJson, sortJson
 from Algorithms.SkyIR import SkyIR
 
 ROWS_RATIO_MULT = pow(10, 3)
@@ -53,6 +53,7 @@ class AlgoCalculator:
         """
         Compare the execution time of an algorithm on several databases of different sizes
         """
+        print(algo)
         if cols == []:
             cols = self.cols
         if rows == []:

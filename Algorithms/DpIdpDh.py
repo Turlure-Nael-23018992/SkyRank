@@ -254,8 +254,7 @@ ORDER BY Score DESC;"
 
 from colorama import Fore, Style
 import math
-import json
-from Utils.JsonUtils import readJson, writeJson, updateJson, sortJson, prettyPrintTimeData
+from Utils.DatasModifier.JsonUtils import readJson
 
 
 def display_matrice(matrice):

@@ -1,10 +1,6 @@
 import json
-import textwrap
 
-from Algorithms.CoskyAlgorithme import CoskyAlgorithme
-from Algorithms.CoskySql import CoskySQL
-from Utils.DisplayHelpers import beauty_print, print_red
-from Utils.JsonUtils import readJson, writeJson, updateJson, sortJson, prettyPrintTimeData
+from Utils.DisplayHelpers import print_red
 from AlgoEnum import AlgoEnum
 import math
 
@@ -1087,11 +1083,11 @@ if __name__ == "__main__":
         )
     if a == "5":
         json_paths = [
-            path + "OneAlgoDatas/OneColumnData/ExecutionCoskySql3.json",
-            path + "OneAlgoDatas/OneColumnData/ExecutionCoskyAlgo3.json",
-            path + "OneAlgoDatas/OneColumnData/ExecutionRankSky3.json",
-            path + "OneAlgoDatas/OneColumnData/ExecutionDpIdpDh3.json",
-            path + "OneAlgoDatas/OneColumnData/ExecutionSkyIR3.json"
+            path + "OneAlgoDatas/OneColumnDatas/ExecutionCoskySql3.json",
+            path + "OneAlgoDatas/OneColumnDatas/ExecutionCoskyAlgo3.json",
+            path + "OneAlgoDatas/OneColumnDatas/ExecutionRankSky3.json",
+            path + "OneAlgoDatas/OneColumnDatas/ExecutionDpIdpDh3.json",
+            path + "OneAlgoDatas/OneColumnDatas/ExecutionSkyIR3.json"
         ]
         # Appelle ta méthode utilitaire
         timeDicts, maxRowsList, maxTimeList = coskyLatex.prepareComparisonData(json_paths, attributes=[3])

@@ -2,12 +2,18 @@ import json
 import sys
 
 
-def readJson(filePath):
+def readJson(filePath, asTuple=False):
     """
     Reads a JSON file and returns its content.
+    If asTuple is True, converts the values of the dictionary to tuples.
     """
     with open(filePath, 'r') as file:
-        return json.load(file)
+        data = json.load(file)
+        if asTuple:
+            # Convert only the values to tuples
+            return {key: tuple(value) for key, value in data.items()}
+        return data
+
 
 def writeJson(filePath, data):
     """
@@ -16,7 +22,7 @@ def writeJson(filePath, data):
     with open(filePath, 'w') as file:
         json.dump(data, file, indent=4)
 
-def updateJson(filePath, key, value):
+def updateJson(filePath, key, value, type="arr"):
     """
     Updates a specific key in a JSON file.
     """
@@ -87,11 +93,7 @@ def sortJson(fp):
 
 
 if __name__ == "__main__":
-    #("../Assets/LatexDatas/OneAlgoDatas/ExecutionAncienRankSky369.json")
-    #toOneColumn("../Assets/LatexDatas/OneAlgoDatas/ExecutionDpIdpDh369.json", 0, "../Assets/LatexDatas/OneAlgoDatas/OneColumnData/ExecutionDpIdpDh3.json")
-    #toOneColumn("../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskyAlgo369.json", 0, "../Assets/LatexDatas/OneAlgoDatas/OneColumnData/ExecutionCoskyAlgo3.json")
-    #toOneColumn("../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskySql369.json", 0, "../Assets/LatexDatas/OneAlgoDatas/OneColumnData/ExecutionCoskySql310^9.json")
-    #toOneColumn("../Assets/LatexDatas/OneAlgoDatas/ExecutionRankSky369.json", 0, "../Assets/LatexDatas/OneAlgoDatas/OneColumnData/ExecutionRankSky3.json")
-    toOneColumn("../Assets/LatexDatas/OneAlgoDatas/ExecutionSkyIR369.json", 0, "../Assets/LatexDatas/OneAlgoDatas/OneColumnData/ExecutionSkyIR3.json")
-    #toOneColumn("../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskySql369.json", 0, "../Assets/LatexDatas/OneAlgoDatas/OneColumnData/ExecutionCoskySql3.json")
+
+    print(readJson("../../Algorithms/Datas/RTuples8.json", asTuple=False))
+    print(readJson("../../Algorithms/Datas/RTuples8.json", asTuple=True))
     pass

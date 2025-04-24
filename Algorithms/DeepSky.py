@@ -26,6 +26,28 @@ Tant que tot >= k and !rl
 
 retourner topk
 """
+import os
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from Algorithms.CoskyAlgorithme import CoskyAlgorithme
+from Algorithms.CoskySql import CoskySQL
+from Algorithms.DpIdpDh import DpIdpDh
+from Algorithms.RankSky import RankSky
+from Algorithms.SkyIR import SkyIR
+from Utils.DatasModifier.DataNormalizer import DataNormalizer
+
+
+
+# MODES contains all the algorithms to be compared
+MODES = {
+    "CoskyAlgo": CoskyAlgorithme,
+    "CoskySql": CoskySQL,
+    "DpIdpDh": DpIdpDh,
+    "RankSky": RankSky,
+    "SkyIR": SkyIR,
+}
 
 """
 r = [
@@ -59,7 +81,6 @@ r = {
 }
 
 
-k = 1
 
 """
 def DeepSky(r,k):
@@ -98,22 +119,74 @@ def DeepSky(r,k):
 res = DeepSky(r,k)
 print(res)
 """
+def addBest(k, topK, s):
+    """
+    Add the best elements to the topK based on the score (last value of the tuple).
+    :param k: the number of top elements to add
+    :param topK: the topK
+    :param s: the elements to add
+    """
+    n = k - len(topK)  # Number of elements to add
+    # Sort elements in `s` by the last value of the tuple (score) in descending order
+    sorted_s = sorted(s.items(), key=lambda x: x[1][-1] if x[1][-1] is not None else float('-inf'), reverse=True)
+
+    # Add the top `n` elements to `topK`
+    for key, value in sorted_s[:n]:
+        topK[key] = value
+
+    return topK
+
+fp = "../Assets/cosky_db_C3_R20000.db"
+
+dataNorm = DataNormalizer(r, fp)
 
 
+def DeepSkyCoskySql(r,k):
+    linesToSave = []
+    topK = {}
+    tot = 0
+    rl = r
+    while tot < k and rl != {}:
+        cosky = CoskySQL(fp)
+        linesToSave.append(cosky.rows_res)
+        s = cosky.dict
+        tot += len(s)
+        if tot <= k:
+            topK.update(s)
+            rl = {k: v for k, v in rl.items() if k not in s.keys()}
+            linesToSave = delLines(linesToSave)
+        else:
+            addBest(k, topK, s)
+            return topK
+    return topK
 
-def DeepSky(r,k):
+def delLines(linesToSave):
+    """
+    Delete the lines from the database.
+    :param linesToSave: the lines to delete
+    """
+    linesToSave = linesToSave[0]
+    for i in range(len(linesToSave)):
+        dataNorm.deleteLineDb(linesToSave[i][0])
+        linesToInsertBack.append(linesToSave[i])
+    return []
+
+def DeepSky(r,k, algo):
     """
     DeepSky algorithm to find the top-k tuples with the best scores.
     :param r: the relation
     :param k: the number of top tuples to find
     :return: the top-k tuples
     """
+    algo = algo.__name__
     topK={}
     tot=0
     rl=r
     while tot<k and rl!={}:
-        #s=Cosky(rl).relations
-        s = r_next
+        if algo == "CoskyAlgorithme":
+            s = CoskyAlgorithme(rl).r
+        elif algo == "DpIdpDh":
+            s = DpIdpDh(rl).r
         tot+=len(s)
         if tot<=k:
             topK.update(s)
@@ -123,5 +196,12 @@ def DeepSky(r,k):
             return topK
     return topK
 
-res = DeepSky(r,k)
-print(res)
+if __name__ == "__main__":
+    """linesToInsertBack = []
+    k = 20
+    res = DeepSkyCoskySql(r, k)
+    dataNorm.addLinesDb(linesToInsertBack)
+    dataNorm.beautyPrintSkylinePoint(res)"""
+    k = 4
+    res = DeepSky(r, k, CoskyAlgorithme)
+    dataNorm.beautyPrintDict(res)
