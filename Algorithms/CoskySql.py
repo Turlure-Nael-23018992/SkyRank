@@ -167,6 +167,8 @@ class CoskySQL:
             dict[row[0]] = row[1:]
         self.dict = dict
 
+        print(self.dict)
+
         return self.rows_res
 
 if __name__ == '__main__':
