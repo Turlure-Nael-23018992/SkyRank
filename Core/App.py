@@ -88,7 +88,7 @@ class App:
 
         # Export the result if an exporter is provided
         if self.exporter:
-            self.exporter.export([self])
+            self.exporter.export(self)
 
     def startCoskySql(self):
         """
@@ -301,7 +301,4 @@ if __name__ == "__main__":
 
     # Launch App with selected data, algorithm, and exporter
     app = App(data, algo_map[algo_choice], exporter=exporter)
-
-
-
-
+    print_green("Execution completed.")
