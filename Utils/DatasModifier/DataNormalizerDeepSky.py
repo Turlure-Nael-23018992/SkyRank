@@ -3,7 +3,7 @@ from Utils.DatasModifier.DatabaseToDict import DatabaseToDict
 from Utils.DatasModifier.JsonUtils import readJson
 from Utils.DatasModifier.DictToDatabase import DictToDatabase
 
-class DataNormalizer:
+class DataNormalizerDeepSky:
 
     def __init__(self, r, fp):
         self.relation = r
@@ -89,8 +89,8 @@ if __name__ == "__main__":
     """fp = "../../Assets/DeepSkyTest.db"
     jsonfp = "../../Algorithms/Datas/RTuples8.json"
     r = readJson(jsonfp, asTuple=True)
-    dataNorm = DataNormalizer(r, fp)
+    dataNorm = DataNormalizerDeepSky(r, fp)
     dataNorm.refreshDb()"""
     tab = [3,1,5,7]
-    print(DataNormalizer.sortArr(tab))
+    print(DataNormalizerDeepSky.sortArr(tab))
 

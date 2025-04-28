@@ -251,6 +251,7 @@ class RankSky:
         self.sort()
         time2.stop()
         self.time = time1.execution_time + time2.execution_time
+        print(self.sky)
 
 if __name__ == "__main__":
     """r = {
@@ -274,7 +275,6 @@ if __name__ == "__main__":
     db = DatabaseToDict("../Assets/DeepSkyTest.db")
     db.toDict()
     r = db.data
-    #print(r)
 
     print("1./ Utiliser rankSky avec ipl")
     print("2./ Utiliser rankSky avec iplDom")

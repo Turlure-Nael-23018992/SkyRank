@@ -284,17 +284,5 @@ MODES = {
 if __name__ == "__main__":
     # Create an instance of the AlgoCalculator class
     calculator = AlgoCalculator("")
-    #calculator.compareExecutionTime(CoskySQL)
-    #calculator.compareExecutionTimeSqlAlgo()
-    #calculator.compareExecutionTime(SkyIR, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionSkyIR369.json", cols=[3], rows=[10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000])
-    #calculator.compareExecutionTime(RankSky, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionRankSky369.json")
-    #calculator.compareExecutionTime(DpIdpDh, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionDpIdpDh369.json")
-    #calculator.compareExecutionTime(CoskySQL, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskySql369.json")
-    #calculator.compareExecutionTime(CoskyAlgorithme, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskyAlgo369.json")
 
-    #calculator.compareExecutionTime(CoskySQL, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskySql369.json", cols=[3], rows=[50000000, 100000000, 200000000, 500000000, 1000000000])
-    #calculator.compareExecutionTime(CoskyAlgorithme, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskyAlgo369.json", cols=[3,6,9], rows=[10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000])
-    #calculator.compareExecutionTime(RankSky, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionRankSky369.json", cols=[3], rows=[10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000])
-    #calculator.compareExecutionTime(CoskySQL, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionCoskySql369.json", cols=[3], rows=[200000000])
-    calculator.compareExecutionTime(SkyIR, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionSkyIR369.json", cols=[3], rows=[10000, 20000, 50000])
-    calculator.compareExecutionTime(DpIdpDh, "../../Assets/LatexDatas/OneAlgoDatas/ExecutionDpIdpDh369.json", cols=[3],rows=[20000, 50000])
+    calculator.compareExecutionTime(CoskySQL, "../../Assets/LatexDatas/OneAlgoDatas/CoskySql/ThreeColumnsDatas/ExecutionCoskySql369.json", cols=[3,6,9], rows=[500000,1000000,2000000])

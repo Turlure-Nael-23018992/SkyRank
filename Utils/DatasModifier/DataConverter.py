@@ -1,6 +1,7 @@
 from Utils.DataTypes.JsonObject import JsonObject
 from Utils.DatasModifier.JsonUtils import *
 from Utils.DatasModifier.DictToDatabase import DictToDatabase
+from Utils.DatasModifier.DatabaseToDict import DatabaseToDict
 
 class DataConverter:
     """
@@ -35,5 +36,11 @@ class DataConverter:
         """
         Convert relation data to a database format.
         """
-        print("self.data : 2 ", self.data)
         self.DictToDatabase.toDatabase(self.data)
+
+    def dbToRelation(self):
+        """
+        Convert database data to a relation format.
+        """
+        databaseToDict = DatabaseToDict(self.data)
+        return databaseToDict.toDict()

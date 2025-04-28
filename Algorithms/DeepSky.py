@@ -26,19 +26,22 @@ Tant que tot >= k and !rl
 
 retourner topk
 """
-import os
+
+
+
 import sys
+from pathlib import Path
+
+sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from Utils.DatasModifier.DatabaseToDict import DatabaseToDict
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 from Algorithms.CoskyAlgorithme import CoskyAlgorithme
 from Algorithms.CoskySql import CoskySQL
 from Algorithms.DpIdpDh import DpIdpDh
 from Algorithms.RankSky import RankSky
 from Algorithms.SkyIR import SkyIR
-from Utils.DatasModifier.DataNormalizer import DataNormalizer
+from Utils.TimerUtils import TimeCalc
+from Utils.DatasModifier.DataNormalizerDeepSky import DataNormalizerDeepSky
 from Utils.Preference import Preference
 
 
@@ -156,7 +159,7 @@ class DeepSky:
         self.k = k
         self.algo = algo.__name__
         self.topK = {}
-        self.dataNorm = DataNormalizer(self.r, self.fp)
+        self.dataNorm = DataNormalizerDeepSky(self.r, self.fp)
         self.lineToInsertBack = []
         self.preference = pref
         self.run()
@@ -176,7 +179,6 @@ class DeepSky:
                 #rl = {k: v for k, v in rl.items() if self.k not in s.keys()}
                 linesToSave = self.delLines(linesToSave)
             else:
-                print("2")
                 addBest(self.k, self.topK, s)
                 return self.topK
         return self.topK
@@ -236,8 +238,13 @@ class DeepSky:
 
 if __name__ == "__main__":
     linesToInsertBack = []
-    k = 4
+    k = 100
     algos = [CoskySQL, CoskyAlgorithme, DpIdpDh, RankSky, SkyIR]
-    deepSky = DeepSky("../Assets/DeepSkyTest.db", k, RankSky)
-    print(deepSky.topK)
+    time1 = TimeCalc(100, CoskySQL)
+    deepSky = DeepSky("../Assets/cosky_db_C3_R20000.db", k, CoskySQL)
+    time1.stop()
+    executionTime = time1.execution_time
+    print(f"Execution time: {executionTime}")
+    """print(deepSky.topK)
+    print(len(deepSky.topK))"""
 

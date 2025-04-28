@@ -255,6 +255,7 @@ ORDER BY Score DESC;"
 from colorama import Fore, Style
 import math
 from Utils.DatasModifier.JsonUtils import readJson
+from Utils.TimerUtils import TimeCalc
 
 
 def display_matrice(matrice):
@@ -539,9 +540,11 @@ class DpIdpDh:
         Constructor to initialize the dp-idp-dh algorithm.
         :param r: the relation
         """
+        time = TimeCalc(100, "DpIdpDh")
         self.r=r
-
         self.run()
+        time.stop()
+        self.time = time.execution_time
 
     def run(self):
         """
@@ -551,6 +554,8 @@ class DpIdpDh:
         self.dom, self.sky, self.spTot, self.skyCard, self.domCard = self.calculGrapheDeCouverture(self.dom, self.sp)
         self.sky = self.calculLm(self.dom, self.sky, self.skyCard)
         self.score = self.calculScore(self.sky, self.domCard, self.spTot)
+        print(self.score)
+
 
 
 

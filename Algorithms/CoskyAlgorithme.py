@@ -2,6 +2,7 @@ import math
 import time
 
 from Algorithms.BbsCosky import BbsCosky
+from Utils.TimerUtils import TimeCalc
 from Utils.DisplayHelpers import beauty_print
 from Utils.DatasModifier.JsonUtils import readJson
 
@@ -12,6 +13,7 @@ class CoskyAlgorithme:
     """
 
     def __init__(self, r, is_debug=False):
+        time = TimeCalc(100, "CoskyAlgorithme")
         self.is_debug=is_debug
         self.r = r
         self.bbs = BbsCosky(r, 1, 2)
@@ -33,6 +35,8 @@ class CoskyAlgorithme:
         self.sqrtTotIdealIdeal=0
         self.totIdealP=0
         self.run()
+        time.stop()
+        self.time = time.execution_time
 
 
 
@@ -103,6 +107,7 @@ class CoskyAlgorithme:
             self.s[i].append(val)
         if self.is_debug:
             beauty_print("totIdealP", self.totIdealP)
+        print(self.s)
         return self.s
 
     def sort(self,rev):
@@ -134,6 +139,7 @@ if __name__ == '__main__':
 
 
     startTime = time.time()
+    print(r_petit)
     cosky = CoskyAlgorithme(r_petit)
     print("-----------------Avant-----------------")
     print(cosky.s)
@@ -141,3 +147,4 @@ if __name__ == '__main__':
     print("-----------------Apres-----------------")
     cosky.sort("Desc")
     print(cosky.s)
+    print(cosky.time)

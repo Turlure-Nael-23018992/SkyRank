@@ -25,6 +25,7 @@ class CoskySQL:
         :param db_filepath: the path to the SQLite database file
         :param is_debug: flag to enable debug mode
         """
+        time = TimeCalc(100, "CoskySQL")
         self.is_debug=is_debug
         self.relations = []
         self.conn=sqlite3.connect(db_filepath)
@@ -41,6 +42,8 @@ class CoskySQL:
         self.colonne_names = self.get_column_names(self.table_name)
 
         self.run()
+        time.stop()
+        self.time = time.execution_time
 
     def get_column_names(self, nom_table):
         """
@@ -166,9 +169,7 @@ class CoskySQL:
         for row in results:
             dict[row[0]] = row[1:]
         self.dict = dict
-
-        print(self.dict)
-
+        print(dict)
         return self.rows_res
 
 if __name__ == '__main__':

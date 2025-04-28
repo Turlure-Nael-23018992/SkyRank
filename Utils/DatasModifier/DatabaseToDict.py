@@ -31,8 +31,16 @@ class DatabaseToDict:
         self.data = result
         return result
 
+    def getMax(self):
+        """
+        Get the maximum value of the database
+        :return: The maximum value of the database
+        """
+        sqlQuery = "SELECT MAX(Col_A, Col_B, Col_C) FROM " + self.tableName
+        self.cursor.execute(sqlQuery)
+        max_value = self.cursor.fetchone()[0]
+        return max_value
+
 
 if __name__ == "__main__":
-    db = DatabaseToDict(fr"..\Assets\databases\cosky_db_C3_R100.db")
-    data = db.toDict()
-    print(data)
+    db = DatabaseToDict(fr"..\..\Assets\databases\cosky_db_C3_R2000.db")

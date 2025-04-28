@@ -162,6 +162,11 @@ class Database:
         return self.cursor.fetchall()
 
     def generer_table(self, n_rnd_cols):
+        """
+        Generate the table with a specified number of random columns
+        :param n_rnd_cols: The number of random columns to generate
+        :return: The SQL query to create the table
+        """
         # Fixed columns
         colonnes_fixes_str = ", ".join([f"{colonne} REAL" for colonne in self.colonnes_initiales_str])
 

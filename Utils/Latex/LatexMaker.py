@@ -794,11 +794,11 @@ class LatexMaker:
             \matrix [below left] at (current bounding box.north east) {
     """
         for i in range(3):
-            self.latexCode += f"            \\node [big{colors[i]}node, label=right:CoSky SQL query with {attributes[i]} attributes] {{}}; \\\\\n"
+            self.latexCode += f"            \\node [big{colors[i]}node, label=right:CoSky 'SQL query' with {attributes[i]} attributes] {{}}; \\\\\n"
         self.latexCode += r"""        };
             \end{tikzpicture}
         }
-        \caption{Execution time of CoSky SQL queries with 3, 6, and 9 attributes}
+        \caption{Execution time of CoSky 'SQL queries' with 3, 6, and 9 attributes}
         \label{fig:cosky_sql_comparaison}
     \end{figure}
     \end{document}"""
@@ -814,7 +814,7 @@ class LatexMaker:
         import math, json
 
         column = int(column)
-        dataPath = "../../Assets/LatexDatas/"
+        dataPath = "../../Assets/LatexDatas/OneAlgoDatas/CoskySql/OneColumnsDatas/"
         match column:
             case 3:
                 self.path += "OneAlgoComparaison/CoskySql3.tex"
@@ -970,13 +970,17 @@ def smart_roundup(value):
 
 if __name__ == "__main__":
     coskyLatex = LatexMaker()
-    path = "../../Assets/LatexDatas/"
+    path = "../../Assets/LatexDatas/OneAlgoDatas/CoskySql/ThreeColumnsDatas/"
 
-    coskyLatex.CoskyComparaisonNColumn(
-        column=3,
+    timeDict, maxRow, maxTime = coskyLatex.getData(path + "ExecutionCoskySql369.json")
+
+    coskyLatex.coskySqlComparaisonLatex(
+        timeDict,
+        maxRow,
+        maxTime,
+        latexFilePath="OneAlgoComparaison/CoskySql369.tex",
         scaleX=280,
-        scaleY=280,
-        scaleType="LinX/LogY"
+        scaleY=280
     )
 
     """timeDict, maxRow, maxTime = coskyLatex.getData(path + "OneAlgoDatas/ExecutionCoskySql369.json")

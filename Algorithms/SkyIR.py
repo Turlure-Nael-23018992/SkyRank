@@ -5,6 +5,7 @@ from queue import PriorityQueue
 from Algorithms.BbsCosky import BbsCosky
 from Utils.DisplayHelpers import beauty_print
 from Utils.DatasModifier.JsonUtils import readJson
+from Utils.TimerUtils import TimeCalc
 
 
 class SkyIR:
@@ -13,7 +14,10 @@ class SkyIR:
     """
 
     def __init__(self, r):
+        time1 = TimeCalc(100, "SkyIR")
         self.r=r
+        time1.stop()
+        self.time = time1.execution_time
 
 
     def calculSkylineEtNbDominants(self):
@@ -153,6 +157,7 @@ class SkyIR:
 
 
     def skyIR(self, k):
+        time2 = TimeCalc(100, "SkyIR")
         s, gamma, spTot = self.calculSkylineEtNbDominants()
         lm={}
         pending={}
@@ -241,6 +246,8 @@ class SkyIR:
             if pending[poi] > 0:
                 fileDePriorite.put((gamma[poi], poi))
         good_K=min(k, len(topK))
+        time2 = time.stop()
+        self.time = time2.execution_time + self.time
         return topK[-good_K:]
 
 

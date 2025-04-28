@@ -5,7 +5,7 @@ import sys
 
 from Algorithms.CoskyAlgorithme import CoskyAlgorithme
 from Algorithms.SkyIR import SkyIR
-from Utils.DatasModifier.DataNormalizer import DataNormalizer
+from Utils.DatasModifier.DataNormalizerDeepSky import DataNormalizerDeepSky
 from Utils.DatasModifier.JsonUtils import readJson
 from Algorithms.CoskySql import CoskySQL
 from Algorithms.DeepSky import DeepSky
@@ -19,7 +19,7 @@ class DeepSkyTest(unittest.TestCase):
     def setUp(self):
         self.rTuples8 = readJson("../Datas/Rtuples8.json")
         self.k = 4
-        self.dataNorm = DataNormalizer(self.rTuples8, "../../Assets/DeepSkyTest.db")
+        self.dataNorm = DataNormalizerDeepSky(self.rTuples8, "../../Assets/DeepSkyTest.db")
 
     def testDeepSkyCoskySql(self):
         """
@@ -69,8 +69,8 @@ class DeepSkyTest(unittest.TestCase):
         deepSkyCoskySql = DeepSky("../../Assets/DeepSkyTest.db", self.k, CoskySQL).topK
         deepSkyCoskyAlgo = DeepSky("../../Assets/DeepSkyTest.db",  self.k, CoskyAlgorithme).topK
         deepSkyDpIdpDh = DeepSky("../../Assets/DeepSkyTest.db", self.k, DpIdpDh).topK
-        deepSkySkyIR = DeepSky("../../Assets/DeepSkyTest.db", self.k, DpIdpDh).topK
-        deepSkyRankSky = DeepSky("../../Assets/DeepSkyTest.db", self.k, DpIdpDh).topK
+        deepSkySkyIR = DeepSky("../../Assets/DeepSkyTest.db", self.k, SkyIR).topK
+        deepSkyRankSky = DeepSky("../../Assets/DeepSkyTest.db", self.k, RankSky).topK
 
         deepSkyCoskySql = self.dataNorm.sortArr([int(k) for k in deepSkyCoskySql.keys()])
         deepSkyCoskyAlgo = self.dataNorm.sortArr([int(k) for k in deepSkyCoskyAlgo.keys()])
