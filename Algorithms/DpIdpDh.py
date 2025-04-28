@@ -254,7 +254,7 @@ ORDER BY Score DESC;"
 
 from colorama import Fore, Style
 import math
-from Utils.DatasModifier.JsonUtils import readJson
+from Utils.DataModifier.JsonUtils import readJson
 from Utils.TimerUtils import TimeCalc
 
 

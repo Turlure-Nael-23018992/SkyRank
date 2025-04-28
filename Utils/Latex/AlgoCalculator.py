@@ -17,7 +17,7 @@ from Utils.TimerUtils import TimeCalc
 from Algorithms.RankSky import RankSky
 from Algorithms.DpIdpDh import DpIdpDh
 from Utils.Preference import Preference
-from Utils.DatasModifier.JsonUtils import readJson, writeJson, sortJson
+from Utils.DataModifier.JsonUtils import readJson, writeJson, sortJson
 from Algorithms.SkyIR import SkyIR
 
 ROWS_RATIO_MULT = pow(10, 3)
@@ -34,7 +34,7 @@ class AlgoCalculator:
         self.conn = sqlite3.connect(db_filepath)
         self.cursor = self.conn.cursor()
         self.latexMaker = LatexMaker()
-        self.jsonFilePath = "../Assets/LatexDatas/"
+        self.jsonFilePath = "../Assets/LatexData/"
         self.tableName = "Pokemon"
         self.conn = sqlite3.connect(fr"..\..\Assets\databases\{self.tableName}.db")
         self.cols = [3,6,9]
@@ -285,4 +285,4 @@ if __name__ == "__main__":
     # Create an instance of the AlgoCalculator class
     calculator = AlgoCalculator("")
 
-    calculator.compareExecutionTime(CoskySQL, "../../Assets/LatexDatas/OneAlgoDatas/CoskySql/ThreeColumnsDatas/ExecutionCoskySql369.json", cols=[3,6,9], rows=[500000,1000000,2000000])
+    calculator.compareExecutionTime(CoskySQL, "../../Assets/LatexData/OneAlgoData/CoskySql/ThreeColumnsData/ExecutionCoskySql369.json", cols=[3,6,9], rows=[500000,1000000,2000000])

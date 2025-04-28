@@ -814,7 +814,7 @@ class LatexMaker:
         import math, json
 
         column = int(column)
-        dataPath = "../../Assets/LatexDatas/OneAlgoDatas/CoskySql/OneColumnsDatas/"
+        dataPath = "../../Assets/LatexData/OneAlgoData/CoskySql/OneColumnsDatas/"
         match column:
             case 3:
                 self.path += "OneAlgoComparaison/CoskySql3.tex"
@@ -970,7 +970,7 @@ def smart_roundup(value):
 
 if __name__ == "__main__":
     coskyLatex = LatexMaker()
-    path = "../../Assets/LatexDatas/OneAlgoDatas/CoskySql/ThreeColumnsDatas/"
+    path = "../../Assets/LatexData/OneAlgoData/CoskySql/ThreeColumnsData/"
 
     timeDict, maxRow, maxTime = coskyLatex.getData(path + "ExecutionCoskySql369.json")
 
@@ -983,7 +983,7 @@ if __name__ == "__main__":
         scaleY=280
     )
 
-    """timeDict, maxRow, maxTime = coskyLatex.getData(path + "OneAlgoDatas/ExecutionCoskySql369.json")
+    """timeDict, maxRow, maxTime = coskyLatex.getData(path + "OneAlgoData/ExecutionCoskySql369.json")
     coskyLatex.coskySqlComparaisonLatex(
         timeDict,
         maxRow,
@@ -997,9 +997,9 @@ if __name__ == "__main__":
 
     """timeDicts, maxRowsList, maxTimeList = coskyLatex.prepareComparisonData(
         [
-            path + "OneAlgoDatas/ExecutionCoskySql369.json",
-            path + "OneAlgoDatas/ExecutionCoskyAlgo369.json",
-            path + "OneAlgoDatas/ExecutionRankSky369.json"
+            path + "OneAlgoData/ExecutionCoskySql369.json",
+            path + "OneAlgoData/ExecutionCoskyAlgo369.json",
+            path + "OneAlgoData/ExecutionRankSky369.json"
         ]
     )
     beauty_print("maxRowsList", maxRowsList)
@@ -1030,9 +1030,9 @@ if __name__ == "__main__":
     a = input("Choix: ")
     if a == "1":
         json_paths = [
-            path + "OneAlgoDatas/ExecutionCoskySql369.json",
-            path + "OneAlgoDatas/ExecutionCoskyAlgo369.json",
-            path + "OneAlgoDatas/ExecutionRankSky369.json"
+            path + "OneAlgoData/ExecutionCoskySql369.json",
+            path + "OneAlgoData/ExecutionCoskyAlgo369.json",
+            path + "OneAlgoData/ExecutionRankSky369.json"
         ]
         timeDicts, maxRowsList, maxTimeList = coskyLatex.prepareComparisonData(json_paths)
 
@@ -1046,8 +1046,8 @@ if __name__ == "__main__":
         )
     elif a == "2":
         json_paths = [
-            path + "OneAlgoDatas/ExecutionCoskySql369.json",
-            path + "OneAlgoDatas/ExecutionCoskyAlgo369.json"
+            path + "OneAlgoData/ExecutionCoskySql369.json",
+            path + "OneAlgoData/ExecutionCoskyAlgo369.json"
         ]
 
         # Appelle ta méthode utilitaire
@@ -1065,8 +1065,8 @@ if __name__ == "__main__":
         )
     if a == "3":
         json_paths = [
-            path + "OneAlgoDatas/ExecutionCoskySql369.json",
-            path + "OneAlgoDatas/ExecutionCoskyAlgo369.json"
+            path + "OneAlgoData/ExecutionCoskySql369.json",
+            path + "OneAlgoData/ExecutionCoskyAlgo369.json"
         ]
 
         # Appelle ta méthode utilitaire
@@ -1087,11 +1087,11 @@ if __name__ == "__main__":
         )
     if a == "5":
         json_paths = [
-            path + "OneAlgoDatas/OneColumnDatas/ExecutionCoskySql3.json",
-            path + "OneAlgoDatas/OneColumnDatas/ExecutionCoskyAlgo3.json",
-            path + "OneAlgoDatas/OneColumnDatas/ExecutionRankSky3.json",
-            path + "OneAlgoDatas/OneColumnDatas/ExecutionDpIdpDh3.json",
-            path + "OneAlgoDatas/OneColumnDatas/ExecutionSkyIR3.json"
+            path + "OneAlgoData/OneColumnData/ExecutionCoskySql3.json",
+            path + "OneAlgoData/OneColumnData/ExecutionCoskyAlgo3.json",
+            path + "OneAlgoData/OneColumnData/ExecutionRankSky3.json",
+            path + "OneAlgoData/OneColumnData/ExecutionDpIdpDh3.json",
+            path + "OneAlgoData/OneColumnData/ExecutionSkyIR3.json"
         ]
         # Appelle ta méthode utilitaire
         timeDicts, maxRowsList, maxTimeList = coskyLatex.prepareComparisonData(json_paths, attributes=[3])

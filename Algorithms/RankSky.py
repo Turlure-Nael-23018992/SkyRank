@@ -3,7 +3,7 @@ import math
 from Utils.Preference import Preference
 from Utils.TimerUtils import TimeCalc
 from Algorithms.BbsCosky import BbsCosky
-from Utils.DatasModifier.DatabaseToDict import DatabaseToDict
+from Utils.DataModifier.DatabaseToDict import DatabaseToDict
 
 
 class RankSky:

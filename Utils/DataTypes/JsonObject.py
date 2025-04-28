@@ -1,4 +1,4 @@
-from Utils.DatasModifier.JsonUtils import *
+from Utils.DataModifier.JsonUtils import *
 
 class JsonObject:
     """

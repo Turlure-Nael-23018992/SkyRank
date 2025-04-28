@@ -34,14 +34,14 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-from Utils.DatasModifier.DatabaseToDict import DatabaseToDict
+from Utils.DataModifier.DatabaseToDict import DatabaseToDict
 from Algorithms.CoskyAlgorithme import CoskyAlgorithme
 from Algorithms.CoskySql import CoskySQL
 from Algorithms.DpIdpDh import DpIdpDh
 from Algorithms.RankSky import RankSky
 from Algorithms.SkyIR import SkyIR
 from Utils.TimerUtils import TimeCalc
-from Utils.DatasModifier.DataNormalizerDeepSky import DataNormalizerDeepSky
+from Utils.DataModifier.DataNormalizerDeepSky import DataNormalizerDeepSky
 from Utils.Preference import Preference
 
 

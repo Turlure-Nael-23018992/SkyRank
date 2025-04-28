@@ -5,8 +5,8 @@ import sys
 
 from Algorithms.CoskyAlgorithme import CoskyAlgorithme
 from Algorithms.SkyIR import SkyIR
-from Utils.DatasModifier.DataNormalizerDeepSky import DataNormalizerDeepSky
-from Utils.DatasModifier.JsonUtils import readJson
+from Utils.DataModifier.DataNormalizerDeepSky import DataNormalizerDeepSky
+from Utils.DataModifier.JsonUtils import readJson
 from Algorithms.CoskySql import CoskySQL
 from Algorithms.DeepSky import DeepSky
 from Algorithms.DpIdpDh import DpIdpDh

@@ -95,6 +95,6 @@ def promptAlgos():
 
 if __name__ == "__main__":
     coskyLatex = LatexMaker()
-    path = "../../Assets/LatexDatas/"
+    path = "../../Assets/LatexData/"
     algos, outputFile = promptAlgos()
     compareAlgos(coskyLatex, algos, outputFile, basePath=path)

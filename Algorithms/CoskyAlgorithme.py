@@ -4,7 +4,7 @@ import time
 from Algorithms.BbsCosky import BbsCosky
 from Utils.TimerUtils import TimeCalc
 from Utils.DisplayHelpers import beauty_print
-from Utils.DatasModifier.JsonUtils import readJson
+from Utils.DataModifier.JsonUtils import readJson
 
 
 class CoskyAlgorithme:

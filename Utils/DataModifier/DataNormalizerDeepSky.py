@@ -1,7 +1,7 @@
 import sqlite3
-from Utils.DatasModifier.DatabaseToDict import DatabaseToDict
-from Utils.DatasModifier.JsonUtils import readJson
-from Utils.DatasModifier.DictToDatabase import DictToDatabase
+from Utils.DataModifier.DatabaseToDict import DatabaseToDict
+from Utils.DataModifier.JsonUtils import readJson
+from Utils.DataModifier.DictToDatabase import DictToDatabase
 
 class DataNormalizerDeepSky:
 

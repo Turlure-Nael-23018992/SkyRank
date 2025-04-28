@@ -1,5 +1,5 @@
 import unittest
-from Utils.DatasModifier.JsonUtils import readJson
+from Utils.DataModifier.JsonUtils import readJson
 
 from Algorithms.DpIdpDh import DpIdpDh
 

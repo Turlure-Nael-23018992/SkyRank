@@ -1,7 +1,7 @@
 from Utils.DataTypes.JsonObject import JsonObject
-from Utils.DatasModifier.JsonUtils import *
-from Utils.DatasModifier.DictToDatabase import DictToDatabase
-from Utils.DatasModifier.DatabaseToDict import DatabaseToDict
+from Utils.DataModifier.JsonUtils import *
+from Utils.DataModifier.DictToDatabase import DictToDatabase
+from Utils.DataModifier.DatabaseToDict import DatabaseToDict
 
 class DataConverter:
     """
