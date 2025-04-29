@@ -1,27 +1,34 @@
 from Utils.DisplayHelpers import beauty_print
 
-
 class DataParser:
     """
-    Class that converts data from SQL to Python dictionnary
+    Class that converts SQL query results into a Python dictionary format.
+    Each row from the SQL result becomes a dictionary entry, with the row ID as key
+    and the remaining values as a tuple.
     """
 
     def __init__(self, sql_r):
+        """
+        Initialize the DataParser.
+
+        :param sql_r: List of rows returned from a SQL query, where each row is a tuple.
+        """
         self.sql_r = sql_r
         self.r_dict = self.convert()
 
     def convert(self):
         """
-        Dictionnairy comprehension that browse all value of sql data as rows
-        and says:
-        for each row, set the first item (the rowId) as dict key and
-        set all the others items as values of the dict (as tuple)
-        :return: a dict
+        Dictionary comprehension that processes each SQL row.
+        - The first element of each row (row ID) is used as the key.
+        - The remaining elements are grouped into a tuple and used as the value.
+
+        :return: A dictionary {row_id: (column1_value, column2_value, ...)}
         """
         return {row[0]: tuple(row[1:]) for row in self.sql_r}
 
 
 if __name__ == '__main__':
+    # Mocked SQL data to simulate database results
     sql_mocked_data = [
         (113, 2.338051603173262, 10.0, 8.0, 0.9994496256117908),
         (36, 21.724758982092293, 14.0, 1.0, 0.9993371656483069),
@@ -42,4 +49,4 @@ if __name__ == '__main__':
     ]
 
     data_parser_obj = DataParser(sql_mocked_data)
-    #beauty_print("converted data from sql format",data_parser_obj.r_dict)
+    # beauty_print("Converted data from SQL format", data_parser_obj.r_dict)

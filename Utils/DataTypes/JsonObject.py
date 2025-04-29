@@ -1,17 +1,18 @@
-from Utils.DataModifier.JsonUtils import *
-
 class JsonObject:
     """
     A class to represent a JSON object.
     """
 
-    def __init__(self, jsonFilepath):
+    def __init__(self, fp):
         """
         Initialize the JSON object
-        """
-        self.fp = jsonFilepath
 
-    def __name__(self):
+        :param fp: Path to the JSON file.
+        """
+        self.fp = fp
+
+    @staticmethod
+    def __name__():
         """
         Return the name of the class.
         """

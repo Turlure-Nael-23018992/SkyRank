@@ -2,17 +2,21 @@ from enum import Enum
 
 class AlgoEnum(Enum):
     """
-    Algo enum class to represent different algorithms and their associated file paths.
+    Enum class representing different Skyline algorithms along with their label and JSON file path.
     """
+
     CoskySql = ("CoSky 'Sql query'", "Assets/LatexData/OneAlgoData/CoskySql/ThreeColumnsData/ExecutionCoskySql369.json")
     CoskyAlgorithme = ("CoSky 'algorithm'", "Assets/LatexData/OneAlgoData/CoskyAlgo/ThreeColumnsData/ExecutionCoskyAlgo369.json")
     RankSky = ("RankSky", "Assets/LatexData/OneAlgoData/RankSky/ThreeColumnsData/ExecutionRankSky369.json")
     DpIdpDh = ("dp-idp with dominance hierarchy", "Assets/LatexData/OneAlgoData/DpIdpDh/ThreeColumnsData/ExecutionDpIdpDh69.json")
     SkyIR = ("SkyIR-UBS", "Assets/LatexData/OneAlgoData/SkyIR/ThreeColumnsData/ExecutionSkyIR369.json")
 
-    def __init__(self, label, filepath):
+    def __init__(self, label: str, filepath: str):
         """
-        Initialize the enum with a label and file path.
+        Initialize each enum member.
+
+        :param label: The display label for the algorithm.
+        :param filepath: The JSON file path where the execution times are stored.
         """
         self.label = label
         self.filepath = filepath

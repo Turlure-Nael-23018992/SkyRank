@@ -4,13 +4,15 @@ from Utils.DisplayHelpers import print_red
 from Utils.Latex.AlgoEnum import AlgoEnum
 import math
 
-
 class LatexMaker:
     """
-    Class to create a latex document for the results of the algorithms
+    Class responsible for generating LaTeX documents from algorithm execution results.
     """
 
     def __init__(self):
+        """
+        Initialize the LatexMaker instance with default colors and path.
+        """
         self.latexCode = ""
         self.latexFinal = ""
         self.colors = ["skyblue", "cyan", "brightmaroon", "SQLCodeGreen", "SQLcodegray", "SQLCodePurple"]
@@ -22,37 +24,41 @@ class LatexMaker:
                                 \\definecolor{SQLCodePurple}{HTML}{C42043}"""
 
     def addLatexCode(self, latexCode):
-        """Add the latex code to the final document"""
+        """
+        Add generated LaTeX code to the final document.
+
+        :param latexCode: The LaTeX code to add.
+        """
         self.latexFinal += latexCode
 
     def render(self):
-        """Render the latex code to a file"""
+        """
+        Save the final LaTeX code to a file.
+        """
         print(self.path)
         with open(self.path, 'w') as file:
             file.write(self.latexCode)
-        #writeJson(self.path, self.latexFinal)
 
     def getData(self, path):
         """
-        Reads and processes JSON data from the given path.
+        Read and parse a JSON file containing execution time data.
+
         :param path: Path to the JSON file.
-        :return: A tuple containing timeDict, maxRows, and maxTime.
+        :return: Tuple (timeDict, maxRows, maxTime)
         """
         with open(path, 'r') as file:
-            data = json.load(file)  # Use json.load instead of json.loads for file objects
-
-        # Assuming data is already a dictionary at this point
+            data = json.load(file)
         timeDict = data.get("time_data", {})
         maxRows = data.get("max_rows", 0)
         maxTime = data.get("max_time", 0)
-
-
         return timeDict, maxRows, maxTime
 
     def get_rgb_value(self, color_name):
         """
-        Return a tuple: (value, format) for the LaTeX \definecolor command.
-        Ex: ('135,206,235', 'RGB') or ('C42043', 'HTML')
+        Return the RGB or HTML value for a given color name.
+
+        :param color_name: Name of the color.
+        :return: Tuple (color value, color format).
         """
         color_map = {
             "brightmaroon": ("195,33,72", "RGB"),
@@ -66,14 +72,11 @@ class LatexMaker:
 
     def prepareComparisonData(self, jsonPaths, attributes=[3, 6, 9]):
         """
-        Prepares the timeDicts, maxRowsList, and maxTimeList from JSON paths.
-        Args:
-            jsonPaths (list): List of JSON paths (1 per algorithm)
-            attributes (list): Attributes to process (default [3, 6, 9])
-        Returns:
-            timeDicts: List of time dictionaries
-            maxRowsList: List of max cardinalities per attribute
-            maxTimeList: List of max execution times per attribute
+        Prepare time data for comparison plots.
+
+        :param jsonPaths: List of paths to JSON files.
+        :param attributes: List of attributes to consider (default [3, 6, 9]).
+        :return: (timeDicts, maxRowsList, maxTimeList)
         """
         timeDicts = []
         all_max_rows = []
@@ -97,6 +100,13 @@ class LatexMaker:
         return timeDicts, maxRowsList, maxTimeList
 
     def roundToNearestN(value, n):
+        """
+        Round the given value to the nearest multiple of (n-1).
+
+        :param value: The value to round.
+        :param n: The reference number; rounding is done to a multiple of (n-1).
+        :return: The rounded value.
+        """
         if value == 0:
             return 0
         return round(value / (n - 1)) * (n - 1)
@@ -104,7 +114,19 @@ class LatexMaker:
     def twoAlgoComparaison369Latex(self, timeDict1, timeDict2, maxRowsList, maxTimeList, algo1, algo2,
                                    latexFilePath="", scaleX=280, scaleY=280, attributes=[3, 6, 9]):
         """
-        Generate clean and well-indented LaTeX code to compare two algorithms for multiple attributes.
+        Generate clean and well-indented LaTeX code to compare two algorithms across multiple attributes
+        (typically for 3, 6, and 9 attributes), with linear scaling for axes.
+
+        :param timeDict1: Time dictionary for the first algorithm.
+        :param timeDict2: Time dictionary for the second algorithm.
+        :param maxRowsList: List containing the maximum cardinality for each attribute configuration.
+        :param maxTimeList: List containing the maximum execution time for each attribute configuration.
+        :param algo1: Enum member (AlgoEnum) representing the first algorithm to compare.
+        :param algo2: Enum member (AlgoEnum) representing the second algorithm to compare.
+        :param latexFilePath: Path to save the generated LaTeX file (relative or absolute).
+        :param scaleX: Width of the graph in points (default is 280pt).
+        :param scaleY: Height of the graph in points (default is 280pt).
+        :param attributes: List of attribute counts to compare (default is [3, 6, 9]).
         """
         self.path += latexFilePath
         algo1_name = algo1.value[0]
@@ -215,7 +237,20 @@ class LatexMaker:
                                       latexFilePath="", scaleX=280, scaleY=280, attributes=[3, 6, 9],
                                       scaleType="LinX/LinY"):
         """
-        Generate LaTeX code to compare two algorithms for multiple attributes, with options for linear or logarithmic scaling.
+        Generate LaTeX code to compare two algorithms across multiple attributes (3, 6, 9),
+        with optional logarithmic or linear scaling on the X and/or Y axes.
+
+        :param timeDict1: Time dictionary for the first algorithm.
+        :param timeDict2: Time dictionary for the second algorithm.
+        :param maxRowsList: List of maximum cardinalities (number of rows) for each attribute.
+        :param maxTimeList: List of maximum execution times for each attribute.
+        :param algo1: Enum value (AlgoEnum) corresponding to the first algorithm.
+        :param algo2: Enum value (AlgoEnum) corresponding to the second algorithm.
+        :param latexFilePath: Path where the LaTeX output file will be saved.
+        :param scaleX: Width of the plot in points (default 280).
+        :param scaleY: Height of the plot in points (default 280).
+        :param attributes: List of attributes (typically [3, 6, 9]) to generate the plots for.
+        :param scaleType: Scaling type for axes, can be "LinX/LinY", "LogX/LinY", "LinX/LogY", or "LogX/LogY".
         """
         self.path += latexFilePath
         algo1_name = algo1.value[0]
@@ -358,7 +393,22 @@ class LatexMaker:
         """
         Generate LaTeX code to compare three algorithms across multiple attributes
         with optional logarithmic scaling for X and/or Y axes.
+
+        :param timeDict1: Time dictionary for the first algorithm.
+        :param timeDict2: Time dictionary for the second algorithm.
+        :param timeDict3: Time dictionary for the third algorithm.
+        :param maxRowsList: List of maximum row counts per attribute (3, 6, 9).
+        :param maxTimeList: List of maximum execution times per attribute (3, 6, 9).
+        :param algo1: Enum value (AlgoEnum) corresponding to the first algorithm.
+        :param algo2: Enum value (AlgoEnum) corresponding to the second algorithm.
+        :param algo3: Enum value (AlgoEnum) corresponding to the third algorithm.
+        :param latexFilePath: Output path where the generated LaTeX file will be saved.
+        :param scaleX: Width of the generated graph (in pt, default 280).
+        :param scaleY: Height of the generated graph (in pt, default 280).
+        :param attributes: List of attributes to generate graphs for (default [3, 6, 9]).
+        :param scaleType: Type of scaling on X and Y axes ("LinX/LinY", "LogX/LinY", "LinX/LogY", or "LogX/LogY").
         """
+
         self.path += latexFilePath
         algo_names = [algo1.value[0], algo2.value[0], algo3.value[0]]
         timeDicts = [timeDict1, timeDict2, timeDict3]
@@ -483,11 +533,23 @@ class LatexMaker:
         self.render()
 
     def threeAlgoComparaison369Latex(self, timeDict1, timeDict2, timeDict3, maxRowsList, maxTimeList, algo1, algo2,
-                                     algo3, latexFilePath="", scaleX=280, scaleY=280, attributes=[3, 6, 9],
-                                     rounding_multiple=10):
+                                     algo3, latexFilePath="", scaleX=280, scaleY=280, attributes=[3, 6, 9]):
         """
-        Create LaTeX code for comparing three algorithms across 3, 6, 9 attributes,
-        with separate scaling per graph.
+        Generate LaTeX code for comparing three algorithms across 3, 6, and 9 attributes
+        with separate graphs for each attribute.
+
+        :param timeDict1: Time dictionary for the first algorithm.
+        :param timeDict2: Time dictionary for the second algorithm.
+        :param timeDict3: Time dictionary for the third algorithm.
+        :param maxRowsList: List of maximum row counts for each attribute (3, 6, 9).
+        :param maxTimeList: List of maximum execution times for each attribute (3, 6, 9).
+        :param algo1: Enum value (AlgoEnum) of the first algorithm.
+        :param algo2: Enum value (AlgoEnum) of the second algorithm.
+        :param algo3: Enum value (AlgoEnum) of the third algorithm.
+        :param latexFilePath: Output path where the LaTeX file will be saved.
+        :param scaleX: Width of the chart in points (default is 280).
+        :param scaleY: Height of the chart in points (default is 280).
+        :param attributes: List of attributes to generate the graphs for (default [3, 6, 9]).
         """
         self.path += latexFilePath
         algo_names = [algo1.value[0], algo2.value[0], algo3.value[0]]
@@ -603,15 +665,24 @@ class LatexMaker:
         self.render()
 
     def fiveAlgoComparaison369Latex(self, timeDicts, maxRowsList, maxTimeList, algos, latexFilePath="", scaleX=280,
-                                    scaleY=280, attributes=[3, 6, 9], rounding_multiple=10):
+                                    scaleY=280, attributes=[3, 6, 9]):
         """
-        Create LaTeX code for comparing five algorithms across 3, 6, 9 attributes,
-        with separate scaling per graph.
+        Create LaTeX code to compare five algorithms across 3, 6, and 9 attributes,
+        each plotted separately.
+
+        :param timeDicts: List of time dictionaries for each algorithm.
+        :param maxRowsList: List of maximum cardinalities (rows) for each attribute set.
+        :param maxTimeList: List of maximum execution times for each attribute set.
+        :param algos: List of algorithm enums (AlgoEnum) representing each algorithm.
+        :param latexFilePath: Path to the output LaTeX file.
+        :param scaleX: Width of the plot in points (default 280).
+        :param scaleY: Height of the plot in points (default 280).
+        :param attributes: List of attributes (default [3, 6, 9]) for which the comparison is made.
         """
         self.path += latexFilePath
         algo_names = [algo.value[0] for algo in algos]
 
-        # Define color styles with format
+        # Define color styles
         color_styles = []
         for color in self.colors[:5]:
             rgb_value, mode = self.get_rgb_value(color)
@@ -630,6 +701,7 @@ class LatexMaker:
             r"\begin{document}"
         ]
 
+        # Loop over each attribute set (3, 6, 9 attributes)
         for i, attr in enumerate(attributes):
             maxRows = maxRowsList[i]
             maxTime = roundtoNearestThousand(maxTimeList[i])
@@ -641,6 +713,7 @@ class LatexMaker:
             lines = []
             points = []
 
+            # Draw lines and points for each algorithm
             for j, timeDict in enumerate(timeDicts):
                 color = self.colors[j]
                 line = f"\\draw[{color}, line width=2pt]"
@@ -654,7 +727,7 @@ class LatexMaker:
                 lines.append(line)
                 points.append(point_set)
 
-            # X-axis ticks
+            # Generate X-axis graduations
             x_axis = "        \\foreach \\x/\\xtext in {\n"
             for step in [scaleX * s / 5 for s in range(6)]:
                 value = round(maxRows * (step / scaleX), 1)
@@ -662,7 +735,7 @@ class LatexMaker:
             x_axis = x_axis.rstrip(", \n") + "} {\n"
             x_axis += "            \\draw (\\x, 2pt) -- (\\x, -2pt) node[below] {\\xtext\\strut};\n        }"
 
-            # Y-axis ticks (maxTime à 80% hauteur)
+            # Generate Y-axis graduations
             y_axis = "        \\foreach \\y/\\ytext in {\n"
             for step in range(8):
                 pos = int(round(heightMaxTick * (step / 7)))
@@ -671,6 +744,7 @@ class LatexMaker:
             y_axis = y_axis.rstrip(", \n") + "} {\n"
             y_axis += "            \\draw (2pt, \\y) -- (-2pt, \\y) node[left] {\\ytext\\strut};\n        }"
 
+            # Construct TikZ picture block
             tikz_block = [
                 f"    % Graph for {attr} attributes",
                 r"    \begin{tikzpicture}[",
@@ -703,22 +777,35 @@ class LatexMaker:
             latex_lines.extend(tikz_block)
 
         latex_lines.append(r"\end{document}")
+
+        # Finalize and render LaTeX
         self.latexCode = "\n".join(latex_lines)
         self.addLatexCode(self.latexCode)
         self.render()
 
     def coskySqlComparaisonLatex(self, timeDict, maxRows, maxTime, latexFilePath, scaleX=280, scaleY=280):
+        """
+        Create a LaTeX document that plots the execution time of CoSky SQL queries
+        across 3, 6, and 9 attributes on a 2D graph.
+
+        :param timeDict: Dictionary containing execution times by number of rows.
+        :param maxRows: Maximum number of rows considered.
+        :param maxTime: Maximum execution time observed.
+        :param latexFilePath: Path where the resulting LaTeX file will be saved.
+        :param scaleX: Width of the graph in points (default 280pt).
+        :param scaleY: Height of the graph in points (default 280pt).
+        """
         self.path += latexFilePath
 
         attributes = [3, 6, 9]
         colors = self.colors[:3]
         attr_names = ["3 attributes", "6 attributes", "9 attributes"]
 
-        # Nettoyage et tri des clés
+        # Clean and sort the dictionary keys
         time_dict_clean = {int(k): v for k, v in timeDict.items()}
         time_dict_clean = dict(sorted(time_dict_clean.items()))
 
-        # Trouver le plus grand temps Y toutes colonnes confondues
+        # Find the maximum Y value across all columns
         global_max_time = max(
             max(float(row[i]) for row in time_dict_clean.values())
             for i in range(3)
@@ -729,6 +816,7 @@ class LatexMaker:
         ratio_y = heightMaxTick / global_max_time_rounded
         ratio_x = scaleX / max(time_dict_clean.keys())
 
+        # Start LaTeX code
         self.latexCode = r"""\documentclass{article}
     \usepackage[utf8]{inputenc}
     \usepackage{tikz}
@@ -751,13 +839,13 @@ class LatexMaker:
                 bigskybluenode/.style={shape=circle, fill=skyblue, draw=black, line width=1pt}]
     """
 
-        # Axes
+        # Draw axes
         self.latexCode += f"""        % Axes
             \\draw[-stealth] (0pt, 0pt) -- ({scaleX}pt, 0pt) node[anchor=north west, yshift=15pt] {{Cardinality}};
             \\draw[-stealth] (0pt, 0pt) -- (0pt, {scaleY}pt) node[anchor=south] {{Response time in s}};
     """
 
-        # Graduation X
+        # Draw X-axis graduations
         self.latexCode += "        % X-axis ticks\n"
         self.latexCode += "        \\foreach \\x/\\xtext in {\n"
         for i in range(6):
@@ -767,7 +855,7 @@ class LatexMaker:
         self.latexCode = self.latexCode.rstrip(",\n") + "} {\n"
         self.latexCode += "            \\draw (\\x, 2pt) -- (\\x, -2pt) node[below] {\\xtext\\strut};\n        }\n"
 
-        # Graduation Y (commune à tous)
+        # Draw Y-axis graduations
         self.latexCode += "        % Y-axis ticks\n"
         self.latexCode += "        \\foreach \\y/\\ytext in {\n"
         for s in range(6):
@@ -777,7 +865,7 @@ class LatexMaker:
         self.latexCode = self.latexCode.rstrip(",\n") + "} {\n"
         self.latexCode += "            \\draw (2pt, \\y) -- (-2pt, \\y) node[left] {\\ytext\\strut};\n        }\n"
 
-        # Courbes et points
+        # Draw curves and points
         for i in range(3):
             color = colors[i]
             line = f"        \\draw[{color}, line width=2pt]"
@@ -789,7 +877,7 @@ class LatexMaker:
                 points += f"        \\filldraw[color=black, fill={color}] ({x}pt, {y}pt) circle (2pt);\n"
             self.latexCode += line.rstrip(" --") + ";\n" + points + "\n"
 
-        # Légende
+        # Legend
         self.latexCode += r"""        % Caption
             \matrix [below left] at (current bounding box.north east) {
     """
@@ -808,8 +896,14 @@ class LatexMaker:
 
     def CoskyComparaisonNColumn(self, column, scaleX=300, scaleY=300, scaleType="LinX/LinY"):
         """
-        Create LaTeX code for CoSky SQL with 'column' attributes,
-        with support for scientific/logarithmic X and/or Y axes.
+        Create a LaTeX file that draws a single graph for CoSky SQL algorithm with a given number of attributes (3, 6, or 9).
+
+        Supports both linear and logarithmic axis scaling.
+
+        :param column: Number of attributes (must be 3, 6, or 9).
+        :param scaleX: Width of the graph in points (default 300pt).
+        :param scaleY: Height of the graph in points (default 300pt).
+        :param scaleType: String to specify scaling ('LinX/LinY', 'LogX/LogY', etc.).
         """
         import math, json
 
@@ -840,6 +934,7 @@ class LatexMaker:
         ratio_x = scaleX / math.log(maxRows + 1) if is_log_x else scaleX / maxRows
         ratio_y = heightMaxTick / math.log(maxTime + 1) if is_log_y else heightMaxTick / maxTime
 
+        # Start LaTeX document
         self.latexCode = r"""\documentclass{article}
     \usepackage[utf8]{inputenc}
     \usepackage[T1]{fontenc}
@@ -866,9 +961,9 @@ class LatexMaker:
                 % Axes
                 \draw[-stealth] (0pt, 0pt) -- (""" + str(scaleX) + r"""pt, 0pt) node[anchor=north west, yshift=15pt] {Cardinality};
                 \draw[-stealth] (0pt, 0pt) -- (0pt, """ + str(scaleY) + r"""pt) node[anchor=south] {Response time (s)};
-
                 % X-axis ticks
     """
+        # Generate X-axis graduations
         tick_count = 6
         self.latexCode += "            \\foreach \\x/\\xtext in {\n"
         for i in range(tick_count + 1):
@@ -891,7 +986,7 @@ class LatexMaker:
         self.latexCode = self.latexCode.rstrip(",\n") + "} {\n"
         self.latexCode += "                \\draw (\\x, 2pt) -- (\\x, -2pt) node[below] {\\xtext\\strut};\n            }\n"
 
-        # Y-axis ticks
+        # Generate Y-axis graduations
         y_steps = 6
         self.latexCode += "\n            % Y-axis ticks\n"
         self.latexCode += "            \\foreach \\y/\\ytext in {\n"
@@ -909,7 +1004,7 @@ class LatexMaker:
         self.latexCode = self.latexCode.rstrip(",\n") + "} {\n"
         self.latexCode += "                \\draw (2pt, \\y) -- (-2pt, \\y) node[left] {\\ytext\\strut};\n            }\n"
 
-        # Curve and points
+        # Draw the curve and points
         self.latexCode += "\n            % Curve and points\n"
         line = f"            \\draw[skyblue, line width=2pt]"
         points = ""
@@ -942,24 +1037,60 @@ class LatexMaker:
 
 
 def roundtoNearestThousand(value):
+    """
+    Round the given value to the nearest thousand.
+
+    :param value: The value to round.
+    :return: Rounded value.
+    """
     if value == 0:
         return 0
     return round(value / 1000) * 1000
 
+
 def round_up_to_multiple(value, multiple):
+    """
+    Round up the given value to the next multiple of 'multiple'.
+
+    :param value: The value to round.
+    :param multiple: The multiple to round up to.
+    :return: Rounded value.
+    """
     return int(math.ceil(value / multiple) * multiple)
 
+
 def roundtoNearestTen(value):
+    """
+    Round the given value to the nearest ten.
+
+    :param value: The value to round.
+    :return: Rounded value.
+    """
     if value == 0:
         return 0
     return round(value / 10) * 10
 
+
 def roundToNearestN(value, n):
+    """
+    Round the given value to the nearest N.
+
+    :param value: The value to round.
+    :param n: The nearest number to round to.
+    :return: Rounded value.
+    """
     if value == 0:
         return 0
     return round(value / (n - 1)) * (n - 1)
 
+
 def smart_roundup(value):
+    """
+    Smartly round up a value to a "nice" upper bound (for axis scaling purposes).
+
+    :param value: The value to round up.
+    :return: Rounded up value.
+    """
     if value == 0:
         return 10
     magnitude = 10 ** (len(str(int(value))) - 1)
@@ -967,13 +1098,12 @@ def smart_roundup(value):
     return base
 
 
-
 if __name__ == "__main__":
     coskyLatex = LatexMaker()
     path = "../../Assets/LatexData/OneAlgoData/CoskySql/ThreeColumnsData/"
 
+    # Generate a LaTeX file for CoskySQL with 3, 6, and 9 attributes
     timeDict, maxRow, maxTime = coskyLatex.getData(path + "ExecutionCoskySql369.json")
-
     coskyLatex.coskySqlComparaisonLatex(
         timeDict,
         maxRow,
@@ -983,51 +1113,10 @@ if __name__ == "__main__":
         scaleY=280
     )
 
-    """timeDict, maxRow, maxTime = coskyLatex.getData(path + "OneAlgoData/ExecutionCoskySql369.json")
-    coskyLatex.coskySqlComparaisonLatex(
-        timeDict,
-        maxRow,
-        maxTime,
-        latexFilePath="OneAlgoComparaison/CoskySql369.tex",
-        scaleX=280,
-        scaleY=280
-    )"""
+    print_red("1./ Compare three algorithms")
+    print_red("2./ Compare two algorithms")
 
-
-
-    """timeDicts, maxRowsList, maxTimeList = coskyLatex.prepareComparisonData(
-        [
-            path + "OneAlgoData/ExecutionCoskySql369.json",
-            path + "OneAlgoData/ExecutionCoskyAlgo369.json",
-            path + "OneAlgoData/ExecutionRankSky369.json"
-        ]
-    )
-    beauty_print("maxRowsList", maxRowsList)
-    beauty_print("maxTimeList", maxTimeList)
-    timeDict1 = timeDicts[0]
-    timeDict2 = timeDicts[1]
-    timeDict3 = timeDicts[2]
-    algo1 = AlgoEnum.CoskySql
-    algo2 = AlgoEnum.CoskyAlgorithme
-    algo3 = AlgoEnum.RankSky
-    coskyLatex.threeAlgoComparaison369LatexLog(
-        timeDict1,
-        timeDict2,
-        timeDict3,
-        maxRowsList,
-        maxTimeList,
-        algo1,
-        algo2,
-        algo3,
-        latexFilePath="ThreeAlgosComparaison/CoskySqlAlgoRankSkyLinLog.tex",
-        attributes=[3, 6, 9],
-        scaleType="LinX/LogY",
-    )"""
-
-    print_red("1./ Comparaison de trois algorithmes")
-    print_red("2./ Comparaison de deux algorithmes")
-
-    a = input("Choix: ")
+    a = input("Choice: ")
     if a == "1":
         json_paths = [
             path + "OneAlgoData/ExecutionCoskySql369.json",
@@ -1050,10 +1139,7 @@ if __name__ == "__main__":
             path + "OneAlgoData/ExecutionCoskyAlgo369.json"
         ]
 
-        # Appelle ta méthode utilitaire
         timeDicts, maxRowsList, maxTimeList = coskyLatex.prepareComparisonData(json_paths)
-
-        # Puis appelle la fonction d'affichage
         coskyLatex.twoAlgoComparaison369Latex(
             timeDicts[0],
             timeDicts[1],
@@ -1068,20 +1154,14 @@ if __name__ == "__main__":
             path + "OneAlgoData/ExecutionCoskySql369.json",
             path + "OneAlgoData/ExecutionCoskyAlgo369.json"
         ]
-
-        # Appelle ta méthode utilitaire
         timeDicts, maxRowsList, maxTimeList = coskyLatex.prepareComparisonData(json_paths)
-        timeDict1 = timeDicts[0]
-        timeDict2 = timeDicts[1]
-        algo1 = AlgoEnum.CoskySql
-        algo2 = AlgoEnum.CoskyAlgorithme
         coskyLatex.twoAlgoComparaison369LatexLog(
-            timeDict1,
-            timeDict2,
+            timeDicts[0],
+            timeDicts[1],
             maxRowsList,
             maxTimeList,
-            algo1,
-            algo2,
+            AlgoEnum.CoskySql,
+            AlgoEnum.CoskyAlgorithme,
             latexFilePath="twoAlgosComparaison/CoskySqlAlgo369LogLogAxes.tex",
             scaleType="LinX/LogY",
         )
@@ -1093,21 +1173,19 @@ if __name__ == "__main__":
             path + "OneAlgoData/OneColumnData/ExecutionDpIdpDh3.json",
             path + "OneAlgoData/OneColumnData/ExecutionSkyIR3.json"
         ]
-        # Appelle ta méthode utilitaire
         timeDicts, maxRowsList, maxTimeList = coskyLatex.prepareComparisonData(json_paths, attributes=[3])
-        algo1 = AlgoEnum.CoskySql
-        algo2 = AlgoEnum.CoskyAlgorithme
-        algo3 = AlgoEnum.RankSky
-        algo4 = AlgoEnum.DpIdpDh
-        algo5 = AlgoEnum.SkyIR
-        algos = [algo1, algo2, algo3, algo4, algo5]
+        algos = [
+            AlgoEnum.CoskySql,
+            AlgoEnum.CoskyAlgorithme,
+            AlgoEnum.RankSky,
+            AlgoEnum.DpIdpDh,
+            AlgoEnum.SkyIR
+        ]
         coskyLatex.fiveAlgoComparaison369Latex(
             timeDicts,
             maxRowsList,
             maxTimeList,
             algos,
             latexFilePath="FiveAlgosComparaison/CoskySqlAlgoRankSkyDpIdpDhSkyIR369.tex",
-            attributes = [3]
+            attributes=[3]
         )
-
-

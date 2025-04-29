@@ -2,10 +2,25 @@ import csv
 import os
 
 class CsvExporterImpl:
+    """
+    Concrete implementation to export the execution time results into a CSV file
+    for different numbers of attributes (3, 6, 9).
+    """
+
     def __init__(self, output_path="Results.csv"):
+        """
+        Constructor of CsvExporterImpl.
+
+        :param output_path: The path where the CSV file will be saved (default is "Results.csv").
+        """
         self.output_path = output_path
 
     def export(self, app):
+        """
+        Export the time information from the App instance into the CSV file.
+
+        :param app: The App instance containing the algorithm execution results.
+        """
         algo_instance = app.algo_instance
         algo_name = app.algo
 
@@ -23,18 +38,22 @@ class CsvExporterImpl:
 
     def exportTimePoint(self, cardinality, time, attributes):
         """
-        Exporte un seul point (cardinality, time) dans la colonne correcte (selon nb d'attributs 3, 6 ou 9).
-        Les colonnes non concernées restent vides.
+        Export a single point (cardinality, execution time) to the appropriate column
+        based on the number of attributes (3, 6, or 9). Other columns are left empty.
+
+        :param cardinality: The number of tuples in the dataset.
+        :param time: The execution time in seconds.
+        :param attributes: The number of attributes (must be 3, 6, or 9).
+        :raises ValueError: If the number of attributes is not 3, 6, or 9.
         """
         if attributes not in (3, 6, 9):
             raise ValueError("Unsupported attribute count. Expected 3, 6, or 9.")
 
-        # Prépare une ligne CSV au format : cardinality, time_attr3, time_attr6, time_attr9
+        # Prepare a CSV row: cardinality, time_attr3, time_attr6, time_attr9
         time_attr3 = time if attributes == 3 else ""
         time_attr6 = time if attributes == 6 else ""
         time_attr9 = time if attributes == 9 else ""
 
-        # Si le fichier n'existe pas, on crée l'en-tête
         header = ["cardinality", "time_attr3", "time_attr6", "time_attr9"]
         file_exists = os.path.isfile(self.output_path)
 

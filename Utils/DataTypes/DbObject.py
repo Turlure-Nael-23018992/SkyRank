@@ -6,11 +6,13 @@ class DbObject:
     def __init__(self, fp):
         """
         Initialize the database object.
+
         :param fp: Path to the database file.
         """
         self.fp = fp
 
-    def __name__(self):
+    @staticmethod
+    def __name__():
         """
         Return the name of the class.
         """

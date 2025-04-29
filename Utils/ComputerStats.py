@@ -3,13 +3,17 @@ import GPUtil
 from tabulate import tabulate
 
 def display_pc_stats():
-    # Retrieve information about the RAM
-    mem = psutil.virtual_memory()
-    ram_total = mem.total / (1024 ** 3)  # Convert to GB
-    ram_used = mem.used / (1024 ** 3)  # Convert to GB
-    ram_free = mem.available / (1024 ** 3)  # Convert to GB
+    """
+    Display detailed statistics about the PC hardware, including RAM, CPU, and GPU information.
+    """
 
-    # Retrieve information about the processor
+    # Retrieve RAM information
+    mem = psutil.virtual_memory()
+    ram_total = mem.total / (1024 ** 3)  # Convert bytes to GB
+    ram_used = mem.used / (1024 ** 3)    # Convert bytes to GB
+    ram_free = mem.available / (1024 ** 3)  # Convert bytes to GB
+
+    # Retrieve CPU information
     cpu_logical_cores = psutil.cpu_count()
     cpu_physical_cores = psutil.cpu_count(logical=False)
     cpu_freq = psutil.cpu_freq()
@@ -18,7 +22,7 @@ def display_pc_stats():
     cpu_freq_current = cpu_freq.current
     cpu_usage = psutil.cpu_percent(interval=1)
 
-    # Retrieve information about the GPU
+    # Retrieve GPU information
     gpus = GPUtil.getGPUs()
     gpu_info = []
     for gpu in gpus:
@@ -32,7 +36,7 @@ def display_pc_stats():
             "temperature": f"{gpu.temperature} °C"
         })
 
-    # Display information in a tabular format
+    # Display RAM information
     print("RAM:")
     ram_table = [
         ["Total", f"{ram_total:.2f} GB"],
@@ -41,6 +45,7 @@ def display_pc_stats():
     ]
     print(tabulate(ram_table, headers=["Type", "Value"], tablefmt="grid"))
 
+    # Display CPU information
     print("\nProcessor:")
     cpu_table = [
         ["Logical Cores", cpu_logical_cores],
@@ -52,6 +57,7 @@ def display_pc_stats():
     ]
     print(tabulate(cpu_table, headers=["Type", "Value"], tablefmt="grid"))
 
+    # Display GPU information
     if gpu_info:
         print("\nGPU:")
         gpu_table = []
@@ -69,56 +75,57 @@ def display_pc_stats():
     else:
         print("\nGPU: No GPU detected")
 
-# Call the function to display PC stats
+# Call the function to display all PC statistics
 display_pc_stats()
 
+# --- Notes ---
 
+# Command to compile a C++ file into a shared library (for use in Python):
+# g++ -shared -o liblm.so -fPIC C:\Users\Julie\Documents\Pro\Prog\Python\CoSky\CoSky\Utils\dpidp_cpp.cpp
 
-#g++ -shared -o liblm.so -fPIC C:\Users\Julie\Documents\Pro\Prog\Python\CoSky\CoSky\Utils\dpidp_cpp.cpp
-
-
-#"D:\Documents\Documents\Pro\Prog\Python\pypy3.9-v7.3.11-win64\pypy3.9-v7.3.11-win64\python3.9.exe" C:\Users\Julie\Documents\Pro\Prog\Python\CoSky\CoSky\Algorithms\DP_IDP_cpp.py
-
-#"D:\Documents\Documents\Pro\Prog\Python\pypy3.9-v7.3.11-win64\pypy3.9-v7.3.11-win64\python3.9.exe" AppRun.py
-#"D:\Documents\Documents\Pro\Prog\Python\pypy3.9-v7.3.11-win64\pypy3.9-v7.3.11-win64\python3.9.exe" C:\Users\Julie\Documents\Pro\Prog\Python\CoSky\CoSky\Algorithms\DP_IDP.py
+# Example of how to execute Python scripts with PyPy interpreter:
+# "D:\Documents\Documents\Pro\Prog\Python\pypy3.9-v7.3.11-win64\pypy3.9-v7.3.11-win64\python3.9.exe" C:\Users\Julie\Documents\Pro\Prog\Python\CoSky\CoSky\Algorithms\DP_IDP_cpp.py
+# "D:\Documents\Documents\Pro\Prog\Python\pypy3.9-v7.3.11-win64\pypy3.9-v7.3.11-win64\python3.9.exe" AppRun.py
+# "D:\Documents\Documents\Pro\Prog\Python\pypy3.9-v7.3.11-win64\pypy3.9-v7.3.11-win64\python3.9.exe" C:\Users\Julie\Documents\Pro\Prog\Python\CoSky\CoSky\Algorithms\DP_IDP.py
 
 """
+--- Example of benchmark results (500 and 1000 iterations) ---
 
 [500] iterations...
-        ALGO [SkyIR]
-        ALGO [DP_IDP]
+    ALGO [SkyIR]
+    ALGO [DP_IDP]
+    ALGO [CoskySQL]
+    ALGO [CoskyAlgorithme]
 
-        ALGO [CoskySQL]
-        ALGO [CoskyAlgorithme]
-        [SkyIR]:
-                [temps]:1.0662 s
-                [temps/samples]:0.0021324877738952636
-        [DP_IDP]:
-                [temps]:8.1627 s
-                [temps/samples]:0.016325428009033204
-        [CoskySQL]:
-                [temps]:0.007 s
-                [temps/samples]:1.3994216918945312e-05
-        [CoskyAlgorithme]:
-                [temps]:0.012 s
-                [temps/samples]:2.40020751953125e-05
+    [SkyIR]:
+        [Time]: 1.0662 s
+        [Time/sample]: 0.0021324877738952636
+    [DP_IDP]:
+        [Time]: 8.1627 s
+        [Time/sample]: 0.016325428009033204
+    [CoskySQL]:
+        [Time]: 0.007 s
+        [Time/sample]: 1.3994216918945312e-05
+    [CoskyAlgorithme]:
+        [Time]: 0.012 s
+        [Time/sample]: 2.40020751953125e-05
+
 [1000] iterations...
-        ALGO [SkyIR]
-        ALGO [DP_IDP]
+    ALGO [SkyIR]
+    ALGO [DP_IDP]
+    ALGO [CoskySQL]
+    ALGO [CoskyAlgorithme]
 
-        ALGO [CoskySQL]
-        ALGO [CoskyAlgorithme]
-        [SkyIR]:
-                [temps]:10.6366 s
-                [temps/samples]:0.01063663411140442
-        [DP_IDP]:
-                [temps]:1mins - 2secs
-                [temps/samples]:0.062197747945785524
-        [CoskySQL]:
-                [temps]:0.013 s
-                [temps/samples]:1.2959957122802734e-05
-        [CoskyAlgorithme]:
-                [temps]:0.064 s
-                [temps/samples]:6.399798393249512e-05
-
+    [SkyIR]:
+        [Time]: 10.6366 s
+        [Time/sample]: 0.01063663411140442
+    [DP_IDP]:
+        [Time]: 1min - 2s
+        [Time/sample]: 0.062197747945785524
+    [CoskySQL]:
+        [Time]: 0.013 s
+        [Time/sample]: 1.2959957122802734e-05
+    [CoskyAlgorithme]:
+        [Time]: 0.064 s
+        [Time/sample]: 6.399798393249512e-05
 """

@@ -19,6 +19,7 @@ from Utils.Preference import Preference
 from Utils.DataModifier.JsonUtils import readJson, writeJson, sortJson, addServerConfigToJson
 from Algorithms.SkyIR import SkyIR
 
+# Constants for row scaling
 ROWS_RATIO_MULT = pow(10, 3)
 ROWS_RATIO_UNITS = [1, 2, 5, 10]
 ROWS_RATIO = [x * ROWS_RATIO_MULT for x in ROWS_RATIO_UNITS]
@@ -26,10 +27,15 @@ ROWS_RATIO = [x * ROWS_RATIO_MULT for x in ROWS_RATIO_UNITS]
 
 class AlgoCalculator:
     """
-    Class to calculate the response time of the algorithms
+    Class to calculate and store the response time of different Skyline algorithms.
     """
 
-    def __init__(self, db_filepath):
+    def __init__(self, db_filepath: str):
+        """
+        Initialize the AlgoCalculator with the given database filepath.
+
+        :param db_filepath: Path to the SQLite database.
+        """
         self.conn = sqlite3.connect(db_filepath)
         self.cursor = self.conn.cursor()
         self.latexMaker = LatexMaker()
@@ -41,23 +47,28 @@ class AlgoCalculator:
 
     def select_all(self):
         """
-        Select all records from the table
+        Select and return all records from the configured database table.
         """
         sql_query = f"SELECT * FROM {self.tableName}"
         self.cursor.execute(sql_query)
         return self.cursor.fetchall()
 
-    def compareExecutionTime(self, algo, fp, cols=[], rows=[]):
+    def compareExecutionTime(self, algo, fp: str, cols=None, rows=None):
         """
-        Compare the execution time of an algorithm on several databases of different sizes
+        Measure and store the execution time of a given algorithm on several databases of different sizes.
+
+        :param algo: The algorithm class to execute (e.g., CoskySQL, RankSky, etc.)
+        :param fp: The JSON file path where execution times should be stored.
+        :param cols: List of column numbers (default: [3,6,9]).
+        :param rows: List of row numbers (default: common experimental settings).
         """
         print(algo)
-        if cols == []:
+        if not cols:
             cols = self.cols
-        if rows == []:
+        if not rows:
             rows = self.rows
 
-        print("row : ", rows)
+        print("rows : ", rows)
         print("cols : ", cols)
 
         time_dict = {k: [0 for i in range(len(self.cols))] for k in self.rows}
@@ -68,6 +79,7 @@ class AlgoCalculator:
 
         root_databases = fr"..\..\Assets\databases"
         i = -1
+
         for col in cols:
             i += 1
             for row in rows:
@@ -77,6 +89,7 @@ class AlgoCalculator:
                 beauty_print("Database path ", database_filepath)
 
                 time_calc = None
+
                 if algo_name == "CoskySQL":
                     time_calc = TimeCalc(row, algo_name)
                     algo_obj = algo(database_filepath)
@@ -155,6 +168,7 @@ class AlgoCalculator:
                     "max_rows": max_rows,
                     "max_time": max_time
                 }
+
                 writeJson(fp, dataToSave)
                 addServerConfigToJson(fp, "../../Assets/ServerConfig/ConfigNael.json")
                 sortJson(fp)
@@ -167,6 +181,7 @@ COSKY_SQL_ = "COSKY_SQL"
 CONFIG_DATA = "CONFIG_DATA"
 RANK_SKY = "RANK_SKY"
 
+# Mapping for algorithm names to classes
 MODES = {
     COSKY_ALGO_: CoskyAlgorithme,
     COSKY_SQL_: CoskySQL,
@@ -178,9 +193,9 @@ MODES = {
 
 if __name__ == "__main__":
     calculator = AlgoCalculator("")
-    calculator.compareExecutionTime(
+    """calculator.compareExecutionTime(
         CoskySQL,
         "../../Assets/test.json",
-        cols=[3, 6, 9],
-        rows=[50, 100, 200, 500, 1000, 2000, 5000,10000, 20000, 50000, 200000]
-    )
+        cols=[],
+        rows=[]
+    )"""
