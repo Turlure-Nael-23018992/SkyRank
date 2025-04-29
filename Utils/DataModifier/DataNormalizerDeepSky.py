@@ -4,8 +4,18 @@ from Utils.DataModifier.JsonUtils import readJson
 from Utils.DataModifier.DictToDatabase import DictToDatabase
 
 class DataNormalizerDeepSky:
+    """
+    A utility class to normalize and manipulate relations (datasets)
+    stored either in a database file or JSON file format.
+    """
 
     def __init__(self, r, fp):
+        """
+        Initialize the DataNormalizerDeepSky.
+
+        :param r: A relation represented as a dictionary (key -> tuple of values).
+        :param fp: Path to the database or JSON file.
+        """
         self.relation = r
         self.filepath = fp
         self.conn = sqlite3.connect(self.filepath)
@@ -14,7 +24,7 @@ class DataNormalizerDeepSky:
 
     def fpToRelation(self):
         """
-        Convert the databases to a relation
+        Convert the database into a relation (dictionary format).
         """
         dbToDict = DatabaseToDict(self.filepath)
         self.relation = dbToDict.toDict()
@@ -22,22 +32,24 @@ class DataNormalizerDeepSky:
 
     def jsonToRelation(self):
         """
-        Convert the json to a relation
+        Convert a JSON file into a relation (dictionary format).
         """
         self.relation = readJson(self.filepath, asTuple=True)
 
     def deleteLineDb(self, line):
         """
-        Delete a line from the database
-        :param line: the line to delete
+        Delete a specific row from the database based on its RowId.
+
+        :param line: The RowId of the line to delete.
         """
         self.cursor.execute(f"DELETE FROM {self.tableName} WHERE RowId = {line}")
         self.conn.commit()
 
     def addLinesDb(self, lines):
         """
-        Add lines to the database
-        :param lines: the lines to add
+        Add multiple rows to the database.
+
+        :param lines: A list of lines to insert, where each line is a tuple.
         """
         for line in lines:
             self.cursor.execute(f"INSERT INTO {self.tableName} VALUES ({line[0]}, {line[1]}, {line[2]}, {line[3]})")
@@ -45,7 +57,7 @@ class DataNormalizerDeepSky:
 
     def refreshDb(self):
         """
-        Refresh the database
+        Overwrite and refresh the database content with the current relation.
         """
         dictToDb = DictToDatabase(self.filepath)
         dictToDb.toDatabase(self.relation)
@@ -53,44 +65,44 @@ class DataNormalizerDeepSky:
     @staticmethod
     def beautyPrintDict(r):
         """
-        Print the dictionary in a beautiful way
+        Nicely print a full dictionary with its keys and values.
+
+        :param r: The dictionary to print.
         """
         for key, value in r.items():
             print(f"{key}: {value}")
         print("========================================")
-        print("Longueur de la relation:", len(r))
+        print("Relation size:", len(r))
 
     @staticmethod
     def beautyPrintSkylinePoint(r):
         """
-        Print the skyline points in a beautiful way
-        :param r: the relation
+        Nicely print the keys of a dictionary representing skyline points.
+
+        :param r: The dictionary containing skyline points.
         """
         print("========================================")
-        print("Points du SkyLine:")
+        print("Skyline Points:")
         for key in r.keys():
             print(f"{key}")
         print("========================================")
-        print("Longueur de la relation:", len(r))
+        print("Relation size:", len(r))
         print("========================================")
 
     @staticmethod
     def sortArr(arr):
         """
-        Sort the array in ascending order (in-place).
-        :param arr: The array to sort
-        :return: The sorted array
+        Sort an array in ascending order (modifies the array in-place).
+
+        :param arr: The list to sort.
+        :return: The sorted list (same object).
         """
         return arr.sort()
 
 
-
 if __name__ == "__main__":
-    """fp = "../../Assets/DeepSkyTest.db"
-    jsonfp = "../../Algorithms/Datas/RTuples8.json"
-    r = readJson(jsonfp, asTuple=True)
-    dataNorm = DataNormalizerDeepSky(r, fp)
-    dataNorm.refreshDb()"""
-    tab = [3,1,5,7]
+    """
+    Example usage of DataNormalizerDeepSky.
+    """
+    tab = [3, 1, 5, 7]
     print(DataNormalizerDeepSky.sortArr(tab))
-

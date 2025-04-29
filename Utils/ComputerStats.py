@@ -73,16 +73,16 @@ def display_pc_stats():
 display_pc_stats()
 
 
+
+#g++ -shared -o liblm.so -fPIC C:\Users\Julie\Documents\Pro\Prog\Python\CoSky\CoSky\Utils\dpidp_cpp.cpp
+
+
+#"D:\Documents\Documents\Pro\Prog\Python\pypy3.9-v7.3.11-win64\pypy3.9-v7.3.11-win64\python3.9.exe" C:\Users\Julie\Documents\Pro\Prog\Python\CoSky\CoSky\Algorithms\DP_IDP_cpp.py
+
+#"D:\Documents\Documents\Pro\Prog\Python\pypy3.9-v7.3.11-win64\pypy3.9-v7.3.11-win64\python3.9.exe" AppRun.py
+#"D:\Documents\Documents\Pro\Prog\Python\pypy3.9-v7.3.11-win64\pypy3.9-v7.3.11-win64\python3.9.exe" C:\Users\Julie\Documents\Pro\Prog\Python\CoSky\CoSky\Algorithms\DP_IDP.py
+
 """
-g++ -shared -o liblm.so -fPIC C:\Users\Julie\Documents\Pro\Prog\Python\CoSky\CoSky\Utils\dpidp_cpp.cpp
-
-
-"D:\Documents\Documents\Pro\Prog\Python\pypy3.9-v7.3.11-win64\pypy3.9-v7.3.11-win64\python3.9.exe" C:\Users\Julie\Documents\Pro\Prog\Python\CoSky\CoSky\Algorithms\DP_IDP_cpp.py
-
-"D:\Documents\Documents\Pro\Prog\Python\pypy3.9-v7.3.11-win64\pypy3.9-v7.3.11-win64\python3.9.exe" AppRun.py
-"D:\Documents\Documents\Pro\Prog\Python\pypy3.9-v7.3.11-win64\pypy3.9-v7.3.11-win64\python3.9.exe" C:\Users\Julie\Documents\Pro\Prog\Python\CoSky\CoSky\Algorithms\DP_IDP.py
-
-
 
 [500] iterations...
         ALGO [SkyIR]

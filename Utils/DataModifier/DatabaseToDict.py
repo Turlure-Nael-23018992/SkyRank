@@ -1,14 +1,16 @@
 from Utils.DisplayHelpers import beauty_print
-
 import sqlite3
 
 class DatabaseToDict:
     """
-    Class to convert a database into a dictionary
+    Class to convert a SQLite database table into a Python dictionary.
     """
+
     def __init__(self, databaseFilepath):
         """
-        Constructor of the class
+        Constructor of the class.
+
+        :param databaseFilepath: Path to the SQLite database file.
         """
         self.conn = sqlite3.connect(databaseFilepath)
         self.cursor = self.conn.cursor()
@@ -17,8 +19,9 @@ class DatabaseToDict:
 
     def toDict(self):
         """
-        Convert the database into a dictionary
-        :return: The database as a dictionary
+        Converts the database table into a dictionary.
+
+        :return: A dictionary where keys are RowIds and values are tuples of the row's data.
         """
         sqlQuery = "SELECT * FROM " + self.tableName
         self.cursor.execute(sqlQuery)
@@ -33,8 +36,9 @@ class DatabaseToDict:
 
     def getMax(self):
         """
-        Get the maximum value of the database
-        :return: The maximum value of the database
+        Gets the maximum value across columns Col_A, Col_B, and Col_C.
+
+        :return: The maximum value among Col_A, Col_B, and Col_C.
         """
         sqlQuery = "SELECT MAX(Col_A, Col_B, Col_C) FROM " + self.tableName
         self.cursor.execute(sqlQuery)

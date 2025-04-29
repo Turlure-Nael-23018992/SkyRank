@@ -21,7 +21,7 @@ from Algorithms.CoskyAlgorithme import CoskyAlgorithme
 from Algorithms.DpIdpDh import DpIdpDh
 from Algorithms.RankSky import RankSky
 from Algorithms.SkyIR import SkyIR
-from Styles.StyleManager import StyleManager
+from Core.Styles.StyleManager import StyleManager
 
 
 class AppUI:

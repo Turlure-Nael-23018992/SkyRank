@@ -9,7 +9,9 @@ ffi.cdef("""
 """)
 
 # Charger la bibliothèque partagée
-C = ffi.dlopen(r"\Core\liblm.so")
+#C = ffi.dlopen(r"\Core\liblm.so")
+C = None  # Mock for documentation generation
+
 
 class DP_IDP:
     """

@@ -4,7 +4,7 @@ from queue import PriorityQueue
 
 
 
-from Algorithms.BbsCosky import BBS_COSKY
+from Algorithms.BbsCosky import BbsCosky
 from Utils.DisplayHelpers import beauty_print
 
 

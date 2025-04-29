@@ -5,21 +5,24 @@ from Utils.DataModifier.DatabaseToDict import DatabaseToDict
 
 class DataConverter:
     """
-    A class to convert data between different formats.
+    A utility class for converting data between different formats:
+    JSON, dictionaries (relations), and SQLite database files.
     """
 
     def __init__(self, data):
         """
-        Initialize the DataConverter with data.
-        :param data: Data to be converted.
+        Initializes a DataConverter with the provided data.
+
+        :param data: Can be a dictionary representing a relation, or a path to a JSON/database file.
         """
         self.data = data
         self.DictToDatabase = DictToDatabase("../Assets/AlgoExecution/DbFiles/TestExecution.db")
 
     def jsonToRelation(self):
         """
-        Convert JSON data to a relation.
-        :return: Converted data.
+        Converts a JSON file to a dictionary with tuples (relation format).
+
+        :return: A dictionary where each key maps to a tuple of values.
         """
         data = readJson(self.data)
         data = {k: tuple(v) for k, v in data.items()}
@@ -27,20 +30,24 @@ class DataConverter:
 
     def jsonToDb(self):
         """
-        Convert JSON data to a database format.
+        Converts JSON data into a database.
+        The result is stored in TestExecution.db.
         """
         data = self.jsonToRelation()
         self.DictToDatabase.toDatabase(data)
 
     def relationToDb(self):
         """
-        Convert relation data to a database format.
+        Converts a relation (dictionary) to a database.
+        The result is stored in TestExecution.db.
         """
         self.DictToDatabase.toDatabase(self.data)
 
     def dbToRelation(self):
         """
-        Convert database data to a relation format.
+        Converts data from a database into a dictionary (relation).
+
+        :return: A dictionary representation of the database table.
         """
         databaseToDict = DatabaseToDict(self.data)
         return databaseToDict.toDict()

@@ -1,7 +1,7 @@
 import json
 
 from Utils.DisplayHelpers import print_red
-from AlgoEnum import AlgoEnum
+from Utils.Latex.AlgoEnum import AlgoEnum
 import math
 
 
