@@ -1,6 +1,5 @@
 import json
 import sqlite3
-
 import sys
 import os
 
@@ -17,7 +16,7 @@ from Utils.TimerUtils import TimeCalc
 from Algorithms.RankSky import RankSky
 from Algorithms.DpIdpDh import DpIdpDh
 from Utils.Preference import Preference
-from Utils.DataModifier.JsonUtils import readJson, writeJson, sortJson
+from Utils.DataModifier.JsonUtils import readJson, writeJson, sortJson, addServerConfigToJson
 from Algorithms.SkyIR import SkyIR
 
 ROWS_RATIO_MULT = pow(10, 3)
@@ -37,19 +36,18 @@ class AlgoCalculator:
         self.jsonFilePath = "../Assets/LatexData/"
         self.tableName = "Pokemon"
         self.conn = sqlite3.connect(fr"..\..\Assets\databases\{self.tableName}.db")
-        self.cols = [3,6,9]
-        self.rows = [10,20,50,100,200,500, 1000, 2000,5000, 10000, 20000, 50000, 100000, 200000]#20, 100, 1000, 2000, 5000, 10000, 20000, 50000 , 5000, 10000, 20000, 50000, 100000, 200000
-        #
+        self.cols = [3, 6, 9]
+        self.rows = [10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000]
+
     def select_all(self):
         """
-        Select all
-        :return: All records from the table
+        Select all records from the table
         """
         sql_query = f"SELECT * FROM {self.tableName}"
         self.cursor.execute(sql_query)
         return self.cursor.fetchall()
 
-    def compareExecutionTime(self, algo, fp, cols=[], rows =[]):
+    def compareExecutionTime(self, algo, fp, cols=[], rows=[]):
         """
         Compare the execution time of an algorithm on several databases of different sizes
         """
@@ -58,10 +56,10 @@ class AlgoCalculator:
             cols = self.cols
         if rows == []:
             rows = self.rows
+
         print("row : ", rows)
         print("cols : ", cols)
-        # iterations = [8, 40, 250, 500, 750, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 100000, 200000, 500000]
-        # rows = ROWS_RATIO  # [10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]
+
         time_dict = {k: [0 for i in range(len(self.cols))] for k in self.rows}
         self.jsonFilePath += "ExecutionRankSky369.json"
         max_rows = 0
@@ -73,24 +71,18 @@ class AlgoCalculator:
         for col in cols:
             i += 1
             for row in rows:
-                # beauty_print("Column", col)
-                # beauty_print("Row", rows)
-                # Displays the execution time of each algorithm
-                database_filepath = fr"{root_databases}\cosky_db_C{col}_R{row}.db"  # Retrieve the path
-                # The name of the algorithm class
+                database_filepath = fr"{root_databases}\cosky_db_C{col}_R{row}.db"
                 algo_name = algo.__name__
                 beauty_print("Algorithm name ", algo_name)
                 beauty_print("Database path ", database_filepath)
-                # For the SQL algorithm, add the connection object to the arguments
+
                 time_calc = None
                 if algo_name == "CoskySQL":
-                    # Need a database path
                     time_calc = TimeCalc(row, algo_name)
                     algo_obj = algo(database_filepath)
                     time_calc.stop()
 
                 elif algo_name == "SkyIR":
-                    # Needs a data dictionary
                     sel = AlgoCalculator(database_filepath)
                     r = DataParser(sel.select_all()).r_dict
                     time_calc = TimeCalc(row, algo_name)
@@ -98,7 +90,6 @@ class AlgoCalculator:
                     time_calc.stop()
 
                 elif algo_name == "CoskyAlgorithme":
-                    # Needs a data dictionary
                     sel = AlgoCalculator(database_filepath)
                     r = DataParser(sel.select_all()).r_dict
                     time_calc = TimeCalc(row, algo_name)
@@ -110,7 +101,7 @@ class AlgoCalculator:
                     r = DataParser(sel.select_all()).r_dict
                     print("algo lancé")
                     time_calc = TimeCalc(row, algo_name)
-                    algo_obj = algo(r,pref)
+                    algo_obj = algo(r, pref)
                     time_calc.stop()
 
                 elif algo_name == "DpIdpDh":
@@ -118,20 +109,20 @@ class AlgoCalculator:
                     r = DataParser(sel.select_all()).r_dict
                     print("algo lancé")
                     time_calc = TimeCalc(row, algo_name)
-                    print("zzz")
                     algo_obj = algo(r)
                     time_calc.stop()
-                # Retrieve the execution time for each database on the given algorithm
-                # Add the execution time to the dictionary
+
                 current_time = time_calc.execution_time
                 print(current_time)
 
                 if algo_name == "RankSky":
                     time_dict[row][i] = algo_obj.time
+
                 if row > max_rows:
                     max_rows = row
                 if current_time > max_time:
                     max_time = current_time
+
                 row_str = str(row)
                 try:
                     savedDatas = readJson(fp)
@@ -152,6 +143,7 @@ class AlgoCalculator:
                     prev_val = float(previous_time)
                 except (ValueError, TypeError):
                     prev_val = float('inf')
+
                 if current_time < prev_val:
                     time_data[row_str][k] = current_time
 
@@ -164,104 +156,9 @@ class AlgoCalculator:
                     "max_time": max_time
                 }
                 writeJson(fp, dataToSave)
-
+                addServerConfigToJson(fp, "../../Assets/ServerConfig/ConfigNael.json")
                 sortJson(fp)
 
-    def compareExecutionTimeSqlAlgo(self):
-        """
-        Compare execution time of CoSky SQL and Algorithm
-        """
-
-        timeDictSql = {k: [0 for i in range(len(self.cols))] for k in self.rows}
-        timeDictAlgo = {k: [0 for i in range(len(self.cols))] for k in self.rows}
-        self.jsonFilePath += "ExecutionCoskySqlAlgo.json"
-        maxRows = 0
-        maxTime = 0
-
-        rootDatabases = fr"..\Assets\databases"
-        i = -1
-        for col in self.cols:
-            i += 1
-            for row in self.rows:
-                # Displays the execution time of each algorithm
-                database_filepath = fr"{rootDatabases}\cosky_db_C{col}_R{row}.db"
-                beauty_print("Database path", database_filepath)
-                sel = AlgoCalculator(database_filepath)
-                r = DataParser(sel.select_all()).r_dict
-                # The name of the algorithm class
-                algo_name1 = CoskySql
-                algo_name2 = CoskyAlgorithme
-                # For the SQL algorithm, add the connection object to the arguments
-                timeCalcSql = TimeCalc(row, algo_name1)
-                algoObj1 = CoskySQL(database_filepath)
-                timeCalcSql.stop()
-                timeCalcAlgo = TimeCalc(row, algo_name2)
-                algoObj2 = CoskyAlgorithme(r)
-                timeCalcAlgo.stop()
-                # Retrieve the execution time for each database on the given algorithm
-                currentTimeSql = timeCalcSql.execution_time
-                currentTimeAlgo = timeCalcAlgo.execution_time
-                # Add the execution time to the dictionary
-                timeDictSql[row][i] = currentTimeSql
-                timeDictAlgo[row][i] = currentTimeAlgo
-                if row > maxRows:
-                    maxRows = row
-
-                if currentTimeSql > maxTime:
-                    maxTime = currentTimeSql
-
-                if currentTimeAlgo > maxTime:
-                    maxTime = currentTimeAlgo
-
-        dataToSave = {
-            "timeDictSql": timeDictSql,  # The dictionary with execution times for the SQL algorithm
-            "timeDictAlgo": timeDictAlgo,  # The dictionary with execution times for the algorithm
-            "maxRows": maxRows,  # The maximum number of rows
-            "maxTime": maxTime  # The maximum execution time
-        }
-
-        writeJson(self.jsonFilePath, dataToSave)
-
-    def compareExecutionTimeCoskySqlColumn(self, col):
-        """
-        Compare the execution time of an algorithm on several databases of different sizes with n columns
-        :param algo: the algorithm to be compared
-        :param col: the number of columns of the databases
-        """
-        timeDict = {k: [0 for i in [col]] for k in self.rows}
-        match col:
-            case 3:
-                self.jsonFilePath += "ExecutionCoskySql310^9.json"
-            case 6:
-                self.jsonFilePath += "ExecutionCoskySql6.json"
-            case 9:
-                self.jsonFilePath += "ExecutionCoskySql9.json"
-        maxRows = 0
-        maxTime = 0
-        rootDatabases = fr"..\Assets\databases"
-        for row in self.rows:
-            databaseFilepath =fr"{rootDatabases}\cosky_db_C{col}_R{row}.db"  # Retrieve the path
-            beauty_print("Database path", databaseFilepath)
-            Timecalc = TimeCalc(row, CoskySql)
-            coskySql = CoskySQL(databaseFilepath)
-            Timecalc.stop()
-            # Retrieve the execution time for each database on the given algorithm
-            currentTime = Timecalc.execution_time
-            # Add the execution time to the dictionary
-            timeDict[row][0] = currentTime
-            if row > maxRows:
-                maxRows = row
-
-            if currentTime > maxTime:
-                maxTime = currentTime
-
-        dataToSave = {
-            "timeDict": timeDict,  # The dictionary with execution times
-            "maxRows": maxRows,  # The maximum number of rows
-            "maxTime": maxTime  # The maximum execution time
-        }
-
-        writeJson(self.jsonFilePath, dataToSave)
 
 # Algorithm declarations
 COMPARE_ALL = "COMPARE_ALL"
@@ -270,7 +167,6 @@ COSKY_SQL_ = "COSKY_SQL"
 CONFIG_DATA = "CONFIG_DATA"
 RANK_SKY = "RANK_SKY"
 
-# MODES contains all the algorithms to be compared
 MODES = {
     COSKY_ALGO_: CoskyAlgorithme,
     COSKY_SQL_: CoskySQL,
@@ -280,9 +176,11 @@ MODES = {
 }
 
 
-
 if __name__ == "__main__":
-    # Create an instance of the AlgoCalculator class
     calculator = AlgoCalculator("")
-
-    calculator.compareExecutionTime(CoskySQL, "../../Assets/LatexData/OneAlgoData/CoskySql/ThreeColumnsData/ExecutionCoskySql369.json", cols=[3,6,9], rows=[500000,1000000,2000000])
+    calculator.compareExecutionTime(
+        CoskySQL,
+        "../../Assets/test.json",
+        cols=[3, 6, 9],
+        rows=[50, 100, 200, 500, 1000, 2000, 5000,10000, 20000, 50000, 200000]
+    )

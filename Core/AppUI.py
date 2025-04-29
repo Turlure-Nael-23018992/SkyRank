@@ -1,11 +1,14 @@
+# Import necessary libraries
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import sys
 import os
 import ast
 
+# Add the project root to the system path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+# Import project modules
 from Core.App import App
 from Utils.Exporter.CsvExporterImpl import CsvExporterImpl
 from Utils.DataTypes.DbObject import DbObject
@@ -22,6 +25,10 @@ from Styles.StyleManager import StyleManager
 
 
 class AppUI:
+    """
+    GUI class to manage user interactions with the application.
+    """
+
     def __init__(self, master: tk.Tk):
         self.root = master
         self.root.title("SkyRank - Algorithm Runner")
@@ -32,6 +39,9 @@ class AppUI:
         self.createWidgets()
 
     def createWidgets(self):
+        """
+        Create all GUI widgets (labels, dropdowns, buttons).
+        """
         self.dataLabel = ttk.Label(self.root, text="Choose Data Type:")
         self.dataLabel.pack(pady=5)
 
@@ -64,6 +74,9 @@ class AppUI:
         self.statusLabel.pack(pady=5)
 
     def onDataChoiceChanged(self, _event):
+        """
+        Handle user data type choice and dynamically update the file import options.
+        """
         for widget in self.fileFrame.winfo_children():
             widget.destroy()
 
@@ -100,6 +113,9 @@ class AppUI:
 
     @staticmethod
     def listAvailableFiles(dataType):
+        """
+        List available files for selection depending on the data type.
+        """
         baseFolders = {
             "Database": "../Assets/Databases",
             "JSON": "../Assets/AlgoExecution/JsonFiles",
@@ -119,6 +135,9 @@ class AppUI:
         return []
 
     def importFile(self):
+        """
+        Open a file dialog to import a selected file.
+        """
         choice = self.dataVar.get()
         filetypes = [("Database Files", "*.db")] if choice == "Database" else [("JSON Files", "*.json")]
 
@@ -129,6 +148,9 @@ class AppUI:
             self.fileVar.set(filename)
 
     def runAlgorithm(self):
+        """
+        Run the selected algorithm based on user configuration.
+        """
         dataChoice = self.dataVar.get()
         algoChoice = self.algoVar.get()
 
@@ -137,6 +159,7 @@ class AppUI:
             return
 
         try:
+            # Determine the data source
             if dataChoice == "Database":
                 filename = self.fileVar.get()
                 if not filename:
@@ -182,6 +205,7 @@ class AppUI:
             else:
                 raise ValueError("Invalid data type selected.")
 
+            # Select algorithm
             algoMap = {
                 "SkyIR": SkyIR,
                 "DpIdpDh": DpIdpDh,
@@ -205,6 +229,9 @@ class AppUI:
             messagebox.showerror("Execution Error", str(e))
 
     def getSkylinePoints(self):
+        """
+        Retrieve the result points after algorithm execution.
+        """
         algoInstance = self.lastAppInstance.algo_instance
         algoName = self.lastAppInstance.algo
 
@@ -223,6 +250,9 @@ class AppUI:
                 return None
 
     def viewSkylinePoints(self):
+        """
+        Open a new window to display the calculated Skyline points.
+        """
         if hasattr(self, "lastAppInstance") and self.lastAppInstance:
             points = self.getSkylinePoints()
 
@@ -243,6 +273,7 @@ class AppUI:
             messagebox.showwarning("Warning", "No results available. Please run an algorithm first.")
 
 
+# Main entry point
 if __name__ == "__main__":
     rootWindow = tk.Tk()
     appUI = AppUI(rootWindow)

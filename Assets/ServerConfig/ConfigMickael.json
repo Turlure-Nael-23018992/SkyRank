@@ -3,8 +3,7 @@
   "cpu": "Intel Xeon W-11955M CPU @ 2.60GHz",
   "ram": "32 GB",
   "os": "Linux",
+  "python_version": "Python 3.8 (interpreted with PyPy 3.10)",
   "interpreter": "PyPy 3.10",
-  "interpreter_details": "PyPy 3.10, alternative Python implementation, ~4.8x faster than CPython 3.7",
-  "python_version": "Python 3.8 (code compatible)",
-  "notes": "Processor time measured. Default 8ms per page assumed."
+  "notes": "PyPy 3.10 is approximately 4.8 times faster than CPython 3.7. Times are measured in seconds as processor processing time, assuming a default value of 8 ms per page."
 }

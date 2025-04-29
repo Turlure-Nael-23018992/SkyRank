@@ -148,6 +148,17 @@ class CoskySQL:
             """
 
         #print(sql_queries)
+        """open = 0
+        close = 0
+        for i in range(len(sql_queries)):
+            if sql_queries[i] == "(":
+                open += 1
+            elif sql_queries[i] == ")":
+                close += 1
+
+        if open != close:
+            print("Erreur dans la requête SQL : nombre de parenthèses non équilibré.")
+            return None"""
 
         cursor.execute(sql_queries)
 
@@ -169,12 +180,12 @@ class CoskySQL:
         for row in results:
             dict[row[0]] = row[1:]
         self.dict = dict
-        print(dict)
+        #print(dict)
         return self.rows_res
 
 if __name__ == '__main__':
     #print("Sqlite version : ", sqlite3.sqlite_version)
-    db_filepath= "../Assets/DeepSkyTest.db"
+    db_filepath= "../Assets/databases/cosky_db_C3_R100000.db"
     #startTime = time.time()
     cosky_sql = CoskySQL(db_filepath)
     #print("cosky_sql:",cosky_sql.rows_res)
