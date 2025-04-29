@@ -246,8 +246,9 @@ class SkyIR:
             if pending[poi] > 0:
                 fileDePriorite.put((gamma[poi], poi))
         good_K=min(k, len(topK))
-        time2 = time.stop()
+        time2.stop()
         self.time = time2.execution_time + self.time
+        self.result = topK[-good_K:]
         return topK[-good_K:]
 
 

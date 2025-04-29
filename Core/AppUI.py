@@ -17,7 +17,7 @@ from Algorithms.CoskyAlgorithme import CoskyAlgorithme
 from Algorithms.DpIdpDh import DpIdpDh
 from Algorithms.RankSky import RankSky
 from Algorithms.SkyIR import SkyIR
-
+from Styles.StyleManager import StyleManager
 
 class AppUI:
     def __init__(self, master: tk.Tk):
@@ -25,15 +25,12 @@ class AppUI:
         self.root.title("SkyRank - Algorithm Runner")
         self.root.geometry("500x600")
 
-        self.selectedDataPath = None
-
-        self.columnEntry = None
-        self.rowEntry = None
+        StyleManager.apply_styles(self.root)  # <--- Application du style
 
         self.createWidgets()
 
     def createWidgets(self):
-        self.dataLabel = tk.Label(self.root, text="Choose Data Type:")
+        self.dataLabel = ttk.Label(self.root, text="Choose Data Type:")
         self.dataLabel.pack(pady=5)
 
         self.dataVar = tk.StringVar()
@@ -42,12 +39,12 @@ class AppUI:
         self.dataDropdown.pack(pady=5)
         self.dataDropdown.bind("<<ComboboxSelected>>", self.onDataChoiceChanged)
 
-        self.fileFrame = tk.Frame(self.root)
+        self.fileFrame = ttk.Frame(self.root)
         self.fileFrame.pack(pady=5)
 
         self.fileVar = tk.StringVar()
 
-        self.algoLabel = tk.Label(self.root, text="Choose Algorithm:")
+        self.algoLabel = ttk.Label(self.root, text="Choose Algorithm:")
         self.algoLabel.pack(pady=5)
 
         self.algoVar = tk.StringVar()
@@ -55,10 +52,13 @@ class AppUI:
         self.algoDropdown['values'] = ("SkyIR", "DpIdpDh", "CoskyAlgorithme", "CoskySQL", "RankSky")
         self.algoDropdown.pack(pady=5)
 
-        self.runButton = tk.Button(self.root, text="Run Algorithm", command=self.runAlgorithm)
+        self.runButton = ttk.Button(self.root, text="Run Algorithm", command=self.runAlgorithm)
         self.runButton.pack(pady=20)
 
-        self.statusLabel = tk.Label(self.root, text="", fg="green")
+        self.viewButton = ttk.Button(self.root, text="View Skyline Points", command=self.viewSkylinePoints)
+        self.viewButton.pack(pady=5)
+
+        self.statusLabel = ttk.Label(self.root, text="")
         self.statusLabel.pack(pady=5)
 
     def onDataChoiceChanged(self, _event):
@@ -69,12 +69,12 @@ class AppUI:
         self.selectedDataPath = None
 
         if choice == "Generate Random Database":
-            tk.Label(self.fileFrame, text="Number of Columns (3, 6, 9):").pack(side="left", padx=5)
-            self.columnEntry = tk.Entry(self.fileFrame, width=5)
+            ttk.Label(self.fileFrame, text="Number of Columns (3, 6, 9):").pack(side="left", padx=5)
+            self.columnEntry = ttk.Entry(self.fileFrame, width=5)
             self.columnEntry.pack(side="left", padx=5)
 
-            tk.Label(self.fileFrame, text="Number of Rows:").pack(side="left", padx=5)
-            self.rowEntry = tk.Entry(self.fileFrame, width=10)
+            ttk.Label(self.fileFrame, text="Number of Rows:").pack(side="left", padx=5)
+            self.rowEntry = ttk.Entry(self.fileFrame, width=10)
             self.rowEntry.pack(side="left", padx=5)
 
         elif choice in ("Database", "JSON", "Dictionary"):
@@ -83,7 +83,7 @@ class AppUI:
                 self.fileDropdown = ttk.Combobox(self.fileFrame, textvariable=self.fileVar, state="readonly", values=files)
                 self.fileDropdown.pack(side="left", padx=5)
 
-            self.importButton = tk.Button(self.fileFrame, text="Import File", command=self.importFile)
+            self.importButton = ttk.Button(self.fileFrame, text="Import File", command=self.importFile)
             self.importButton.pack(side="left", padx=5)
 
     @staticmethod
@@ -108,10 +108,7 @@ class AppUI:
 
     def importFile(self):
         choice = self.dataVar.get()
-        if choice == "Database":
-            filetypes = [("Database Files", "*.db")]
-        else:
-            filetypes = [("JSON Files", "*.json")]
+        filetypes = [("Database Files", "*.db")] if choice == "Database" else [("JSON Files", "*.json")]
 
         filepath = filedialog.askopenfilename(filetypes=filetypes)
         if filepath:
@@ -157,8 +154,8 @@ class AppUI:
                 if columns not in (3, 6, 9):
                     raise ValueError("Number of columns must be 3, 6 or 9.")
 
-                db = Database("../Assets/Databases/TestExecution.db", columns, rows)
-                data = DbObject("../Assets/Databases/TestExecution.db")
+                db = Database("../Assets/AlgoExecution/DbFiles/TestExecution.db", columns, rows)
+                data = DbObject("../Assets/AlgoExecution/DbFiles/TestExecution.db")
 
             else:
                 raise ValueError("Invalid data type selected.")
@@ -177,12 +174,51 @@ class AppUI:
 
             exporter = CsvExporterImpl(output_path="Results.csv")
             appInstance = App(data, algoClass, exporter=exporter)
+            self.lastAppInstance = appInstance  # <-- Ajout ici pour pouvoir accéder aux résultats plus tard
 
-            self.statusLabel.config(text="Execution completed! Result saved to Results.csv", fg="green")
+            self.statusLabel.config(text="Execution completed! Result saved to Results.csv", foreground="green")
 
         except Exception as e:
-            self.statusLabel.config(text=f"Error: {str(e)}", fg="red")
+            self.statusLabel.config(text=f"Error: {str(e)}", foreground="red")
             messagebox.showerror("Execution Error", str(e))
+
+    def getSkylinePoints(self):
+        algoInstance = self.lastAppInstance.algo_instance
+        algoName = self.lastAppInstance.algo
+
+        match algoName:
+            case "SkyIR":
+                return algoInstance.result
+            case "DpIdpDh":
+                return algoInstance.score
+            case "CoskyAlgorithme":
+                return algoInstance.s
+            case "CoskySQL":
+                return algoInstance.rows_res
+            case "RankSky":
+                return algoInstance.score
+            case _:
+                return None
+
+    def viewSkylinePoints(self):
+        if hasattr(self, "lastAppInstance") and self.lastAppInstance:
+            points = self.getSkylinePoints()
+
+            if not points:
+                messagebox.showinfo("Skyline Points", "No skyline points found or algorithm did not produce output.")
+                return
+
+            window = tk.Toplevel(self.root)
+            window.title("Skyline Points")
+            window.geometry("600x400")
+
+            textArea = tk.Text(window, wrap="word")
+            textArea.pack(expand=True, fill="both")
+
+            for point in points:
+                textArea.insert(tk.END, str(point) + "\n")
+        else:
+            messagebox.showwarning("Warning", "No results available. Please run an algorithm first.")
 
 
 if __name__ == "__main__":

@@ -191,7 +191,6 @@ class App:
                 self.r = {k: tuple(v) for k, v in self.r.items()}
                 self.algo_instance = RankSky(self.r, self.pref)
                 self.cardinality = len(next(iter(self.r.values())))
-                self.tuples = len(self.r)
 
     def startSkyIR(self):
         """

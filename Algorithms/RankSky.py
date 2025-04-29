@@ -201,6 +201,7 @@ class RankSky:
             self.score[key] = self.rTupleInit[key] + tuple([float(self.vk[i])])
             i += 1
         self.score = dict(sorted(self.score.items(), key=lambda item: item[1][-1], reverse=reverse))
+        print("Score sorted:", self.score)
 
     def printOutcomes(self):
         """
@@ -251,7 +252,7 @@ class RankSky:
         self.sort()
         time2.stop()
         self.time = time1.execution_time + time2.execution_time
-        print(self.sky)
+        #print(self.sky)
 
 if __name__ == "__main__":
     """r = {
