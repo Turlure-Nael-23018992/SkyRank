@@ -38,5 +38,14 @@
         ]
     },
     "max_rows": 1000000000,
-    "max_time": 11421.053777694702
+    "max_time": 11421.053777694702,
+    "server_config": {
+        "server_name": "Nael-PC",
+        "cpu": "AMD Ryzen 5 5600X @ 3.7 GHz",
+        "ram": "32 GB",
+        "os": "Linux",
+        "python_version": "Python 3.8 (interpreted with PyPy 3.10)",
+        "interpreter": "PyPy 3.10",
+        "notes": "PyPy 3.10 is approximately 4.8 times faster than CPython 3.7. Times are measured in seconds as processor processing time, assuming a default value of 8 ms per page."
+    }
 }

@@ -772,7 +772,7 @@ class LatexMaker:
         self.latexCode += "        \\foreach \\y/\\ytext in {\n"
         for s in range(6):
             pos = int(heightMaxTick * s / 5)
-            val = round(global_max_time_rounded * s / 5, 2)
+            val = int(global_max_time_rounded * s / 5)
             self.latexCode += f"            {pos}pt/${val}$,\n"
         self.latexCode = self.latexCode.rstrip(",\n") + "} {\n"
         self.latexCode += "            \\draw (2pt, \\y) -- (-2pt, \\y) node[left] {\\ytext\\strut};\n        }\n"

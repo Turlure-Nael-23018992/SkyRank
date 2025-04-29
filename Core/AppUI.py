@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import sys
 import os
+import ast
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -19,13 +20,14 @@ from Algorithms.RankSky import RankSky
 from Algorithms.SkyIR import SkyIR
 from Styles.StyleManager import StyleManager
 
+
 class AppUI:
     def __init__(self, master: tk.Tk):
         self.root = master
         self.root.title("SkyRank - Algorithm Runner")
-        self.root.geometry("500x600")
+        self.root.geometry("600x700")
 
-        StyleManager.apply_styles(self.root)  # <--- Application du style
+        StyleManager.apply_styles(self.root)
 
         self.createWidgets()
 
@@ -77,12 +79,22 @@ class AppUI:
             self.rowEntry = ttk.Entry(self.fileFrame, width=10)
             self.rowEntry.pack(side="left", padx=5)
 
-        elif choice in ("Database", "JSON", "Dictionary"):
+        elif choice == "Database" or choice == "JSON":
             files = self.listAvailableFiles(choice)
             if files:
                 self.fileDropdown = ttk.Combobox(self.fileFrame, textvariable=self.fileVar, state="readonly", values=files)
                 self.fileDropdown.pack(side="left", padx=5)
+            self.importButton = ttk.Button(self.fileFrame, text="Import File", command=self.importFile)
+            self.importButton.pack(side="left", padx=5)
 
+        elif choice == "Dictionary":
+            ttk.Label(self.fileFrame, text="Enter Dictionary manually:").pack()
+            self.dictTextArea = tk.Text(self.fileFrame, height=10, width=60)
+            self.dictTextArea.pack(pady=5)
+
+            ttk.Label(self.fileFrame, text="Or import from a JSON file:").pack(pady=5)
+            self.fileDropdown = ttk.Combobox(self.fileFrame, textvariable=self.fileVar, state="readonly", values=self.listAvailableFiles("Dictionary"))
+            self.fileDropdown.pack(side="left", padx=5)
             self.importButton = ttk.Button(self.fileFrame, text="Import File", command=self.importFile)
             self.importButton.pack(side="left", padx=5)
 
@@ -140,12 +152,22 @@ class AppUI:
                 data = JsonObject(path)
 
             elif dataChoice == "Dictionary":
-                filename = self.fileVar.get()
-                if not filename:
-                    raise ValueError("No Dictionary file selected.")
-                path = self.selectedDataPath or os.path.join("../Assets/AlgoExecution/JsonFiles", filename)
-                rawDict = readJson(path)
-                data = DictObject(rawDict)
+                userInput = self.dictTextArea.get("1.0", tk.END).strip()
+                if userInput:
+                    try:
+                        rawDict = ast.literal_eval(userInput)
+                        if not isinstance(rawDict, dict):
+                            raise ValueError("Input is not a valid dictionary.")
+                        data = DictObject(rawDict)
+                    except Exception as e:
+                        raise ValueError(f"Invalid dictionary input: {e}")
+                else:
+                    filename = self.fileVar.get()
+                    if not filename:
+                        raise ValueError("No Dictionary file selected.")
+                    path = self.selectedDataPath or os.path.join("../Assets/AlgoExecution/JsonFiles", filename)
+                    rawDict = readJson(path)
+                    data = DictObject(rawDict)
 
             elif dataChoice == "Generate Random Database":
                 columns = int(self.columnEntry.get())
@@ -172,9 +194,9 @@ class AppUI:
             if not algoClass:
                 raise ValueError("Invalid algorithm choice.")
 
-            exporter = CsvExporterImpl(output_path="Results.csv")
+            exporter = CsvExporterImpl(output_path="../Assets/Export/Results.csv")
             appInstance = App(data, algoClass, exporter=exporter)
-            self.lastAppInstance = appInstance  # <-- Ajout ici pour pouvoir accéder aux résultats plus tard
+            self.lastAppInstance = appInstance
 
             self.statusLabel.config(text="Execution completed! Result saved to Results.csv", foreground="green")
 

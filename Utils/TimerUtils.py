@@ -1,5 +1,6 @@
 import time
-
+import humanize
+from datetime import timedelta
 
 
 class TimeCalc:
@@ -39,6 +40,18 @@ class TimeCalc:
         self.execution_time=self.stop_time-self.start_time
         self.ratio=self.execution_time/self.samples_count
         #print(self.get_formated_data())
+
+    @staticmethod
+    def humanizeTime(time):
+        """
+        Convert the time to a human-readable format (Hour, Min, secs)
+        """
+        return humanize.precisedelta(time, minimum_unit="seconds")
+
+if __name__ == '__main__':
+    time = TimeCalc(100, "CoskySQL")
+    t = 267.63728548
+    print(time.humanizeTime(t))
 
 
 

@@ -1,5 +1,6 @@
 import json
 import sys
+import os
 
 
 def readJson(filePath, asTuple=False):
@@ -91,9 +92,46 @@ def sortJson(fp):
     writeJson(fp, data)
 
 
+def addServerConfigToJson(json_path, config_path):
+    """
+    Add server configuration into an existing JSON file.
+
+    Args:
+        json_path (str): Path to the target JSON file (e.g., "Assets/LatexData/ExecutionCoskySql369.json")
+        config_path (str): Path to the server configuration JSON file (e.g., "Assets/ServerConfig/ConfigNael.json")
+
+    Raises:
+        FileNotFoundError: If either the json_path or config_path does not exist.
+    """
+    if not os.path.exists(json_path):
+        raise FileNotFoundError(f"JSON file not found: {json_path}")
+    if not os.path.exists(config_path):
+        raise FileNotFoundError(f"Config file not found: {config_path}")
+
+    data = readJson(json_path)
+    server_config = readJson(config_path)
+
+    # Add server configuration under the key "server_config"
+    data["server_config"] = server_config
+
+    writeJson(json_path, data)
+    print(f"[OK] Server configuration added into {json_path}")
 
 if __name__ == "__main__":
+    import glob
 
-    print(readJson("../../Algorithms/Datas/RTuples8.json", asTuple=False))
-    print(readJson("../../Algorithms/Datas/RTuples8.json", asTuple=True))
-    pass
+    # Path to the folder containing all JSON files
+    json_folder = "../../Assets/LatexData/OneAlgoData/"
+    # Path to the server config to insert (example: ConfigNael.json or ConfigMickael.json)
+    config_path = "../../Assets/ServerConfig/ConfigNael.json"
+
+    # Get all JSON files recursively
+    json_files = glob.glob(os.path.join(json_folder, "**", "*.json"), recursive=True)
+
+    for json_file in json_files:
+        try:
+            addServerConfigToJson(json_file, config_path)
+        except Exception as e:
+            print(f"[ERROR] Could not process {json_file} -> {e}")
+
+    print("[DONE] Server configuration added to all JSON files.")

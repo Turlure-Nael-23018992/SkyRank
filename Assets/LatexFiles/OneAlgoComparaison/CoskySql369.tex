@@ -33,12 +33,12 @@
         }
         % Y-axis ticks
         \foreach \y/\ytext in {
-            0pt/$0.0$,
-            44pt/$4000.0$,
-            89pt/$8000.0$,
-            134pt/$12000.0$,
-            179pt/$16000.0$,
-            224pt/$20000.0$} {
+            0pt/$0$,
+            44pt/$4000$,
+            89pt/$8000$,
+            134pt/$12000$,
+            179pt/$16000$,
+            224pt/$20000$} {
             \draw (2pt, \y) -- (-2pt, \y) node[left] {\ytext\strut};
         }
         \draw[skyblue, line width=2pt] (0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (0pt, 0pt) -- (1pt, 0pt) -- (1pt, 0pt) -- (3pt, 0pt) -- (7pt, 0pt) -- (14pt, 0pt) -- (28pt, 0pt) -- (70pt, 0pt) -- (140pt, 0pt) -- (280pt, 0pt);
