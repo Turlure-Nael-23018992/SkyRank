@@ -1,0 +1,11 @@
+{
+    "skyline_points": [
+        2,
+        4,
+        1
+    ],
+    "execution_time": 0.0009992122650146484,
+    "algorithm": "CoskySQL",
+    "input_type": "JSON",
+    "input_file": "RTuples8.json"
+}

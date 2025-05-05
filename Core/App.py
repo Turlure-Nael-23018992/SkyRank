@@ -27,13 +27,16 @@ class App:
     and delegate the results to an exporter.
     """
 
-    def __init__(self, data, algo, exporter=None):
+    def __init__(self, data, algo, exporter=None, input_type=None, input_file=None):
         self.tableName = "Pokemon"
         self.exporter = exporter
         self.cardinality = None
         self.tuples = None
         self.algo_instance = None
         self.execution_time = 0
+
+        self.input_type = input_type or "Unknown"
+        self.input_file = input_file or "generated"
 
         if isinstance(data, DictObject):
             self.r = data.r
@@ -54,7 +57,6 @@ class App:
         end = time.perf_counter()
         self.execution_time = round(end - start, 6)
 
-        # Sauvegarde dans algo_instance pour exporter via CsvExporterImpl
         if self.algo_instance and not hasattr(self.algo_instance, "time"):
             self.algo_instance.time = self.execution_time
 

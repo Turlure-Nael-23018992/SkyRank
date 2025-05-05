@@ -181,11 +181,12 @@ class CoskySQL:
             dict[row[0]] = row[1:]
         self.dict = dict
         #print(dict)
+        #print(self.executionTime)
         return self.rows_res
 
 if __name__ == '__main__':
     #print("Sqlite version : ", sqlite3.sqlite_version)
-    db_filepath= "../Assets/databases/cosky_db_C3_R100000.db"
+    db_filepath= "../Assets/databases/cosky_db_C3_R10000.db"
     #startTime = time.time()
     cosky_sql = CoskySQL(db_filepath)
     #print("cosky_sql:",cosky_sql.rows_res)
