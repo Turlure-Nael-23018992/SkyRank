@@ -4,6 +4,7 @@ from Utils.Preference import Preference
 from Utils.TimerUtils import TimeCalc
 from Algorithms.BbsCosky import BbsCosky
 from Utils.DataModifier.DatabaseToDict import DatabaseToDict
+from Utils.DataModifier.DataUnifier import DataUnifier
 
 
 class RankSky:
@@ -39,26 +40,7 @@ class RankSky:
         self.alpha = 0.85 # Damping factor
         self.score = {}
         self.time = 0
-        self.run()
-
-    def unifyPreferences(self, r, pref, prefNext):
-        """
-        Static method to unify preferences in a relation by transforming values accordingly.
-
-        For each dimension, if the preference has changed, the corresponding values in the
-        relation are inverted (1 / value) to switch between MIN and MAX logic.
-
-        :param r: dict - the relation structure to update
-        :param pref: list[Preference] - current preference list
-        :param prefNext: list[Preference] - updated preference list to unify against
-        """
-
-        for i in range(len(pref)):
-            if prefNext[i] != pref[i]:
-                pref[i] = prefNext[i]
-                for val in r.values():
-                    val[i] = 1 / val[i]
-
+        #self.run()
 
     def unifyPreferencesMax(self, r, pref):
         """
@@ -67,12 +49,10 @@ class RankSky:
         :param r: dict - the relation data to modify (values are updated in place)
         :param pref: list[Preference] - list of current preferences, which will be updated to MAX
         """
-        for i in range(len(pref)):
-
-            if pref[i] == Preference.MIN:
-                pref[i] = Preference.MAX
-                for val in r.values():
-                    val[i] = 1 / val[i]
+        dataUnifier = DataUnifier(r, pref, mode="Max")
+        print(f"Pre Unify data: {r}")
+        self.r = dataUnifier.unifyPreferencesMax()
+        print(f"Post Unify data: {self.r}")
 
     def unifyPreferencesMin(self, r, pref):
         """
@@ -81,12 +61,10 @@ class RankSky:
         :param r: dict - the relation data to modify (values are updated in place)
         :param pref: list[Preference] - list of current preferences, which will be updated to MIN
         """
-
-        for i in range(len(pref)):
-            if pref[i] == Preference.MAX:
-                pref[i] = Preference.MIN
-                for val in r.values():
-                    val[i] = 1 / val[i]
+        dataUnifier = DataUnifier(r, pref, mode="Min")
+        #print(f"Pre Unify data: {r}")
+        self.r = dataUnifier.unifyPreferencesMin()
+        #print(f"Post Unify data: {self.r}")
 
     def tupleToTab(self, rTuple):
         """
@@ -262,14 +240,14 @@ if __name__ == "__main__":
     }"""
 
     r = {
-        1: (5, 20, 70),
-        2: (4, 60, 50),
-        3: (5, 30, 60),
-        4: (1, 80, 60),
-        5: (5, 90, 40),
-        6: (9, 30, 50),
-        7: (7, 80, 40),
-        8: (9, 90, 30)
+        1: (5, 20, 1/70),
+        2: (4, 60, 1/50),
+        3: (5, 30, 1/60),
+        4: (1, 80, 1/60),
+        5: (5, 90, 1/40),
+        6: (9, 30, 1/50),
+        7: (7, 80, 1/40),
+        8: (9, 90, 1/30)
     }
     pref = [Preference.MIN,Preference.MIN,Preference.MIN]
 

@@ -1,6 +1,6 @@
 from Utils.DisplayHelpers import beauty_print
-from BbsPy3.Bbs.Bbs import Bbs
-from BbsPy3.RTree.rTree import RTree
+from external.BBS.Bbs.Bbs import Bbs
+from external.BBS.RTree.RTree.rTree import RTree
 
 
 class BbsCosky:

@@ -2,9 +2,11 @@ import math
 import time
 
 from Algorithms.BbsCosky import BbsCosky
+from Utils.Preference import Preference
 from Utils.TimerUtils import TimeCalc
 from Utils.DisplayHelpers import beauty_print
 from Utils.DataModifier.JsonUtils import readJson
+from Utils.DataModifier.DataUnifier import DataUnifier
 
 
 class CoskyAlgorithme:
@@ -12,10 +14,13 @@ class CoskyAlgorithme:
     Class to implement the Cosky algorithm for ranking and sorting data based on multiple criteria.
     """
 
-    def __init__(self, r, is_debug=False):
+    def __init__(self, r, pref, is_debug=False):
         time = TimeCalc(100, "CoskyAlgorithme")
         self.is_debug=is_debug
+        self.pref = pref
         self.r = r
+        self.r = self.unifyMin()
+        print("self.r",self.r)
         self.bbs = BbsCosky(r, 1, 2)
         self.s= {k:list(v) for k,v in self.bbs.skyline.items()}
         #beauty_print("s",self.s)
@@ -38,8 +43,11 @@ class CoskyAlgorithme:
         time.stop()
         self.time = time.execution_time
 
-
-
+    def unifyMin(self):
+        dataUnifier = DataUnifier(self.r, self.pref, mode="Min")
+        print(f"Pre Unify data: {self.r}")
+        self.r = dataUnifier.unifyPreferencesMin()
+        return self.r
 
     def run(self):
         """
@@ -139,8 +147,8 @@ if __name__ == '__main__':
 
 
     startTime = time.time()
-    print(r_petit)
-    cosky = CoskyAlgorithme(r_petit)
+    #print(r_petit)
+    cosky = CoskyAlgorithme(r_petit, [Preference.MIN, Preference.MIN, Preference.MIN], is_debug=True)
     print("-----------------Avant-----------------")
     print(cosky.s)
     print(f"temps: {time.time() - startTime}")

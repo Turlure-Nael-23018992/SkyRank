@@ -4,6 +4,10 @@ import string
 import time
 import os
 import sys
+
+from Utils.DataModifier.DataUnifier import DataUnifier
+from Utils.Preference import Preference
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from typing import AnyStr
 
@@ -19,12 +23,14 @@ class CoskySQL:
     """
     Class to implement the Cosky algorithm for ranking and sorting data based on multiple criteria using SQLite.
     """
-    def __init__(self, db_filepath,is_debug=False):
+    def __init__(self, db_filepath, preferences, is_debug=False):
         """
         Initialize the Cosky algorithm with the given database file path and debug flag.
         :param db_filepath: the path to the SQLite database file
         :param is_debug: flag to enable debug mode
         """
+        self.pref = preferences
+        self.dbFilepath = db_filepath
         time = TimeCalc(100, "CoskySQL")
         self.is_debug=is_debug
         self.relations = []
@@ -40,7 +46,6 @@ class CoskySQL:
             print(e)
             self.colonne_len = 9
         self.colonne_names = self.get_column_names(self.table_name)
-
         self.run()
         time.stop()
         self.time = time.execution_time
@@ -132,10 +137,13 @@ class CoskySQL:
         # Projection finale.
         proj = ", ".join(col_offset)
 
+        self.unifyPreferences()
+        q1= self.unifyPreferencesQuery()
 
         sql_queries = f"""
-           WITH S AS (SELECT * FROM {self.table_name} AS R1
-            WHERE NOT EXISTS (SELECT * FROM {self.table_name} AS R2 WHERE ({s1}) AND ({s2}))),
+           WITH {q1},
+            S AS (SELECT * FROM {"T"} AS R1
+            WHERE NOT EXISTS (SELECT * FROM {"T"} AS R2 WHERE ({s1}) AND ({s2}))),
             SN AS (SELECT RowId, {snn} FROM S, (SELECT {snt} FROM S) AS ST),
             SGini AS (SELECT {sgini} FROM SN),
             SW AS (SELECT {sw} FROM SGini),
@@ -171,6 +179,7 @@ class CoskySQL:
             self.dict = {row_with_score[0]: row_with_score[1:]}
             #print(self.rows_res)
             #print(self.dict)
+
             return self.rows_res
 
         # Récupération des résultats de la dernière instruction
@@ -182,12 +191,41 @@ class CoskySQL:
         self.dict = dict
         #print(dict)
         #print(self.executionTime)
+        print("rows_res", self.rows_res)
         return self.rows_res
+
+    def unifyPreferences(self):
+        dataUnifier = DataUnifier(self.dbFilepath, self.pref)
+        self.prefNext = dataUnifier.unifyPreferences()
+
+    def unifyPreferencesQuery(self):
+        querry = f"""T AS {"("}
+        SELECT RowId, """
+        col_offset = self.get_column_names(self.table_name)[1:]
+        if len(col_offset) != len(self.pref):
+            print("Erreur : le nombre de colonnes ne correspond pas au nombre de préférences.")
+            return None
+        for i in range(len(col_offset)):
+            if self.pref[i] != self.prefNext[i]:
+                querry += f""" {1.0} / {col_offset[i]} AS {col_offset[i]},"""
+            else :
+                querry += f""" {col_offset[i]},"""
+
+        query1 = querry[:-1] + f"""
+        FROM {self.table_name}
+        )"""
+        return query1
+
+
 
 if __name__ == '__main__':
     #print("Sqlite version : ", sqlite3.sqlite_version)
-    db_filepath= "../Assets/databases/cosky_db_C3_R10000.db"
+    db_filepath= "../Assets/DeepSkyTest.db"
     #startTime = time.time()
-    cosky_sql = CoskySQL(db_filepath)
+    CoskySQL(db_filepath, [Preference.MIN, Preference.MAX, Preference.MIN])
+
+
+
     #print("cosky_sql:",cosky_sql.rows_res)
     #print(f"temps: {time.time() - startTime}")
+
