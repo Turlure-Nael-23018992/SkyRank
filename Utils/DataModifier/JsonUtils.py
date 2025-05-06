@@ -135,15 +135,5 @@ def addServerConfigToJson(json_path, config_path):
 if __name__ == "__main__":
     import glob
 
-    json_folder = "../../Assets/LatexData/OneAlgoData/"
-    config_path = "../../Assets/ServerConfig/ConfigNael.json"
-
-    json_files = glob.glob(os.path.join(json_folder, "**", "*.json"), recursive=True)
-
-    for json_file in json_files:
-        try:
-            addServerConfigToJson(json_file, config_path)
-        except Exception as e:
-            print(f"[ERROR] Could not process {json_file} -> {e}")
-
-    print("[DONE] Server configuration added to all JSON files.")
+    tab = readJson("../../Assets/AlgoExecution/JsonFiles/RTuples8.json", True)
+    print(tab)
