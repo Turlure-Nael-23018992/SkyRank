@@ -1,3 +1,5 @@
+from Utils.DataModifier.JsonUtils import *
+
 class JsonObject:
     """
     A class to represent a JSON object.
@@ -10,6 +12,7 @@ class JsonObject:
         :param fp: Path to the JSON file.
         """
         self.fp = fp
+        self.data = readJson(self.fp)
 
     @staticmethod
     def __name__():

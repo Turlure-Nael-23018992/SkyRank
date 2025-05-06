@@ -1,8 +1,4 @@
-import sys
-import os
-import sqlite3
-import time
-
+import os, sys, sqlite3, time
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from Algorithms.CoskySql import CoskySQL
@@ -17,197 +13,165 @@ from Utils.DataModifier.DataConverter import DataConverter
 from Utils.DataTypes.JsonObject import JsonObject
 from Utils.DataTypes.DbObject import DbObject
 from Utils.DataTypes.DictObject import DictObject
-from Utils.DisplayHelpers import *
-from Utils.DataModifier.JsonUtils import *
+from Utils.DisplayHelpers import print_red
 
 
 class App:
-    """
-    Main application class to run algorithms on different types of input data
-    and delegate the results to an exporter.
-    """
+    def __init__(self, data, algo, exporter=None,
+                 input_type=None, input_file=None, preferences=None):
 
-    def __init__(self, data, algo, exporter=None, input_type=None, input_file=None):
-        self.tableName = "Pokemon"
         self.exporter = exporter
-        self.cardinality = None
-        self.tuples = None
         self.algo_instance = None
         self.execution_time = 0
-
+        self.pref = preferences
         self.input_type = input_type or "Unknown"
         self.input_file = input_file or "generated"
 
+        # detect wrapper
         if isinstance(data, DictObject):
-            self.r = data.r
-            self.dataName = "DictObject"
+            self.r, self.dataName = data.r, "DictObject"
+            nb_cols = len(next(iter(self.r.values())))
         elif isinstance(data, JsonObject):
-            self.jsonFp = data.fp
-            self.dataName = "JsonObject"
+            self.jsonFp, self.dataName = data.fp, "JsonObject"
+            nb_cols = len(data.data[next(iter(data.data))])
         elif isinstance(data, DbObject):
-            self.dbFp = data.fp
-            self.dataName = "DbObject"
+            self.dbFp, self.dataName = data.fp, "DbObject"
+            nb_cols = self._count_db_columns(self.dbFp) - 1
         else:
-            raise ValueError("Unsupported data type.")
+            raise ValueError("Unsupported data type")
+
+        # check preference length
+        if self.pref is not None and len(self.pref) != nb_cols:
+            raise ValueError(
+                f"Preference list length ({len(self.pref)}) "
+                f"does not match column count ({nb_cols})"
+            )
 
         self.algo = algo.__name__
 
         start = time.perf_counter()
-        self.run()
-        end = time.perf_counter()
-        self.execution_time = round(end - start, 6)
+        self._dispatch()
+        self.execution_time = round(time.perf_counter() - start, 6)
 
         if self.algo_instance and not hasattr(self.algo_instance, "time"):
             self.algo_instance.time = self.execution_time
-
         if self.exporter:
             self.exporter.export(self)
 
-    @staticmethod
-    def askPreference():
-        val = input("Min/Max : ").strip()
-        return Preference.MIN if val.lower() == "min" else Preference.MAX
-
-    def run(self):
+    # ------------------------------------------------------------------ #
+    # dispatcher                                                         #
+    # ------------------------------------------------------------------ #
+    def _dispatch(self):
         match self.algo:
-            case "CoskyAlgorithme":
-                self.startCoskyAlgorithme()
-            case "CoskySQL":
-                self.startCoskySql()
-            case "DpIdpDh":
-                self.startDpIdpDh()
-            case "RankSky":
-                print_red("Choose your preferences:")
-                a = self.askPreference()
-                b = self.askPreference()
-                c = self.askPreference()
-                self.pref = [a, b, c]
-                self.startRankSky()
-            case "SkyIR":
-                self.startSkyIR()
-            case _:
-                print("Unknown algorithm.")
+            case "CoskyAlgorithme": self._start_cosky_algorithme()
+            case "CoskySQL":        self._start_cosky_sql()
+            case "DpIdpDh":         self._start_dp_idp_dh()
+            case "RankSky":         self._start_ranksky()
+            case "SkyIR":           self._start_skyir()
+            case _:                 raise ValueError("Unknown algorithm")
 
-    def startCoskySql(self):
+    # ------------------------------------------------------------------ #
+    # algorithm starters                                                 #
+    # ------------------------------------------------------------------ #
+    def _start_cosky_sql(self):
         print_red("Starting CoskySQL")
-        match self.dataName:
-            case "DbObject":
-                self.cardinality, self.tuples = self.extractDbData(self.dbFp)
-                self.algo_instance = CoskySQL(self.dbFp)
-            case "JsonObject":
-                dataConverter = DataConverter(self.jsonFp)
-                dataConverter.jsonToDb()
-                self.cardinality, self.tuples = self.extractDbData("../Assets/AlgoExecution/DbFiles/TestExecution.db")
-                self.algo_instance = CoskySQL("../Assets/AlgoExecution/DbFiles/TestExecution.db")
-            case "DictObject":
-                dataConverter = DataConverter(self.r)
-                dataConverter.relationToDb()
-                self.cardinality, self.tuples = self.extractDbData("../Assets/AlgoExecution/DbFiles/TestExecution.db")
-                self.algo_instance = CoskySQL("../Assets/AlgoExecution/DbFiles/TestExecution.db")
+        if self.dataName == "DbObject":
+            self.algo_instance = CoskySQL(self.dbFp, self.pref)
+        elif self.dataName == "JsonObject":
+            DataConverter(self.jsonFp).jsonToDb()
+            self.algo_instance = CoskySQL("../Assets/AlgoExecution/DbFiles/TestExecution.db", self.pref)
+        else:
+            DataConverter(self.r).relationToDb()
+            self.algo_instance = CoskySQL("../Assets/AlgoExecution/DbFiles/TestExecution.db", self.pref)
 
-    def startCoskyAlgorithme(self):
+    def _start_cosky_algorithme(self):
         print_red("Starting CoskyAlgorithme")
-        match self.dataName:
-            case "DbObject":
-                dataConverter = DataConverter(self.dbFp)
-                data = dataConverter.dbToRelation()
-                self.algo_instance = CoskyAlgorithme(data)
-                self.cardinality = len(data[list(data.keys())[0]])
-                self.tuples = len(data)
-            case "JsonObject":
-                dataConverter = DataConverter(self.jsonFp)
-                data = dataConverter.jsonToRelation()
-                self.algo_instance = CoskyAlgorithme(data)
-                self.cardinality = len(data[list(data.keys())[0]])
-                self.tuples = len(data)
-            case "DictObject":
-                self.r = {k: tuple(v) for k, v in self.r.items()}
-                self.algo_instance = CoskyAlgorithme(self.r)
-                self.cardinality = len(next(iter(self.r.values())))
-                self.tuples = len(self.r)
+        if self.dataName == "DbObject":
+            rel = DataConverter(self.dbFp).dbToRelation()
+            self.algo_instance = CoskyAlgorithme(rel, self.pref)
+        elif self.dataName == "JsonObject":
+            rel = DataConverter(self.jsonFp).jsonToRelation()
+            self.algo_instance = CoskyAlgorithme(rel, self.pref)
+        else:
+            self.r = {k: tuple(v) for k, v in self.r.items()}
+            self.algo_instance = CoskyAlgorithme(self.r, self.pref)
 
-    def startDpIdpDh(self):
+    def _start_dp_idp_dh(self):
         print_red("Starting DpIdpDh")
-        match self.dataName:
-            case "DbObject":
-                dataConverter = DataConverter(self.dbFp)
-                data = dataConverter.dbToRelation()
-                self.algo_instance = DpIdpDh(data)
-                self.cardinality = len(data[list(data.keys())[0]])
-                self.tuples = len(data)
-            case "JsonObject":
-                dataConverter = DataConverter(self.jsonFp)
-                data = dataConverter.jsonToRelation()
-                self.algo_instance = DpIdpDh(data)
-                self.cardinality = len(data[list(data.keys())[0]])
-                self.tuples = len(data)
-            case "DictObject":
-                self.r = {k: tuple(v) for k, v in self.r.items()}
-                self.algo_instance = DpIdpDh(self.r)
-                self.cardinality = len(next(iter(self.r.values())))
-                self.tuples = len(self.r)
+        if self.dataName == "DbObject":
+            rel = DataConverter(self.dbFp).dbToRelation()
+            self.algo_instance = DpIdpDh(rel)
+        elif self.dataName == "JsonObject":
+            rel = DataConverter(self.jsonFp).jsonToRelation()
+            self.algo_instance = DpIdpDh(rel)
+        else:
+            self.r = {k: tuple(v) for k, v in self.r.items()}
+            self.algo_instance = DpIdpDh(self.r)
 
-    def startRankSky(self):
+    def _start_ranksky(self):
         print_red("Starting RankSky")
-        match self.dataName:
-            case "DbObject":
-                dataConverter = DataConverter(self.dbFp)
-                data = dataConverter.dbToRelation()
-                self.algo_instance = RankSky(data, self.pref)
-                self.cardinality = len(data[list(data.keys())[0]])
-                self.tuples = len(data)
-            case "JsonObject":
-                dataConverter = DataConverter(self.jsonFp)
-                data = dataConverter.jsonToRelation()
-                self.algo_instance = RankSky(data, self.pref)
-                self.cardinality = len(data[list(data.keys())[0]])
-                self.tuples = len(data)
-            case "DictObject":
-                self.r = {k: tuple(v) for k, v in self.r.items()}
-                self.algo_instance = RankSky(self.r, self.pref)
-                self.cardinality = len(next(iter(self.r.values())))
-                self.tuples = len(self.r)
+        if self.pref is None:
+            raise ValueError("RankSky requires a preference list")
+        if self.dataName == "DbObject":
+            rel = DataConverter(self.dbFp).dbToRelation()
+            self.algo_instance = RankSky(rel, self.pref)
+        elif self.dataName == "JsonObject":
+            rel = DataConverter(self.jsonFp).jsonToRelation()
+            self.algo_instance = RankSky(rel, self.pref)
+        else:
+            self.r = {k: tuple(v) for k, v in self.r.items()}
+            self.algo_instance = RankSky(self.r, self.pref)
 
-    def startSkyIR(self):
+    def _start_skyir(self):
         print_red("Starting SkyIR")
-        match self.dataName:
-            case "DbObject":
-                dataConverter = DataConverter(self.dbFp)
-                data = dataConverter.dbToRelation()
-                self.algo_instance = SkyIR(data)
-                self.algo_instance.skyIR(10)
-                self.cardinality = len(data[list(data.keys())[0]])
-                self.tuples = len(data)
-            case "JsonObject":
-                dataConverter = DataConverter(self.jsonFp)
-                data = dataConverter.jsonToRelation()
-                self.algo_instance = SkyIR(data)
-                self.algo_instance.skyIR(10)
-                self.cardinality = len(data[list(data.keys())[0]])
-                self.tuples = len(data)
-            case "DictObject":
-                self.r = {k: tuple(v) for k, v in self.r.items()}
-                self.algo_instance = SkyIR(self.r)
-                self.algo_instance.skyIR(10)
-                self.cardinality = len(next(iter(self.r.values())))
-                self.tuples = len(self.r)
+        if self.dataName == "DbObject":
+            rel = DataConverter(self.dbFp).dbToRelation()
+            self.algo_instance = SkyIR(rel); self.algo_instance.skyIR(10)
+        elif self.dataName == "JsonObject":
+            rel = DataConverter(self.jsonFp).jsonToRelation()
+            self.algo_instance = SkyIR(rel); self.algo_instance.skyIR(10)
+        else:
+            self.r = {k: tuple(v) for k, v in self.r.items()}
+            self.algo_instance = SkyIR(self.r); self.algo_instance.skyIR(10)
 
-    def extractDbData(self, db_path):
-        conn = sqlite3.connect(db_path)
-        cur = conn.cursor()
+    # ------------------------------------------------------------------ #
+    # helper                                                             #
+    # ------------------------------------------------------------------ #
+    @staticmethod
+    def _count_db_columns(db_path: str) -> int:
+        con = sqlite3.connect(db_path)
+        cur = con.cursor()
+        cur.execute("PRAGMA table_info(Pokemon)")
+        n = len(cur.fetchall())
+        con.close()
+        return n
 
-        cur.execute(f"PRAGMA table_info({self.tableName})")
-        columns_info = cur.fetchall()
 
-        if not columns_info:
-            print_red(f"Warning: No columns found for table '{self.tableName}'.")
-            return 0, 0
+# ====================================================================== #
+#  quick tests                                                           #
+# ====================================================================== #
+if __name__ == "__main__":
+    from Utils.DataTypes.DictObject import DictObject
 
-        columns = [col[1] for col in columns_info if col[1].lower() != "rowid"]
+    # sample relation
+    relation = {
+        1: (5, 20, 70),
+        2: (4, 60, 50),
+        3: (7, 30, 40),
+        4: (6, 80, 60)
+    }
+    prefs = [Preference.MIN, Preference.MAX, Preference.MIN]
 
-        cur.execute(f"SELECT COUNT(*) FROM {self.tableName}")
-        row_count = cur.fetchone()[0]
+    print(">>> Test RankSky on DictObject")
+    app_test = App(DictObject(relation), RankSky,
+                   input_type="Dictionary",
+                   preferences=prefs)
+    print("Scores:", app_test.algo_instance.score)
+    print("Time  :", app_test.execution_time, "s\n")
 
-        conn.close()
-
-        return len(columns), row_count
+    print(">>> Test CoskyAlgorithme on DictObject")
+    app_test2 = App(DictObject(relation), CoskyAlgorithme,
+                    input_type="Dictionary",
+                    preferences=prefs)
+    print("Result:", app_test2.algo_instance.s)  # structure propre au CoskyAlgorithme
+    print("Time  :", app_test2.execution_time, "s")

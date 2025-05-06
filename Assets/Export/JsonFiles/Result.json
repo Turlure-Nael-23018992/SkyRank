@@ -1,7 +1,11 @@
 {
-    "skyline_points": [],
-    "execution_time": 0,
-    "algorithm": "RankSky",
+    "skyline_points": [
+        2,
+        4,
+        1
+    ],
+    "execution_time": 0.0010006427764892578,
+    "algorithm": "CoskySQL",
     "input_type": "JSON",
     "input_file": "RTuples8.json"
 }

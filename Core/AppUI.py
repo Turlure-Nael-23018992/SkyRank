@@ -1,265 +1,214 @@
-# Import necessary libraries
-import tkinter as tk
+import os, sys, ast, sqlite3, tkinter as tk
 from tkinter import ttk, messagebox, filedialog
-import sys
-import os
-import ast
-import json
-import humanize
+from tkinter.simpledialog import askstring
 
-# Add the project root to the system path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-# Import project modules
 from Core.App import App
+from Core.Styles.StyleManager import StyleManager
+from Utils.Preference import Preference
 from Utils.Exporter.CsvExporterImpl import CsvExporterImpl
 from Utils.Exporter.JsonExporterImpl import JsonExporterImpl
 from Utils.DataTypes.DbObject import DbObject
 from Utils.DataTypes.JsonObject import JsonObject
 from Utils.DataTypes.DictObject import DictObject
-from Database.DatabaseHelpers import Database
 from Utils.DataModifier.JsonUtils import readJson
+from Database.DatabaseHelpers import Database
 from Algorithms.CoskySql import CoskySQL
 from Algorithms.CoskyAlgorithme import CoskyAlgorithme
 from Algorithms.DpIdpDh import DpIdpDh
 from Algorithms.RankSky import RankSky
 from Algorithms.SkyIR import SkyIR
-from Core.Styles.StyleManager import StyleManager
 
 
 class AppUI:
-    """
-    GUI class to manage user interactions with the application.
-    """
-
     def __init__(self, master: tk.Tk):
         self.root = master
         self.root.title("SkyRank - Algorithm Runner")
         self.root.geometry("600x750")
-
         StyleManager.apply_styles(self.root)
-        self.createWidgets()
+        self._build_widgets()
+        self.selectedDataPath = None
+        self.lastAppInstance = None
 
-    def createWidgets(self):
-        """
-        Create all GUI widgets (labels, dropdowns, buttons).
-        """
-        self.dataLabel = ttk.Label(self.root, text="Choose Data Type:")
-        self.dataLabel.pack(pady=5)
-
+    # ----------------------------------------------------------------- widgets
+    def _build_widgets(self):
+        ttk.Label(self.root, text="Choose Data Type:").pack(pady=5)
         self.dataVar = tk.StringVar()
-        self.dataDropdown = ttk.Combobox(self.root, textvariable=self.dataVar, state="readonly")
-        self.dataDropdown['values'] = ("Database", "JSON", "Dictionary", "Generate Random Database")
+        self.dataDropdown = ttk.Combobox(
+            self.root, textvariable=self.dataVar, state="readonly",
+            values=("Database", "JSON", "Dictionary", "Generate Random Database")
+        )
         self.dataDropdown.pack(pady=5)
-        self.dataDropdown.bind("<<ComboboxSelected>>", self.onDataChoiceChanged)
+        self.dataDropdown.bind("<<ComboboxSelected>>", self._data_choice_changed)
 
-        self.fileFrame = ttk.Frame(self.root)
-        self.fileFrame.pack(pady=5)
-
+        self.fileFrame = ttk.Frame(self.root); self.fileFrame.pack(pady=5)
         self.fileVar = tk.StringVar()
 
-        self.algoLabel = ttk.Label(self.root, text="Choose Algorithm:")
-        self.algoLabel.pack(pady=5)
-
+        ttk.Label(self.root, text="Choose Algorithm:").pack(pady=5)
         self.algoVar = tk.StringVar()
-        self.algoDropdown = ttk.Combobox(self.root, textvariable=self.algoVar, state="readonly")
-        self.algoDropdown['values'] = ("SkyIR", "DpIdpDh", "CoskyAlgorithme", "CoskySQL", "RankSky")
-        self.algoDropdown.pack(pady=5)
+        self.algoDropdown = ttk.Combobox(
+            self.root, textvariable=self.algoVar, state="readonly",
+            values=("SkyIR", "DpIdpDh", "CoskyAlgorithme", "CoskySQL", "RankSky")
+        ); self.algoDropdown.pack(pady=5)
 
-        self.outputLabel = ttk.Label(self.root, text="Choose Output Format:")
-        self.outputLabel.pack(pady=5)
-
+        ttk.Label(self.root, text="Choose Output Format:").pack(pady=5)
         self.outputVar = tk.StringVar()
-        self.outputDropdown = ttk.Combobox(self.root, textvariable=self.outputVar, state="readonly")
-        self.outputDropdown['values'] = ("CSV", "JSON")
-        self.outputDropdown.current(0)
-        self.outputDropdown.pack(pady=5)
+        self.outputDropdown = ttk.Combobox(
+            self.root, textvariable=self.outputVar, state="readonly", values=("CSV", "JSON")
+        ); self.outputDropdown.current(0); self.outputDropdown.pack(pady=5)
 
-        self.runButton = ttk.Button(self.root, text="Run Algorithm", command=self.runAlgorithm)
-        self.runButton.pack(pady=20)
+        ttk.Button(self.root, text="Run Algorithm", command=self._run_algorithm).pack(pady=20)
+        ttk.Button(self.root, text="View Skyline Points", command=self._view_skyline_points).pack(pady=5)
+        self.statusLabel = ttk.Label(self.root, text=""); self.statusLabel.pack(pady=5)
 
-        self.viewButton = ttk.Button(self.root, text="View Skyline Points", command=self.viewSkylinePoints)
-        self.viewButton.pack(pady=5)
-
-        self.statusLabel = ttk.Label(self.root, text="")
-        self.statusLabel.pack(pady=5)
-
-    def onDataChoiceChanged(self, _event):
-        """
-        Handle user data type choice and dynamically update the file import options.
-        """
-        for widget in self.fileFrame.winfo_children():
-            widget.destroy()
+    # ---------------------------------------------------------- dynamic frame
+    def _data_choice_changed(self, _):
+        for w in self.fileFrame.winfo_children():
+            w.destroy()
 
         choice = self.dataVar.get()
         self.selectedDataPath = None
 
         if choice == "Generate Random Database":
-            ttk.Label(self.fileFrame, text="Number of Columns (3, 6, 9):").pack(side="left", padx=5)
-            self.columnEntry = ttk.Entry(self.fileFrame, width=5)
-            self.columnEntry.pack(side="left", padx=5)
-
-            ttk.Label(self.fileFrame, text="Number of Rows:").pack(side="left", padx=5)
-            self.rowEntry = ttk.Entry(self.fileFrame, width=10)
-            self.rowEntry.pack(side="left", padx=5)
+            ttk.Label(self.fileFrame, text="Columns (3/6/9):").pack(side="left", padx=5)
+            self.columnEntry = ttk.Entry(self.fileFrame, width=5); self.columnEntry.pack(side="left", padx=5)
+            ttk.Label(self.fileFrame, text="Rows:").pack(side="left", padx=5)
+            self.rowEntry = ttk.Entry(self.fileFrame, width=10); self.rowEntry.pack(side="left", padx=5)
 
         elif choice in ("Database", "JSON"):
-            files = self.listAvailableFiles(choice)
+            files = self._list_files(choice)
             if files:
-                self.fileDropdown = ttk.Combobox(self.fileFrame, textvariable=self.fileVar, state="readonly", values=files)
-                self.fileDropdown.pack(side="left", padx=5)
-            self.importButton = ttk.Button(self.fileFrame, text="Import File", command=self.importFile)
-            self.importButton.pack(side="left", padx=5)
+                ttk.Combobox(self.fileFrame, textvariable=self.fileVar,
+                             state="readonly", values=files).pack(side="left", padx=5)
+            ttk.Button(self.fileFrame, text="Import", command=self._import_file).pack(side="left", padx=5)
 
         elif choice == "Dictionary":
-            ttk.Label(self.fileFrame, text="Enter Dictionary manually:").pack()
-            self.dictTextArea = tk.Text(self.fileFrame, height=10, width=60)
-            self.dictTextArea.pack(pady=5)
+            ttk.Label(self.fileFrame, text="Enter Dictionary:").pack()
+            self.dictTextArea = tk.Text(self.fileFrame, height=10, width=60); self.dictTextArea.pack(pady=5)
+            ttk.Label(self.fileFrame, text="Or import JSON:").pack(pady=5)
+            ttk.Combobox(self.fileFrame, textvariable=self.fileVar,
+                         state="readonly", values=self._list_files("Dictionary")
+                         ).pack(side="left", padx=5)
+            ttk.Button(self.fileFrame, text="Import", command=self._import_file).pack(side="left", padx=5)
 
-            ttk.Label(self.fileFrame, text="Or import from a JSON file:").pack(pady=5)
-            self.fileDropdown = ttk.Combobox(self.fileFrame, textvariable=self.fileVar, state="readonly", values=self.listAvailableFiles("Dictionary"))
-            self.fileDropdown.pack(side="left", padx=5)
-            self.importButton = ttk.Button(self.fileFrame, text="Import File", command=self.importFile)
-            self.importButton.pack(side="left", padx=5)
-
-    @staticmethod
-    def listAvailableFiles(dataType):
-        baseFolders = {
-            "Database": "../Assets/Databases",
-            "JSON": "../Assets/AlgoExecution/JsonFiles",
-            "Dictionary": "../Assets/AlgoExecution/JsonFiles"
-        }
-        extensions = {
-            "Database": ".db",
-            "JSON": ".json",
-            "Dictionary": ".json"
-        }
-        folder = baseFolders.get(dataType)
-        ext = extensions.get(dataType)
-        if folder and os.path.exists(folder):
-            return [f for f in os.listdir(folder) if f.endswith(ext)]
-        return []
-
-    def importFile(self):
+    def _import_file(self):
         choice = self.dataVar.get()
-        filetypes = [("Database Files", "*.db")] if choice == "Database" else [("JSON Files", "*.json")]
-        filepath = filedialog.askopenfilename(filetypes=filetypes)
-        if filepath:
-            self.selectedDataPath = filepath
-            self.fileVar.set(os.path.basename(filepath))
+        types = [("Database Files", "*.db")] if choice == "Database" else [("JSON Files", "*.json")]
+        path = filedialog.askopenfilename(filetypes=types)
+        if path:
+            self.selectedDataPath = path
+            self.fileVar.set(os.path.basename(path))
 
-    from Utils.Exporter.CsvExporterImpl import CsvExporterImpl
-    from Utils.Exporter.JsonExporterImpl import JsonExporterImpl
-    # ...
+    # ------------------------------------------------------------ utilities
+    @staticmethod
+    def _list_files(dtype):
+        roots = {"Database": "../Assets/Databases",
+                 "JSON": "../Assets/AlgoExecution/JsonFiles",
+                 "Dictionary": "../Assets/AlgoExecution/JsonFiles"}
+        ext = ".db" if dtype == "Database" else ".json"
+        folder = roots[dtype]
+        return [f for f in os.listdir(folder) if f.endswith(ext)] if os.path.exists(folder) else []
 
-    def runAlgorithm(self):
-        """
-        Run the selected algorithm based on configuration and export results.
-        """
-        import time
-        dataChoice = self.dataVar.get()
-        algoChoice = self.algoVar.get()
-        outputFormat = self.outputVar.get()
+    # ----------------------------------------------------------- data loader
+    def _load_data(self, dtype):
+        if dtype == "Database":
+            p = self.selectedDataPath or os.path.join("../Assets/Databases", self.fileVar.get())
+            return DbObject(p)
+        if dtype == "JSON":
+            p = self.selectedDataPath or os.path.join("../Assets/AlgoExecution/JsonFiles", self.fileVar.get())
+            return JsonObject(p)
+        if dtype == "Dictionary":
+            txt = getattr(self, "dictTextArea", tk.Text()).get("1.0", tk.END).strip()
+            return DictObject(ast.literal_eval(txt)) if txt else DictObject(
+                readJson(os.path.join("../Assets/AlgoExecution/JsonFiles", self.fileVar.get())))
+        if dtype == "Generate Random Database":
+            cols, rows = int(self.columnEntry.get()), int(self.rowEntry.get())
+            dbp = "../Assets/AlgoExecution/DbFiles/TestExecution.db"
+            Database(dbp, cols, rows); return DbObject(dbp)
+        raise ValueError("Unsupported data type")
 
-        if not dataChoice or not algoChoice:
-            messagebox.showerror("Error", "Please select data type and algorithm.")
-            return
+    # --------------------------------------------------------- count columns
+    def _count_columns(self, data_obj, dtype):
+        if isinstance(data_obj, DictObject):
+            return len(next(iter(data_obj.r.values())))
+        if isinstance(data_obj, JsonObject):
+            raw = readJson(data_obj.fp)
+            return len(next(iter(raw.values())))
+        if isinstance(data_obj, DbObject):
+            con = sqlite3.connect(data_obj.fp); cur = con.cursor()
+            cur.execute("PRAGMA table_info(Pokemon)"); n = len(cur.fetchall()) - 1
+            con.close(); return n
+        if dtype == "Generate Random Database":
+            return int(self.columnEntry.get())
+        raise ValueError("Cannot count columns")
 
+    # -------------------------------------------------------------- run algo
+    def _run_algorithm(self):
+        dtype, algo_name, out_fmt = self.dataVar.get(), self.algoVar.get(), self.outputVar.get()
+        if not dtype or not algo_name:
+            messagebox.showerror("Error", "Select data type and algorithm."); return
         try:
-            # Load data
-            if dataChoice == "Database":
-                filename = self.fileVar.get()
-                path = self.selectedDataPath or os.path.join("../Assets/Databases", filename)
-                data = DbObject(path)
-            elif dataChoice == "JSON":
-                filename = self.fileVar.get()
-                path = self.selectedDataPath or os.path.join("../Assets/AlgoExecution/JsonFiles", filename)
-                data = JsonObject(path)
-            elif dataChoice == "Dictionary":
-                userInput = self.dictTextArea.get("1.0", tk.END).strip()
-                if userInput:
-                    rawDict = ast.literal_eval(userInput)
-                    data = DictObject(rawDict)
-                else:
-                    filename = self.fileVar.get()
-                    path = self.selectedDataPath or os.path.join("../Assets/AlgoExecution/JsonFiles", filename)
-                    data = DictObject(readJson(path))
-            elif dataChoice == "Generate Random Database":
-                cols = int(self.columnEntry.get())
-                rows = int(self.rowEntry.get())
-                dbPath = "../Assets/AlgoExecution/DbFiles/TestExecution.db"
-                Database(dbPath, cols, rows)
-                data = DbObject(dbPath)
-            else:
-                raise ValueError("Unsupported data type.")
+            data = self._load_data(dtype)
+            nb_cols = self._count_columns(data, dtype)
 
-            # Algo mapping
-            algoMap = {
-                "SkyIR": SkyIR,
-                "DpIdpDh": DpIdpDh,
-                "CoskyAlgorithme": CoskyAlgorithme,
-                "CoskySQL": CoskySQL,
-                "RankSky": RankSky
-            }
-            algoClass = algoMap.get(algoChoice)
-            if not algoClass:
-                raise ValueError("Unsupported algorithm.")
+            requires_pref = algo_name in ("RankSky", "CoskyAlgorithme", "CoskySQL")
+            prefs = None
+            if requires_pref:
+                s = askstring("Preferences",
+                              f"{nb_cols} columns detected.\nEnter {nb_cols} values (min/max) comma‑separated:")
+                if not s: return
+                parts = [p.strip().lower() for p in s.split(",")]
+                if len(parts) != nb_cols or any(p not in ("min", "max") for p in parts):
+                    messagebox.showerror("Error", "Incorrect preference list."); return
+                prefs = [Preference.MIN if p == "min" else Preference.MAX for p in parts]
 
-            # Exporter selection
-            exporter = None
-            if outputFormat == "CSV":
-                exporter = CsvExporterImpl(output_path="../Assets/Export/CSVFiles/Results.csv")
-            elif outputFormat == "JSON":
-                exporter = JsonExporterImpl(output_path="../Assets/Export/JsonFiles/Result.json")
+            algo_cls = {"SkyIR": SkyIR, "DpIdpDh": DpIdpDh,
+                        "CoskyAlgorithme": CoskyAlgorithme, "CoskySQL": CoskySQL,
+                        "RankSky": RankSky}[algo_name]
 
-            # Run app
-            app = App(
-                data,
-                algoClass,
-                exporter=exporter,
-                input_type=dataChoice,
-                input_file=self.fileVar.get() if self.fileVar.get() else "generated"
-            )
+            exporter = CsvExporterImpl("../Assets/Export/CSVFiles/Results.csv") if out_fmt == "CSV" \
+                      else JsonExporterImpl("../Assets/Export/JsonFiles/Result.json")
+
+            app = App(data, algo_cls, exporter=exporter,
+                      input_type=dtype, input_file=self.fileVar.get() or "inline",
+                      preferences=prefs)
             self.lastAppInstance = app
-
-            self.statusLabel.config(
-                text=f"Execution complete. Results saved to {outputFormat}.",
-                foreground="green"
-            )
-
+            self.statusLabel.config(text=f"Done in {app.execution_time}s", foreground="green")
         except Exception as e:
-            self.statusLabel.config(text=f"Error: {str(e)}", foreground="red")
-            messagebox.showerror("Execution Error", str(e))
+            self.statusLabel.config(text=f"Error: {e}", foreground="red")
+            messagebox.showerror("Error", str(e))
 
+    # ----------------------------------------------------------- skyline UI
+    # ------------------------------------------------ skyline viewer
+    def _get_skyline_points(self):
+        algo = self.lastAppInstance.algo
+        inst = self.lastAppInstance.algo_instance
 
-    def getSkylinePoints(self):
-        algoInstance = self.lastAppInstance.algo_instance
-        algoName = self.lastAppInstance.algo
-        match algoName:
-            case "SkyIR": return algoInstance.result
-            case "DpIdpDh": return algoInstance.score
-            case "CoskyAlgorithme": return algoInstance.s
-            case "CoskySQL": return algoInstance.rows_res
-            case "RankSky": return algoInstance.score
-        return []
-
-    def viewSkylinePoints(self):
-        if hasattr(self, "lastAppInstance") and self.lastAppInstance:
-            points = self.getSkylinePoints()
-            if not points:
-                messagebox.showinfo("Skyline Points", "No skyline points found.")
-                return
-            win = tk.Toplevel(self.root)
-            win.title("Skyline Points")
-            textArea = tk.Text(win, wrap="word")
-            textArea.pack(expand=True, fill="both")
-            for p in points:
-                textArea.insert(tk.END, str(p) + "\n")
+        if algo == "SkyIR":
+            return inst.result
+        elif algo == "DpIdpDh":
+            return inst.score
+        elif algo == "CoskyAlgorithme":
+            return getattr(inst, "s", [])
+        elif algo == "CoskySQL":
+            return inst.rows_res
+        elif algo == "RankSky":
+            return inst.score
         else:
-            messagebox.showwarning("Warning", "Please run an algorithm first.")
+            return []
+
+    def _view_skyline_points(self):
+        if not self.lastAppInstance: return
+        pts = self._get_skyline_points()
+        if not pts:
+            messagebox.showinfo("Skyline", "No points."); return
+        win = tk.Toplevel(self.root); win.title("Skyline Points")
+        ta = tk.Text(win, wrap="word"); ta.pack(expand=True, fill="both")
+        for p in pts: ta.insert(tk.END, str(p) + "\n")
 
 
 if __name__ == "__main__":
-    rootWindow = tk.Tk()
-    appUI = AppUI(rootWindow)
-    rootWindow.mainloop()
+    root = tk.Tk()
+    AppUI(root)
+    root.mainloop()
