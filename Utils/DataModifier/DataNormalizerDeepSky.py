@@ -104,5 +104,6 @@ if __name__ == "__main__":
     """
     Example usage of DataNormalizerDeepSky.
     """
-    tab = [3, 1, 5, 7]
-    print(DataNormalizerDeepSky.sortArr(tab))
+    r = readJson("../../Assets/AlgoExecution/JsonFiles/RTuples8.json")
+    DataNorm = DataNormalizerDeepSky(r, "../../Assets/DeepSkyTest.db")
+    DataNorm.refreshDb()

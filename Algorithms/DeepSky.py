@@ -146,13 +146,15 @@ class DeepSky:
     """
     Class to implement the DeepSky algorithm with SQL.
     """
-    def __init__(self, fp, k, algo, pref=[Preference.MIN, Preference.MIN, Preference.MIN]):
+    def __init__(self, fp, k, algo, pref=None):
         """
         Initialize the DeepSky algorithm with the given database file path and relation.
         :param fp: the path to the SQLite database file
         :param k: the number of top tuples to find
         :param algo: the algorithm to use (CoskySQL, CoskyAlgorithme, DpIdpDh, RankSky, SkyIR)
         """
+        if pref is None:
+            pref = [Preference.MIN, Preference.MIN, Preference.MIN]
         self.dbToDict = DatabaseToDict(fp)
         self.fp = fp
         self.r = self.dbToDict.toDict()
@@ -169,7 +171,7 @@ class DeepSky:
         tot = 0
         rl = self.r
         while tot < self.k and rl != {}:
-            cosky = CoskySQL(self.fp)
+            cosky = CoskySQL(self.fp, self.preference)
             linesToSave.append(cosky.rows_res)
             s = cosky.dict
 
@@ -195,19 +197,21 @@ class DeepSky:
         rl=self.r
         while tot<self.k and rl!={}:
             if self.algo == "CoskyAlgorithme":
-                s = CoskyAlgorithme(rl).r
-            elif self.algo == "DpIdpDh":
-                s = DpIdpDh(rl).r
+                s = CoskyAlgorithme(rl, self.preference).s
+                """elif self.algo == "DpIdpDh":
+                s = DpIdpDh(rl).score"""
             elif self.algo == "RankSky":
                 s = RankSky(rl, self.preference).sky
-            elif self.algo == "SkyIR":
-                s = SkyIR(rl).r
+            """elif self.algo == "SkyIR":
+                s = SkyIR(rl).r"""
+            print("s", s)
             tot+=len(s)
+            print("tot", tot)
             if tot<=self.k:
                 self.topK.update(s)
                 rl = {k:v for k,v in rl.items() if k not in s.keys()}
             else:
-                self.topK.update({x:s[x] for x in list(s.keys())[:self.k]})
+                self.topK = addBest(self.k, self.topK, s)
                 return self.topK
         return self.topK
 
@@ -238,13 +242,9 @@ class DeepSky:
 
 if __name__ == "__main__":
     linesToInsertBack = []
-    k = 100
+    k = 4
     algos = [CoskySQL, CoskyAlgorithme, DpIdpDh, RankSky, SkyIR]
-    time1 = TimeCalc(100, CoskySQL)
-    deepSky = DeepSky("../Assets/cosky_db_C3_R20000.db", k, CoskySQL)
-    time1.stop()
-    executionTime = time1.execution_time
-    print(f"Execution time: {executionTime}")
-    """print(deepSky.topK)
-    print(len(deepSky.topK))"""
+    deepSky = DeepSky("../Assets/DeepSkyTest.db", k, RankSky)
+    print(deepSky.topK)
+    print(len(deepSky.topK))
 

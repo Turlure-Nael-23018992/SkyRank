@@ -40,7 +40,7 @@ class RankSky:
         self.alpha = 0.85 # Damping factor
         self.score = {}
         self.time = 0
-        #self.run()
+        self.run()
 
     def unifyPreferencesMax(self, r, pref):
         """
@@ -50,9 +50,7 @@ class RankSky:
         :param pref: list[Preference] - list of current preferences, which will be updated to MAX
         """
         dataUnifier = DataUnifier(r, pref, mode="Max")
-        print(f"Pre Unify data: {r}")
         self.r = dataUnifier.unifyPreferencesMax()
-        print(f"Post Unify data: {self.r}")
 
     def unifyPreferencesMin(self, r, pref):
         """

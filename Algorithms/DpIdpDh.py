@@ -815,7 +815,7 @@ class DpIdpDh:
             for j in range(len(sky[i])):
                 if sky[i][j] > 0:
                     tot += 1 / sky[i][j] * math.log10(spTot / domCard[j])
-            score[i] = tot
+            score[i + 1] = tot
         return score
 
     def sort(self,rev):
@@ -897,7 +897,7 @@ def dpIdpAvecHierarchieDeDominance():
 if __name__ == '__main__':
     import time
 
-    r_big = readJson("Datas/RBig.json")
+    r_big = readJson("Datas/RTuples8.json")
 
     # Convert the loaded dictionary values to tuples
     r_big = {key: tuple(value) for key, value in r_big.items()}
@@ -914,12 +914,7 @@ if __name__ == '__main__':
     }
 
     startTime=time.time()
-    dp_idp = DpIdpDh(r_big)
-    print("--------------Avant--------------")
-    print(dp_idp.score)
-    print(f"temps: {time.time()-startTime}")
-    print("--------------Apres--------------")
-    dp_idp.sort("Desc")
+    dp_idp = DpIdpDh(r)
     print(dp_idp.score)
 
 

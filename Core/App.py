@@ -153,7 +153,6 @@ class App:
 if __name__ == "__main__":
     from Utils.DataTypes.DictObject import DictObject
 
-    # sample relation
     relation = {
         1: (5, 20, 70),
         2: (4, 60, 50),
@@ -173,5 +172,5 @@ if __name__ == "__main__":
     app_test2 = App(DictObject(relation), CoskyAlgorithme,
                     input_type="Dictionary",
                     preferences=prefs)
-    print("Result:", app_test2.algo_instance.s)  # structure propre au CoskyAlgorithme
+    print("Result:", app_test2.algo_instance.s)
     print("Time  :", app_test2.execution_time, "s")

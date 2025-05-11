@@ -20,7 +20,6 @@ class CoskyAlgorithme:
         self.pref = pref
         self.r = r
         self.r = self.unifyMin()
-        print("self.r",self.r)
         self.bbs = BbsCosky(r, 1, 2)
         self.s= {k:list(v) for k,v in self.bbs.skyline.items()}
         #beauty_print("s",self.s)
@@ -45,7 +44,7 @@ class CoskyAlgorithme:
 
     def unifyMin(self):
         dataUnifier = DataUnifier(self.r, self.pref, mode="Min")
-        print(f"Pre Unify data: {self.r}")
+        #print(f"Pre Unify data: {self.r}")
         self.r = dataUnifier.unifyPreferencesMin()
         return self.r
 
@@ -80,6 +79,10 @@ class CoskyAlgorithme:
         for i in self.data_keys:
             # for each element of s's values (column)
             for j in range(self.m):
+                if self.totGini == 0:
+                    for i in self.s:
+                        self.s[i].append(1.0)
+                    return self.s
                 self.p[i][j]=self.gini[j]/self.totGini*self.ni[i][j]
                 p_i_j=self.p[i][j]
                 self.totPP[i]+=pow(p_i_j, 2)
@@ -115,7 +118,8 @@ class CoskyAlgorithme:
             self.s[i].append(val)
         if self.is_debug:
             beauty_print("totIdealP", self.totIdealP)
-        print(self.s)
+        self.sort("Desc")
+        print("CoskyAlgorithme Result : ", self.s)
         return self.s
 
     def sort(self,rev):
@@ -137,6 +141,17 @@ if __name__ == '__main__':
         8: (9, 90, 0.033333333)
     }
 
+    r_petit = {
+        #1: (5, 20, 0.014285714),
+        #2: (4, 60, 0.02),
+        3: (5, 30, 0.016666667),
+        #4: (1, 80, 0.016666667),
+        5: (5, 90, 0.025),
+        6: (9, 30, 0.02),
+        7: (7, 80, 0.025),
+        8: (9, 90, 0.033333333)
+    }
+
     r_big = readJson("Datas/RBig.json")
 
     r = {
@@ -147,8 +162,8 @@ if __name__ == '__main__':
 
 
     startTime = time.time()
-    #print(r_petit)
-    cosky = CoskyAlgorithme(r_petit, [Preference.MIN, Preference.MIN, Preference.MIN], is_debug=True)
+    print(r_petit)
+    cosky = CoskyAlgorithme(r_petit, [Preference.MIN, Preference.MIN, Preference.MIN])
     print("-----------------Avant-----------------")
     print(cosky.s)
     print(f"temps: {time.time() - startTime}")
