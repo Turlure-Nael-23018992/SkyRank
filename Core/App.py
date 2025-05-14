@@ -17,9 +17,23 @@ from Utils.DisplayHelpers import print_red
 
 
 class App:
+    """
+    Unified interface to execute Skyline algorithms on various data types
+    (Dictionary, JSON, or Database) and optionally export the results.
+    """
+
     def __init__(self, data, algo, exporter=None,
                  input_type=None, input_file=None, preferences=None):
+        """
+        Initialize the App and run the selected algorithm.
 
+        :param data: Input data object (DictObject, JsonObject, or DbObject)
+        :param algo: Algorithm class to execute
+        :param exporter: Exporter object (CSV or JSON)
+        :param input_type: Type of input (for logging or metadata)
+        :param input_file: Input file name or identifier
+        :param preferences: List of preferences (MIN or MAX) for each column
+        """
         self.exporter = exporter
         self.algo_instance = None
         self.execution_time = 0
@@ -27,7 +41,6 @@ class App:
         self.input_type = input_type or "Unknown"
         self.input_file = input_file or "generated"
 
-        # detect wrapper
         if isinstance(data, DictObject):
             self.r, self.dataName = data.r, "DictObject"
             nb_cols = len(next(iter(self.r.values())))
@@ -40,7 +53,6 @@ class App:
         else:
             raise ValueError("Unsupported data type")
 
-        # check preference length
         if self.pref is not None and len(self.pref) != nb_cols:
             raise ValueError(
                 f"Preference list length ({len(self.pref)}) "
@@ -58,10 +70,10 @@ class App:
         if self.exporter:
             self.exporter.export(self)
 
-    # ------------------------------------------------------------------ #
-    # dispatcher                                                         #
-    # ------------------------------------------------------------------ #
     def _dispatch(self):
+        """
+        Dispatch the algorithm execution based on its name.
+        """
         match self.algo:
             case "CoskyAlgorithme": self._start_cosky_algorithme()
             case "CoskySQL":        self._start_cosky_sql()
@@ -70,10 +82,10 @@ class App:
             case "SkyIR":           self._start_skyir()
             case _:                 raise ValueError("Unknown algorithm")
 
-    # ------------------------------------------------------------------ #
-    # algorithm starters                                                 #
-    # ------------------------------------------------------------------ #
     def _start_cosky_sql(self):
+        """
+        Launch the CoskySQL algorithm based on the data format.
+        """
         print_red("Starting CoskySQL")
         if self.dataName == "DbObject":
             self.algo_instance = CoskySQL(self.dbFp, self.pref)
@@ -85,6 +97,9 @@ class App:
             self.algo_instance = CoskySQL("../Assets/AlgoExecution/DbFiles/TestExecution.db", self.pref)
 
     def _start_cosky_algorithme(self):
+        """
+        Launch the CoskyAlgorithme algorithm based on the data format.
+        """
         print_red("Starting CoskyAlgorithme")
         if self.dataName == "DbObject":
             rel = DataConverter(self.dbFp).dbToRelation()
@@ -97,6 +112,9 @@ class App:
             self.algo_instance = CoskyAlgorithme(self.r, self.pref)
 
     def _start_dp_idp_dh(self):
+        """
+        Launch the DpIdpDh algorithm based on the data format.
+        """
         print_red("Starting DpIdpDh")
         if self.dataName == "DbObject":
             rel = DataConverter(self.dbFp).dbToRelation()
@@ -109,6 +127,9 @@ class App:
             self.algo_instance = DpIdpDh(self.r)
 
     def _start_ranksky(self):
+        """
+        Launch the RankSky algorithm based on the data format.
+        """
         print_red("Starting RankSky")
         if self.pref is None:
             raise ValueError("RankSky requires a preference list")
@@ -123,6 +144,9 @@ class App:
             self.algo_instance = RankSky(self.r, self.pref)
 
     def _start_skyir(self):
+        """
+        Launch the SkyIR algorithm based on the data format.
+        """
         print_red("Starting SkyIR")
         if self.dataName == "DbObject":
             rel = DataConverter(self.dbFp).dbToRelation()
@@ -134,11 +158,14 @@ class App:
             self.r = {k: tuple(v) for k, v in self.r.items()}
             self.algo_instance = SkyIR(self.r); self.algo_instance.skyIR(10)
 
-    # ------------------------------------------------------------------ #
-    # helper                                                             #
-    # ------------------------------------------------------------------ #
     @staticmethod
-    def _count_db_columns(db_path: str) -> int:
+    def _count_db_columns(db_path):
+        """
+        Count the number of columns in a database table.
+
+        :param db_path: Path to the SQLite database
+        :return: Number of columns
+        """
         con = sqlite3.connect(db_path)
         cur = con.cursor()
         cur.execute("PRAGMA table_info(Pokemon)")
@@ -147,9 +174,6 @@ class App:
         return n
 
 
-# ====================================================================== #
-#  quick tests                                                           #
-# ====================================================================== #
 if __name__ == "__main__":
     from Utils.DataTypes.DictObject import DictObject
 

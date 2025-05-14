@@ -5,6 +5,7 @@ from Utils.TimerUtils import TimeCalc
 from Algorithms.BbsCosky import BbsCosky
 from Utils.DataModifier.DatabaseToDict import DatabaseToDict
 from Utils.DataModifier.DataUnifier import DataUnifier
+from Utils.DisplayHelpers import print_red
 
 
 class RankSky:
@@ -108,7 +109,7 @@ class RankSky:
         """
         bbs = BbsCosky(self.r, 1, 2)  # Create BBS object
         self.sky = {k: list(v) for k, v in bbs.skyline.items()}
-
+        return len(self.sky) == 1
     def squareMatrix(self):
         """
         Constructs the square matrix used for ranking.
@@ -177,7 +178,6 @@ class RankSky:
             self.score[key] = self.rTupleInit[key] + tuple([float(self.vk[i])])
             i += 1
         self.score = dict(sorted(self.score.items(), key=lambda item: item[1][-1], reverse=reverse))
-        print("Score sorted:", self.score)
 
     def printOutcomes(self):
         """
@@ -216,19 +216,29 @@ class RankSky:
         Executes the entire ranking process, including skyline computation, including a timer for performance measurement.
         """
         time1 = TimeCalc(100, "RankSky")
-        self.skylineComputation()
-        time1.stop()
-        self.unifyPreferencesMax(self.sky, self.pref)
-        self.initMatrix()
-        time2 = TimeCalc(100, "RankSky")
-        self.squareMatrix()
-        self.stochasticMatrix()
-        self.googlePageRank()
-        self.Ipl()
-        self.sort()
-        time2.stop()
-        self.time = time1.execution_time + time2.execution_time
-        #print(self.sky)
+        if self.skylineComputation():
+            time1.stop()
+            self.time = time1.execution_time
+            first_key = next(iter(self.sky))
+            self.sky[first_key].append(1)
+            self.score = {first_key : self.sky[first_key]}
+            print("self.score", self.score)
+            print_red("1")
+        else :
+            self.skylineComputation()
+            print_red("2")
+            time1.stop()
+            self.unifyPreferencesMax(self.sky, self.pref)
+            self.initMatrix()
+            time2 = TimeCalc(100, "RankSky")
+            self.squareMatrix()
+            self.stochasticMatrix()
+            self.googlePageRank()
+            self.Ipl()
+            self.sort()
+            time2.stop()
+            self.time = time1.execution_time + time2.execution_time
+        print(self.sky)
 
 if __name__ == "__main__":
     """r = {
@@ -247,16 +257,21 @@ if __name__ == "__main__":
         7: (7, 80, 1/40),
         8: (9, 90, 1/30)
     }
+
+    """r = {
+        1: (5, 20, 1/70),
+    }"""
     pref = [Preference.MIN,Preference.MIN,Preference.MIN]
 
-    db = DatabaseToDict("../Assets/DeepSkyTest.db")
+    """db = DatabaseToDict("../Assets/DeepSkyTest.db")
     db.toDict()
-    r = db.data
+    r = db.data"""
+
+    """rankSky = RankSky(r, pref)
 
     print("1./ Utiliser rankSky avec ipl")
     print("2./ Utiliser rankSky avec iplDom")
     i = input("Choisir 1 ou 2 : ")
-    rankSky = RankSky(r, pref)
     if i == "1":
         time1 = TimeCalc(100, "RankSky")
         rankSky.skylineComputation()
@@ -272,6 +287,7 @@ if __name__ == "__main__":
         time2.stop()
         rankSky.printOutcomes()
         print("Execution time : ", time1.execution_time + time2.execution_time)
+        print(rankSky.sky)
 
     elif i== "2":
         time1 = TimeCalc(100, "RankSky")
@@ -287,7 +303,7 @@ if __name__ == "__main__":
         rankSky.sort()
         time2.stop()
         rankSky.printOutcomes()
-        print("Execution time : ", time1.execution_time + time2.execution_time)
+        print("Execution time : ", time1.execution_time + time2.execution_time)"""
 
 
 

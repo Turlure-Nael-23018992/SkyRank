@@ -2,6 +2,7 @@ import math
 import time
 
 from Algorithms.BbsCosky import BbsCosky
+from Utils.DataModifier.DatabaseToDict import DatabaseToDict
 from Utils.Preference import Preference
 from Utils.TimerUtils import TimeCalc
 from Utils.DisplayHelpers import beauty_print
@@ -52,6 +53,10 @@ class CoskyAlgorithme:
         """
         Run the Cosky algorithm to compute the ranking and sorting of data based on multiple criteria.
         """
+        if len(self.s) == 1:
+            for i in self.s:
+                self.s[i].append(1.0)
+            return self.s
         # for each key (row) of s
         for i in self.data_keys:
             # for each element of s's values (column)
@@ -142,10 +147,10 @@ if __name__ == '__main__':
     }
 
     r_petit = {
-        #1: (5, 20, 0.014285714),
-        #2: (4, 60, 0.02),
+        1: (5, 20, 0.014285714),
+        2: (4, 60, 0.02),
         3: (5, 30, 0.016666667),
-        #4: (1, 80, 0.016666667),
+        4: (1, 80, 0.016666667),
         5: (5, 90, 0.025),
         6: (9, 30, 0.02),
         7: (7, 80, 0.025),
@@ -160,14 +165,19 @@ if __name__ == '__main__':
         4: (1, 80, 1 / 60)
     }
 
+    r = {
+        1 : (5, 20, 1/70),
+    }
+    import os
 
+    print(os.path.abspath("../Assets/Databases/cosky_db_C3_R100.db"))
+    db = DatabaseToDict("../Assets/Databases/cosky_db_C3_R100.db")
+    db_dict = db.toDict()
     startTime = time.time()
-    print(r_petit)
-    cosky = CoskyAlgorithme(r_petit, [Preference.MIN, Preference.MIN, Preference.MIN])
+    cosky = CoskyAlgorithme(r, [Preference.MIN, Preference.MIN, Preference.MIN])
     print("-----------------Avant-----------------")
     print(cosky.s)
     print(f"temps: {time.time() - startTime}")
     print("-----------------Apres-----------------")
     cosky.sort("Desc")
     print(cosky.s)
-    print(cosky.time)

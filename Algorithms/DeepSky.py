@@ -134,6 +134,8 @@ def addBest(k, topK, s):
     """
     n = k - len(topK)  # Number of elements to add
     # Sort elements in `s` by the last value of the tuple (score) in descending order
+    print("s", s)
+    print("s type", type(s))
     sorted_s = sorted(s.items(), key=lambda x: x[1][-1] if x[1][-1] is not None else float('-inf'), reverse=True)
 
     # Add the top `n` elements to `topK`
@@ -174,11 +176,9 @@ class DeepSky:
             cosky = CoskySQL(self.fp, self.preference)
             linesToSave.append(cosky.rows_res)
             s = cosky.dict
-
             tot += len(s)
             if tot <= self.k:
                 self.topK.update(s)
-                #rl = {k: v for k, v in rl.items() if self.k not in s.keys()}
                 linesToSave = self.delLines(linesToSave)
             else:
                 addBest(self.k, self.topK, s)
@@ -189,8 +189,6 @@ class DeepSky:
     def DeepSky(self):
         """
         DeepSky algorithm to find the top-k tuples with the best scores.
-        :param r: the relation
-        :param k: the number of top tuples to find
         :return: the top-k tuples
         """
         tot=0
@@ -201,14 +199,14 @@ class DeepSky:
                 """elif self.algo == "DpIdpDh":
                 s = DpIdpDh(rl).score"""
             elif self.algo == "RankSky":
-                s = RankSky(rl, self.preference).sky
+                s = RankSky(rl, self.preference).score
+                print("s 1", s)
             """elif self.algo == "SkyIR":
                 s = SkyIR(rl).r"""
-            print("s", s)
             tot+=len(s)
-            print("tot", tot)
             if tot<=self.k:
                 self.topK.update(s)
+                print("self.topK", self.topK)
                 rl = {k:v for k,v in rl.items() if k not in s.keys()}
             else:
                 self.topK = addBest(self.k, self.topK, s)
@@ -242,9 +240,10 @@ class DeepSky:
 
 if __name__ == "__main__":
     linesToInsertBack = []
-    k = 4
+    k = 7
     algos = [CoskySQL, CoskyAlgorithme, DpIdpDh, RankSky, SkyIR]
-    deepSky = DeepSky("../Assets/DeepSkyTest.db", k, RankSky)
-    print(deepSky.topK)
-    print(len(deepSky.topK))
+    fp = "../Assets/Databases/cosky_db_C3_R10000.db"
+    fp = "../Assets/DeepSkyTest.db"
+    deepSky = DeepSky(fp, k, CoskyAlgorithme)
+    print("deepSky.topK", deepSky.topK)
 

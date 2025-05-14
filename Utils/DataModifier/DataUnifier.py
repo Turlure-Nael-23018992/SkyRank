@@ -11,7 +11,6 @@ class DataUnifier:
         """
         :param data: the data to be unified can be a dictionary, JSON or database object
         :param preferences: the preferences to be used for unifying the data
-        :param toMin: if True, the data will be unified to minimum values else to maximum values
         """
         self.data = data
         self.preferences = preferences
@@ -21,9 +20,6 @@ class DataUnifier:
     def unifyPreferencesMin(self):
         """
         Converts all preferences in the relation to MIN by inverting MAX dimensions.
-
-        :param r: dict - the relation data to modify (values are updated in place)
-        :param pref: list[Preference] - list of current preferences, which will be updated to MIN
         """
         self.tupleToTab(self.data)
         for i in range(len(self.preferences)):
@@ -37,9 +33,6 @@ class DataUnifier:
     def unifyPreferencesMax(self):
         """
         Converts all preferences in the relation to MAX by inverting MIN dimensions.
-
-        :param r: dict - the relation data to modify (values are updated in place)
-        :param pref: list[Preference] - list of current preferences, which will be updated to MAX
         """
         for i in range(len(self.preferences)):
             if self.preferences[i] == Preference.MIN:

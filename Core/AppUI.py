@@ -22,7 +22,17 @@ from Algorithms.SkyIR import SkyIR
 
 
 class AppUI:
+    """
+    Graphical User Interface for SkyRank - Algorithm Runner.
+    Allows users to select data, run different algorithms, and export results.
+    """
+
     def __init__(self, master: tk.Tk):
+        """
+        Initialize the AppUI.
+
+        :param master: The root Tkinter window
+        """
         self.root = master
         self.root.title("SkyRank - Algorithm Runner")
         self.root.geometry("600x750")
@@ -31,8 +41,10 @@ class AppUI:
         self.selectedDataPath = None
         self.lastAppInstance = None
 
-    # ----------------------------------------------------------------- widgets
     def _build_widgets(self):
+        """
+        Build all UI widgets such as dropdowns, buttons, and labels.
+        """
         ttk.Label(self.root, text="Choose Data Type:").pack(pady=5)
         self.dataVar = tk.StringVar()
         self.dataDropdown = ttk.Combobox(
@@ -62,8 +74,12 @@ class AppUI:
         ttk.Button(self.root, text="View Skyline Points", command=self._view_skyline_points).pack(pady=5)
         self.statusLabel = ttk.Label(self.root, text=""); self.statusLabel.pack(pady=5)
 
-    # ---------------------------------------------------------- dynamic frame
     def _data_choice_changed(self, _):
+        """
+        Handle changes to the data type selection and update the UI accordingly.
+
+        :param _: Event object (not used)
+        """
         for w in self.fileFrame.winfo_children():
             w.destroy()
 
@@ -93,6 +109,9 @@ class AppUI:
             ttk.Button(self.fileFrame, text="Import", command=self._import_file).pack(side="left", padx=5)
 
     def _import_file(self):
+        """
+        Open a file dialog to import a database or JSON file based on selected type.
+        """
         choice = self.dataVar.get()
         types = [("Database Files", "*.db")] if choice == "Database" else [("JSON Files", "*.json")]
         path = filedialog.askopenfilename(filetypes=types)
@@ -100,9 +119,14 @@ class AppUI:
             self.selectedDataPath = path
             self.fileVar.set(os.path.basename(path))
 
-    # ------------------------------------------------------------ utilities
     @staticmethod
     def _list_files(dtype):
+        """
+        List all available files for the given data type.
+
+        :param dtype: Type of the data (Database, JSON, Dictionary)
+        :return: List of matching filenames
+        """
         roots = {"Database": "../Assets/Databases",
                  "JSON": "../Assets/AlgoExecution/JsonFiles",
                  "Dictionary": "../Assets/AlgoExecution/JsonFiles"}
@@ -110,8 +134,13 @@ class AppUI:
         folder = roots[dtype]
         return [f for f in os.listdir(folder) if f.endswith(ext)] if os.path.exists(folder) else []
 
-    # ----------------------------------------------------------- data loader
     def _load_data(self, dtype):
+        """
+        Load the selected data depending on its type.
+
+        :param dtype: Type of the data to load
+        :return: A data object (DbObject, JsonObject, or DictObject)
+        """
         if dtype == "Database":
             p = self.selectedDataPath or os.path.join("../Assets/Databases", self.fileVar.get())
             return DbObject(p)
@@ -128,8 +157,14 @@ class AppUI:
             Database(dbp, cols, rows); return DbObject(dbp)
         raise ValueError("Unsupported data type")
 
-    # --------------------------------------------------------- count columns
     def _count_columns(self, data_obj, dtype):
+        """
+        Count the number of columns in the given data object.
+
+        :param data_obj: The data object loaded
+        :param dtype: The data type string
+        :return: Number of columns
+        """
         if isinstance(data_obj, DictObject):
             return len(next(iter(data_obj.r.values())))
         if isinstance(data_obj, JsonObject):
@@ -143,8 +178,10 @@ class AppUI:
             return int(self.columnEntry.get())
         raise ValueError("Cannot count columns")
 
-    # -------------------------------------------------------------- run algo
     def _run_algorithm(self):
+        """
+        Execute the selected algorithm on the loaded data and export results.
+        """
         dtype, algo_name, out_fmt = self.dataVar.get(), self.algoVar.get(), self.outputVar.get()
         if not dtype or not algo_name:
             messagebox.showerror("Error", "Select data type and algorithm."); return
@@ -179,9 +216,12 @@ class AppUI:
             self.statusLabel.config(text=f"Error: {e}", foreground="red")
             messagebox.showerror("Error", str(e))
 
-    # ----------------------------------------------------------- skyline UI
-    # ------------------------------------------------ skyline viewer
     def _get_skyline_points(self):
+        """
+        Get the computed skyline points from the last executed algorithm.
+
+        :return: List of skyline points
+        """
         algo = self.lastAppInstance.algo
         inst = self.lastAppInstance.algo_instance
 
@@ -199,6 +239,9 @@ class AppUI:
             return []
 
     def _view_skyline_points(self):
+        """
+        Open a new window displaying the skyline points, if any.
+        """
         if not self.lastAppInstance: return
         pts = self._get_skyline_points()
         if not pts:
@@ -206,6 +249,7 @@ class AppUI:
         win = tk.Toplevel(self.root); win.title("Skyline Points")
         ta = tk.Text(win, wrap="word"); ta.pack(expand=True, fill="both")
         for p in pts: ta.insert(tk.END, str(p) + "\n")
+
 
 
 if __name__ == "__main__":

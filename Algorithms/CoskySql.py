@@ -191,8 +191,9 @@ class CoskySQL:
         self.dict = dict
         #print(dict)
         #print(self.executionTime)
-        print("rows_res", self.rows_res)
-        return self.rows_res
+        print(self.dict)
+
+        return self.dict
 
     def unifyPreferences(self):
         dataUnifier = DataUnifier(self.dbFilepath, self.pref)
@@ -221,8 +222,10 @@ class CoskySQL:
 if __name__ == '__main__':
     #print("Sqlite version : ", sqlite3.sqlite_version)
     db_filepath= "../Assets/DeepSkyTest.db"
+    db_filepath = "../Assets/Databases/cosky_db_C3_R100.db"
     #startTime = time.time()
-    CoskySQL(db_filepath, [Preference.MIN, Preference.MAX, Preference.MIN])
+    CoskySQL(db_filepath, [Preference.MIN, Preference.MIN, Preference.MIN])
+
 
 
 

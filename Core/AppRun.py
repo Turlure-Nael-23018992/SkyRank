@@ -26,10 +26,16 @@ ROWS_RATIO = [x * ROWS_RATIO_MULT for x in ROWS_RATIO_UNITS]
 
 class AppRun:
     """
-    EntryPoint of the app
+    Entry point of the application for interacting with the SQLite database
+    and managing table creation and data retrieval.
     """
 
     def __init__(self, db_filepath):
+        """
+        Initialize AppRun with the given database filepath.
+
+        :param db_filepath: Path to the SQLite database file
+        """
         self.table_name = "Pokemon"
         self.db_filepath = db_filepath
         self.conn = sqlite3.connect(db_filepath)
@@ -40,8 +46,9 @@ class AppRun:
 
     def select_all(self):
         """
-        Select tout
-        :return: Tous les enregistrements de la table
+        Select all rows from the table.
+
+        :return: All records from the table
         """
         sql_query = f"SELECT * FROM {self.table_name}"
         self.cursor.execute(sql_query)
@@ -49,22 +56,22 @@ class AppRun:
 
     def create_table(self, root_databases, col, row):
         """
-        Crée une table dans la base de données
-        :param root_databases: Le chemin vers le dossier contenant les bases de données
-        :param col: Le nombre de colonnes
-        :param row: Le nombre de lignes
+        Create a new database file and generate a table with mock data.
+
+        :param root_databases: Root folder for database generation
+        :param col: Number of columns
+        :param row: Number of rows
         """
         database_filepath = fr"{root_databases}\cosky_db_C{col}_R{row // self.ratio_for_count}M.db"
         sql_mocker = SqlDataMocker(col, row, filepath=database_filepath)
         r_dict = sql_mocker.run()
         database = sql_mocker.database
-        print(f"{database_filepath} créé avec {col} colonnes / {row} rows...")
+        print(f"{database_filepath} created with {col} columns / {row} rows...")
 
     def create_tables(self):
         """
-        Crée les tables dans la base de données
+        Create multiple tables using predefined column and row configurations.
         """
-        #Apelle la fonction create_table pour chaque combinaison de colonnes et de lignes
         cols = range(3, 12, 3)
         root_databases = fr"..\Assets\databases"
         for col in cols:
@@ -73,7 +80,7 @@ class AppRun:
 
     def mock_data(self):
         """
-        Mock des données
+        Generate mock data and display results for different configurations.
         """
         db_filepath = f"../Assets/pokemon.db"
         for col in range(3, 4):
@@ -82,43 +89,26 @@ class AppRun:
                 row_len = row
                 dict_data = SqlDataMocker(col_len, row_len, db_filepath).dict_data
                 beauty_print(f"[col]:{col} [row]:{row}", dict_data)
-                # sleep(5)
         print("Mock data done")
 
 def data_normalizer(time_dict, max_rows, max_time, scaleX=280, scaleY=280):
     """
-    Normalize les données pour le graphique
-    :param time_dict: Dictionnaire contenant les temps d'exécution
-    :param max_rows: Nombre maximum de lignes
-    :param max_time: Temps maximum
-    :param scaleX: Échelle pour l'axe X (280)
-    :param scaleY: Échelle pour l'axe Y (280)
+    Normalize execution time data for graph plotting.
+
+    :param time_dict: Dictionary with execution time per row count
+    :param max_rows: Maximum number of rows
+    :param max_time: Maximum execution time
+    :param scaleX: X-axis scaling factor (default: 280)
+    :param scaleY: Y-axis scaling factor (default: 280)
     """
     colors = [f"gray", "brightmaroon", "cyan", "skyblue"]
-    #colors=[Fore.LIGHTBLACK_EX, Fore.LIGHTMAGENTA_EX, Fore.CYAN, Fore.BLUE]
     NL = '\n'
-    # calcul des ratios pour les axes du graphique
     ratio_x = scaleX / max_rows
     ratio_y = scaleY / max_time
     dict_ = '\n'.join([f"{k}:{v}" for k, v in time_dict.items()])
-    '''
-    print(f"""
-        time_dict:{dict_}
-        max_rows:{max_rows} 
-        max_time:{max_time}
-        ratio_x:{ratio_x}
-        ratio_y:{ratio_y}""")'''
-    mini_ = min(time_dict.keys()) # minimum colonne bd
-    mini_key = time_dict[mini_] # Tableau des valeurs pour la colonne mini_
-    len_dict_val = len(mini_key) # Nombre BD testée
-    '''
-    beauty_print("time_dict", time_dict)
-    beauty_print("mini_", mini_)
-    beauty_print("mini_key", mini_key)
-    beauty_print("len_dict_val", len_dict_val)
-    '''
-
-
+    mini_ = min(time_dict.keys())
+    mini_key = time_dict[mini_]
+    len_dict_val = len(mini_key)
 
     line2 = ""
     print("% Lines")
@@ -133,87 +123,57 @@ def data_normalizer(time_dict, max_rows, max_time, scaleX=280, scaleY=280):
         line1_full = line1_header + line1 + ";"
         line1_full = line1_full.replace(" -- ;", ";")
         print(line1_full)
-    #print()
-    #print("% Filldraws")
-    #print(line2)
-
 
 def compare_all():
     """
-    Compare le temps d'éxécution de tous les algos
+    Compare execution time of all algorithms over different database configurations.
     """
     db_filepath = f"../Assets/pokemon.db"
     log_filepath = fr"..\Assets\log.txt"
-    algo_types = [CoskySQL] #SkyIR, CoskyAlgorithme,
-    #iterations =[8, 40, 250, 500, 750, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 100000, 200000, 500000]
-    rows = ROWS_RATIO  #[10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000]
+    algo_types = [CoskySQL]
+    rows = [100, 1000]
     col_count = 3
     cols = [3, 6, 9]
-    rows = [100, 1000]
     time_dict = {k: [0, 0, 0, 0] for k in rows}
-    #beauty_print("time_dict", time_dict)
-
     max_rows = 0
     max_time = 0
 
     root_databases = fr"..\Assets\databasesGenerated"
     for col in cols:
         for row in rows:
-            #beauty_print("Colonne", col)
-            #beauty_print("Ligne", rows)
-            #Permets d'afficher le temps d'éxécution de chaque algo
-            database_filepath = fr"{root_databases}\cosky_db_C{col}_R{row}.db" # Récupération du chemin
+            database_filepath = fr"{root_databases}\cosky_db_C{col}_R{row}.db"
             iteration_logs = []
-            #print(f"[{row}] iterations...")
             beauty_print("Chemin de la base de données", database_filepath)
             app_run = (AppRun("../Assets/Databases/cosky_db_C3_R10.db"))
-            #print(app_run.select_all())  # Sélectionne toutes les données de la table
-            r = DataParser(app_run.select_all()).r_dict  # Transformation des données en dictionnaire
-            #On a transformé les données en dictionnaire Pour les algos qui en ont besoin
-            
-            # Pour tous les types d'algos
-            for idx, algo_type in enumerate(algo_types):
-                # Le nom de la classe de l'algo
-                algo_name = algo_type.__name__
-                #print(f"\tALGO [{algo_name}]")
+            r = DataParser(app_run.select_all()).r_dict
 
+            for idx, algo_type in enumerate(algo_types):
+                algo_name = algo_type.__name__
                 time_calc = TimeCalc(row, algo_name)
-                # Pour l'algo SQL on lui rajoute l'objet connection dans les arguments
 
                 if algo_name == "CoskySQL":
-                    # a besoin d'un chemin
                     algo_obj = algo_type(database_filepath)
 
-
                 elif algo_name == "SkyIR":
-                    # a besoin d'un dictionnaire de données
                     algo_obj = algo_type(r).skyIR(10)
 
-
                 elif algo_name == "CoskyAlgorithme":
-                    # a besoin d'un dictionnaire de données
                     algo_obj = algo_type(r)
 
-                time_calc.stop()  # Arrête le timer
-                iteration_logs.append(time_calc)  # Ajoute le temps d'éxécution à la liste
+                time_calc.stop()
+                iteration_logs.append(time_calc)
                 current_time = time_calc.execution_time
-                time_dict[row][idx] = current_time  # Ajoute le temps d'éxécution au dictionnaire
+                time_dict[row][idx] = current_time
 
                 if row > max_rows:
                     max_rows = row
-
                 if current_time > max_time:
                     max_time = current_time
 
-            # Affichage du temps d'éxécution de chaque algo
             min_for_sample = min([x.ratio for x in iteration_logs])
             for x in iteration_logs:
-                if x.ratio == min_for_sample:
-                    print(x.get_formated_data(), file=open(log_filepath, 'a'))
-                else:
-                    print(x.get_formated_data(), file=open(log_filepath, 'a'))
+                print(x.get_formated_data(), file=open(log_filepath, 'a'))
 
-                #print(x.get_formated_data())
     '''
     beauty_print("time_dict2", time_dict2)
     beauty_print("time_dict", time_dict)
@@ -225,14 +185,12 @@ def compare_all():
 
 
 
-# Déclaration des algos
 COMPARE_ALL = "COMPARE_ALL"
 COSKY_ALGO_ = "COSKY_ALGO"
 COSKY_SQL_ = "COSKY_SQL"
 #DP_IDP_ = "DP_IDP"
 CONFIG_DATA = "CONFIG_DATA"
 
-# MODES Contient tous les algos dont on veut faire la comparaison
 MODES = {
     COMPARE_ALL: compare_all,
     COSKY_ALGO_: CoskyAlgorithme,
@@ -240,18 +198,6 @@ MODES = {
     #DP_IDP_: DP_IDP,
     CONFIG_DATA: SqlDataMocker
 }
-
-# Comparateur
-
-# Time calc
-
-# print
-
-# Single algos
-
-# Config
-
-# choice row and columns
 
 
 if __name__ == '__main__':

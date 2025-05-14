@@ -18,7 +18,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 class DeepSkyTest(unittest.TestCase):
     def setUp(self):
         self.rTuples8 = readJson("../Datas/Rtuples8.json")
-        self.k = 5
+        self.k = 7
         self.dataNorm = DataNormalizerDeepSky(self.rTuples8, "../../Assets/DeepSkyTest.db")
 
     def testDeepSkyCoskySql(self):
