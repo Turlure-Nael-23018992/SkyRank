@@ -17,9 +17,9 @@ python3.8 -m venv .venv
 # Activate and install dependencies
 echo "Installing dependencies..."
 source .venv/bin/activate
-python -m ensurepip --upgrade
-python -m pip install --upgrade pip
-python -m pip install -e .
+python3.8 -m ensurepip --upgrade
+python3.8 -m pip install --upgrade pip
+python3.8 -m pip install -e .
 
 # Initialize git submodules
 echo "Initializing Git submodules..."

@@ -86,7 +86,7 @@
             15987.148180961609
         ]
     },
-    "max_rows": 1000000000,
+    "max_rows": 2000000,
     "max_time": 15987.148180961609,
     "server_config": {
         "server_name": "Nael-PC",

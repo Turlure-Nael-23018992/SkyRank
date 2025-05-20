@@ -154,7 +154,7 @@ class CoskySQL:
             FROM {self.table_name} INNER JOIN SScore rs ON {self.table_name}.RowId = rs.RowId
             ORDER BY Score DESC;
             """
-        print(sql_queries)
+        #print(sql_queries)
 
         """open = 0
         close = 0

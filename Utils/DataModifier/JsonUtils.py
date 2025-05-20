@@ -135,5 +135,4 @@ def addServerConfigToJson(json_path, config_path):
 if __name__ == "__main__":
     import glob
 
-    tab = readJson("../../Assets/AlgoExecution/JsonFiles/RTuples8.json", True)
-    print(tab)
+    addServerConfigToJson("../../Assets/LatexData/OneAlgoData/CoskySql/ThreeColumnsData/ExecutionCoskySql369.json", "../../Assets/ServerConfig/ConfigNael.json")
