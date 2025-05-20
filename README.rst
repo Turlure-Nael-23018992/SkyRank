@@ -31,6 +31,23 @@ If you already cloned it without `--recurse-submodules`, run:
 
     git submodule update --init --recursive
 
+🚀 Installation on Linux/macOS
+------------------------------
+
+Run the provided shell script:
+
+.. code-block:: bash
+
+    chmod +x install.sh
+    ./install.sh
+
+This script will:
+
+- Use `python3.8` to create a virtual environment in `.venv`
+- Install all dependencies
+- Initialize Git submodules
+- Make the `skyrank-gui` and `skyrank-gui2` commands available inside the virtual environment
+
 🚀 Installation on Windows
 --------------------------
 
@@ -50,27 +67,20 @@ To launch it:
 
 If you encounter a permissions issue, try launching the terminal **as administrator**.
 
-🚀 Installation on Linux/macOS
-------------------------------
-
-Run the provided shell script:
-
-.. code-block:: bash
-
-    chmod +x install.sh
-    ./install.sh
-
-This script will:
-
-- Use `python3.8` to create a virtual environment in `.venv`
-- Install all dependencies
-- Initialize Git submodules
-- Make the `skyrank-gui` and `skyrank-gui2` commands available inside the virtual environment
-
 🧪 Manual Setup (Alternative)
 -----------------------------
 
 If you prefer setting it up manually:
+
+On **Linux/macOS**:
+
+.. code-block:: bash
+
+    python3.8 -m venv .venv
+    source .venv/bin/activate
+    python -m pip install --upgrade pip
+    python -m pip install -e .
+    git submodule update --init --recursive
 
 On **Windows**:
 
@@ -83,35 +93,25 @@ On **Windows**:
     python -m pip install -e .
     git submodule update --init --recursive
 
-On **Linux/macOS**:
-
-.. code-block:: bash
-
-    python3.8 -m venv .venv
-    source .venv/bin/activate
-    python -m pip install --upgrade pip
-    python -m pip install -e .
-    git submodule update --init --recursive
-
 🏁 Usage
 --------
 
 Once installed, activate the environment and launch one of the interfaces:
+
+On **Linux/macOS**:
+
+.. code-block:: bash
+
+    source .venv/bin/activate
+
+    skyrank-gui     # PyQt5 GUI with Skyline visualizations
+    skyrank-gui2    # Tkinter GUI (alternative interface)
 
 On **Windows**:
 
 .. code-block:: bash
 
     .\.venv\Scripts\activate
-
-    skyrank-gui     # PyQt5 GUI with Skyline visualizations
-    skyrank-gui2    # Tkinter GUI (alternative interface)
-
-On **Linux/macOS**:
-
-.. code-block:: bash
-
-    source .venv/bin/activate
 
     skyrank-gui     # PyQt5 GUI with Skyline visualizations
     skyrank-gui2    # Tkinter GUI (alternative interface)
