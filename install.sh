@@ -1,29 +1,33 @@
 #!/bin/bash
+set -e
 
-echo "[SkyRank] Setting up environment with Python 3.8..."
+echo "[SkyRank] Installing using CPython 3.8..."
 
-# Check for python3.8
-if ! command -v python3.8 &> /dev/null
-then
-    echo "❌ Python 3.8 is not installed. Please install it manually."
+# Check Python 3.8
+if ! command -v python3.8 &> /dev/null; then
+    echo "❌ Python 3.8 not found. Please install it first:"
+    echo "https://www.python.org/downloads/release/python-380/"
     exit 1
 fi
 
-# Create virtual env
+# Create virtual environment
 echo "Creating virtual environment..."
 python3.8 -m venv .venv
 
-# Activate and install
-source .venv/bin/activate
+# Activate and install dependencies
 echo "Installing dependencies..."
-pip install --upgrade pip
-pip install -e .
+source .venv/bin/activate
+python -m ensurepip --upgrade
+python -m pip install --upgrade pip
+python -m pip install -e .
 
-# Init git submodules
+# Initialize git submodules
 echo "Initializing Git submodules..."
 git submodule update --init --recursive
 
 echo
-echo "✅ SkyRank is ready. To launch:"
-echo "  source .venv/bin/activate"
-echo "  skyrank-gui"
+echo "✅ SkyRank is ready to use!"
+echo "To run it:"
+echo "    source .venv/bin/activate"
+echo "    skyrank-gui     # PyQt5 interface"
+echo "    skyrank-gui2    # Tkinter interface"

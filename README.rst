@@ -1,100 +1,124 @@
 📦 SkyRank — Installation Guide
 ===============================
 
-SkyRank is a benchmarking and visualization framework for Skyline algorithms.
+This guide explains how to install and run the **SkyRank** project with its visual interfaces using **CPython 3.8** and virtual environments.
 
-This guide explains how to install and run SkyRank correctly on **Windows** and **Linux/macOS**, including its Git submodules and required dependencies.
+⚙️ Requirements
+---------------
 
-🚀 Clone the Repository with Submodules
+- Git installed
+- Python 3.8 installed (https://www.python.org/downloads/release/python-380/)
+- Internet connection
+- (On Windows) Python launcher `py`
+
+📥 Clone the Repository with Submodules
 ---------------------------------------
 
-SkyRank depends on two Git submodules:
+SkyRank depends on nested Git submodules for external algorithms:
 
 - ``external/BBS/`` → `BBS-Python-3.x- <https://github.com/Turlure-Nael-23018992/BBS-Python-3.x-.git>`__
 - ``external/BBS/RTree/`` → `R-Tree-Python-3.x- <https://github.com/Turlure-Nael-23018992/R-Tree-Python-3.x-.git>`__
 
-Clone everything in one command:
+To clone the full project with all submodules in one step:
 
 .. code-block:: bash
 
     git clone --recurse-submodules https://github.com/Turlure-Nael-23018992/SkyRank.git
 
-Already cloned without submodules? Run this inside the project folder:
+If you already cloned it without `--recurse-submodules`, run:
 
 .. code-block:: bash
 
     git submodule update --init --recursive
 
-🧪 Step-by-Step Installation
-----------------------------
+🚀 Installation on Windows
+--------------------------
 
-📍 **Windows Setup**
+SkyRank provides an installation script that does everything for you:
 
-1. **Install Python 3.8**
-   Download it from: https://www.python.org/downloads/release/python-380/
+1. **Checks for Python 3.8**
+2. **Creates `.venv` with CPython 3.8**
+3. **Installs all dependencies**
+4. **Initializes submodules**
+5. **Exposes CLI commands: `skyrank-gui`, `skyrank-gui2`**
 
-2. **Create and activate a virtual environment**:
+To launch it:
 
-.. code-block:: cmd
+.. code-block:: bash
 
-    python -m venv .venv
-    .venv\Scripts\activate
+    install.bat
 
-3. **Install dependencies using `pip`**:
+If you encounter a permissions issue, try launching the terminal **as administrator**.
 
-.. code-block:: cmd
+🚀 Installation on Linux/macOS
+------------------------------
 
-    pip install -e .
+Run the provided shell script:
 
-📍 **Linux / macOS Setup**
+.. code-block:: bash
 
-1. **Install Python 3.8**
-   (Use `pyenv` or your system’s package manager)
+    chmod +x install.sh
+    ./install.sh
 
-2. **Create and activate a virtual environment**:
+This script will:
+
+- Use `python3.8` to create a virtual environment in `.venv`
+- Install all dependencies
+- Initialize Git submodules
+- Make the `skyrank-gui` and `skyrank-gui2` commands available inside the virtual environment
+
+🧪 Manual Setup (Alternative)
+-----------------------------
+
+If you prefer setting it up manually:
+
+On **Windows**:
+
+.. code-block:: bash
+
+    py -3.8 -m venv .venv
+    .\.venv\Scripts\activate
+    python -m ensurepip --upgrade
+    python -m pip install --upgrade pip
+    python -m pip install -e .
+    git submodule update --init --recursive
+
+On **Linux/macOS**:
 
 .. code-block:: bash
 
     python3.8 -m venv .venv
     source .venv/bin/activate
+    python -m pip install --upgrade pip
+    python -m pip install -e .
+    git submodule update --init --recursive
 
-3. **Install project in editable mode**:
+🏁 Usage
+--------
 
-.. code-block:: bash
+Once installed, activate the environment and launch one of the interfaces:
 
-    pip install -e .
-
-📜 Dependencies Overview
--------------------------
-
-The following Python packages are required:
-
-- ``PyQt5==5.15.10`` — GUI with modern components and 3D visualization
-- ``tkinter`` — Lightweight fallback interface (already included in most Python distributions)
-- ``matplotlib`` — Plotting graphs
-- ``numpy`` — Matrix/vector computations
-- ``scikit-learn`` — Dimensionality reduction (PCA)
-- ``colorama`` and ``humanize`` — Terminal output formatting
-
-🖥️ Launch the Graphical Interfaces
------------------------------------
-
-SkyRank comes with **two GUI modes**:
-
-- ✅ **Modern GUI (PyQt5)**: 3D visualization, interactive selection, better UX
-- 🪶 **Lightweight GUI (Tkinter)**: Requires fewer libraries, suitable for older machines
-
-Launch them using:
+On **Windows**:
 
 .. code-block:: bash
 
-    skyrank-gui      # PyQt5 interface
-    skyrank-gui2     # Tkinter interface
+    .\.venv\Scripts\activate
 
-🔍 Need Help?
--------------
+    skyrank-gui     # PyQt5 GUI with Skyline visualizations
+    skyrank-gui2    # Tkinter GUI (alternative interface)
 
-For issues or contributions, feel free to open a GitHub issue or contact the maintainers:
+On **Linux/macOS**:
 
-- Naël Turlure
-- Mickael Martin-Nevot
+.. code-block:: bash
+
+    source .venv/bin/activate
+
+    skyrank-gui     # PyQt5 GUI with Skyline visualizations
+    skyrank-gui2    # Tkinter GUI (alternative interface)
+
+📄 License
+----------
+
+MIT License. See ``LICENSE`` file for details.
+
+``SkyRank`` is developed and maintained by Naël Turlure and Mickael Martin-Nevot.
