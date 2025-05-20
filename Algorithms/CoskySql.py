@@ -117,7 +117,7 @@ class CoskySQL:
         giniTot = " + ".join(["Gini" + name for name in col_offset])
 
         # SW.
-        sw = ", ".join([f"Gini{name} / ({giniTot}) AS W{name}" for name in col_offset])
+        sw = ", ".join([f"Gini{name} / COALESCE(NULLIF({giniTot},0),1) AS W{name}" for name in col_offset])
 
         # SP.
         sp = ", ".join([f"W{name} * N{name} AS P{name}" for name in col_offset])
@@ -154,8 +154,8 @@ class CoskySQL:
             FROM {self.table_name} INNER JOIN SScore rs ON {self.table_name}.RowId = rs.RowId
             ORDER BY Score DESC;
             """
+        print(sql_queries)
 
-        #print(sql_queries)
         """open = 0
         close = 0
         for i in range(len(sql_queries)):
@@ -172,9 +172,12 @@ class CoskySQL:
 
         results = cursor.fetchall()
         if len(results) == 1:
+            print("Only one skyline point found – automatic assignment of score 1.0")
             row = results[0]
-            #print("Un seul point Skyline trouvé – attribution automatique du score 1.0")
-            row_with_score = row + (1.0,)
+            row = [r for r in row]
+            row[-1] = 1.0
+            row = tuple(row)
+            row_with_score = row
             self.rows_res = [row_with_score]
             self.dict = {row_with_score[0]: row_with_score[1:]}
             #print(self.rows_res)
@@ -222,7 +225,6 @@ class CoskySQL:
 if __name__ == '__main__':
     #print("Sqlite version : ", sqlite3.sqlite_version)
     db_filepath= "../Assets/DeepSkyTest.db"
-    db_filepath = "../Assets/Databases/cosky_db_C3_R100.db"
     #startTime = time.time()
     CoskySQL(db_filepath, [Preference.MIN, Preference.MIN, Preference.MIN])
 

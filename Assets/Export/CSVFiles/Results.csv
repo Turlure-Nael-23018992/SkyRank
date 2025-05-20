@@ -1,5 +1,2 @@
-cardinality,time_attr3,time_attr6,time_attr9
-8,0.0010001659393310547,,
-8,0.0010001659393310547,,
-8,0.0010001659393310547,,
-8,0,,
+algorithm,input_type,input_file,execution_time,skyline_points
+CoskySQL,JSON,../Assets/AlgoExecution/JsonFiles\RTuples8.json,0.0009992122650146484,2;4;1

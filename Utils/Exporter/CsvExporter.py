@@ -1,30 +1,35 @@
-# Utils/Exporter/CsvExporter.py
-
 import csv
+import os
 
 class CsvExporter:
     """
-    Concrete class to export the results of an App instance into a CSV file.
+    Simple CSV exporter to save basic App results to a CSV file.
     """
 
     def __init__(self, output_path="Results.csv"):
         """
-        Constructor of CsvExporter.
-
-        :param output_path: The path where the CSV file will be saved (default is "Results.csv").
+        :param output_path: The path where the CSV file will be saved.
         """
         self.output_path = output_path
 
     def export(self, app):
         """
-        Exports the App's results (cardinality, number of tuples, execution time) into a CSV file.
+        Export the algorithm name, cardinality, number of tuples, and execution time into a CSV file.
 
-        :param app: The App instance containing the results to export.
+        :param app: The App instance containing the results.
         """
-        headers = ['cardinality', 'tuples', app.algo]
-        data = [app.cardinality, app.tuples, getattr(app.algo_instance, 'time', 0)]
+        algo_instance = app.algo_instance
+        algo_name = app.algo
+        time = getattr(algo_instance, 'time', 0)
+
+        headers = ['algorithm', 'cardinality', 'tuples', 'execution_time']
+        data = [algo_name, app.cardinality, app.tuples, time]
+
+        os.makedirs(os.path.dirname(self.output_path), exist_ok=True)
 
         with open(self.output_path, mode='w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(headers)
             writer.writerow(data)
+
+        print(f"[CSV Exporter] Exported summary to {self.output_path}")

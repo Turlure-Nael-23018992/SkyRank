@@ -24,16 +24,6 @@ class App:
 
     def __init__(self, data, algo, exporter=None,
                  input_type=None, input_file=None, preferences=None):
-        """
-        Initialize the App and run the selected algorithm.
-
-        :param data: Input data object (DictObject, JsonObject, or DbObject)
-        :param algo: Algorithm class to execute
-        :param exporter: Exporter object (CSV or JSON)
-        :param input_type: Type of input (for logging or metadata)
-        :param input_file: Input file name or identifier
-        :param preferences: List of preferences (MIN or MAX) for each column
-        """
         self.exporter = exporter
         self.algo_instance = None
         self.execution_time = 0
@@ -43,20 +33,23 @@ class App:
 
         if isinstance(data, DictObject):
             self.r, self.dataName = data.r, "DictObject"
-            nb_cols = len(next(iter(self.r.values())))
+            self.cardinality = len(next(iter(self.r.values())))
+            self.tuples = len(self.r)
         elif isinstance(data, JsonObject):
             self.jsonFp, self.dataName = data.fp, "JsonObject"
-            nb_cols = len(data.data[next(iter(data.data))])
+            self.cardinality = len(data.data[next(iter(data.data))])
+            self.tuples = len(data.data)
         elif isinstance(data, DbObject):
             self.dbFp, self.dataName = data.fp, "DbObject"
-            nb_cols = self._count_db_columns(self.dbFp) - 1
+            self.cardinality = self._count_db_columns(self.dbFp) - 1
+            self.tuples = self._count_db_rows(self.dbFp)
         else:
             raise ValueError("Unsupported data type")
 
-        if self.pref is not None and len(self.pref) != nb_cols:
+        if self.pref is not None and len(self.pref) != self.cardinality:
             raise ValueError(
                 f"Preference list length ({len(self.pref)}) "
-                f"does not match column count ({nb_cols})"
+                f"does not match column count ({self.cardinality})"
             )
 
         self.algo = algo.__name__
@@ -67,13 +60,11 @@ class App:
 
         if self.algo_instance and not hasattr(self.algo_instance, "time"):
             self.algo_instance.time = self.execution_time
+
         if self.exporter:
             self.exporter.export(self)
 
     def _dispatch(self):
-        """
-        Dispatch the algorithm execution based on its name.
-        """
         match self.algo:
             case "CoskyAlgorithme": self._start_cosky_algorithme()
             case "CoskySQL":        self._start_cosky_sql()
@@ -83,9 +74,6 @@ class App:
             case _:                 raise ValueError("Unknown algorithm")
 
     def _start_cosky_sql(self):
-        """
-        Launch the CoskySQL algorithm based on the data format.
-        """
         print_red("Starting CoskySQL")
         if self.dataName == "DbObject":
             self.algo_instance = CoskySQL(self.dbFp, self.pref)
@@ -97,9 +85,6 @@ class App:
             self.algo_instance = CoskySQL("../Assets/AlgoExecution/DbFiles/TestExecution.db", self.pref)
 
     def _start_cosky_algorithme(self):
-        """
-        Launch the CoskyAlgorithme algorithm based on the data format.
-        """
         print_red("Starting CoskyAlgorithme")
         if self.dataName == "DbObject":
             rel = DataConverter(self.dbFp).dbToRelation()
@@ -112,9 +97,6 @@ class App:
             self.algo_instance = CoskyAlgorithme(self.r, self.pref)
 
     def _start_dp_idp_dh(self):
-        """
-        Launch the DpIdpDh algorithm based on the data format.
-        """
         print_red("Starting DpIdpDh")
         if self.dataName == "DbObject":
             rel = DataConverter(self.dbFp).dbToRelation()
@@ -127,9 +109,6 @@ class App:
             self.algo_instance = DpIdpDh(self.r)
 
     def _start_ranksky(self):
-        """
-        Launch the RankSky algorithm based on the data format.
-        """
         print_red("Starting RankSky")
         if self.pref is None:
             raise ValueError("RankSky requires a preference list")
@@ -144,9 +123,6 @@ class App:
             self.algo_instance = RankSky(self.r, self.pref)
 
     def _start_skyir(self):
-        """
-        Launch the SkyIR algorithm based on the data format.
-        """
         print_red("Starting SkyIR")
         if self.dataName == "DbObject":
             rel = DataConverter(self.dbFp).dbToRelation()
@@ -160,12 +136,6 @@ class App:
 
     @staticmethod
     def _count_db_columns(db_path):
-        """
-        Count the number of columns in a database table.
-
-        :param db_path: Path to the SQLite database
-        :return: Number of columns
-        """
         con = sqlite3.connect(db_path)
         cur = con.cursor()
         cur.execute("PRAGMA table_info(Pokemon)")
@@ -173,28 +143,11 @@ class App:
         con.close()
         return n
 
-
-if __name__ == "__main__":
-    from Utils.DataTypes.DictObject import DictObject
-
-    relation = {
-        1: (5, 20, 70),
-        2: (4, 60, 50),
-        3: (7, 30, 40),
-        4: (6, 80, 60)
-    }
-    prefs = [Preference.MIN, Preference.MAX, Preference.MIN]
-
-    print(">>> Test RankSky on DictObject")
-    app_test = App(DictObject(relation), RankSky,
-                   input_type="Dictionary",
-                   preferences=prefs)
-    print("Scores:", app_test.algo_instance.score)
-    print("Time  :", app_test.execution_time, "s\n")
-
-    print(">>> Test CoskyAlgorithme on DictObject")
-    app_test2 = App(DictObject(relation), CoskyAlgorithme,
-                    input_type="Dictionary",
-                    preferences=prefs)
-    print("Result:", app_test2.algo_instance.s)
-    print("Time  :", app_test2.execution_time, "s")
+    @staticmethod
+    def _count_db_rows(db_path):
+        con = sqlite3.connect(db_path)
+        cur = con.cursor()
+        cur.execute("SELECT COUNT(*) FROM Pokemon")
+        n = cur.fetchone()[0]
+        con.close()
+        return n

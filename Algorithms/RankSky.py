@@ -267,7 +267,7 @@ if __name__ == "__main__":
     db.toDict()
     r = db.data"""
 
-    """rankSky = RankSky(r, pref)
+    rankSky = RankSky(r, pref)
 
     print("1./ Utiliser rankSky avec ipl")
     print("2./ Utiliser rankSky avec iplDom")
@@ -303,7 +303,7 @@ if __name__ == "__main__":
         rankSky.sort()
         time2.stop()
         rankSky.printOutcomes()
-        print("Execution time : ", time1.execution_time + time2.execution_time)"""
+        print("Execution time : ", time1.execution_time + time2.execution_time)
 
 
 

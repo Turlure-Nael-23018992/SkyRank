@@ -159,6 +159,7 @@ class DeepSky:
             pref = [Preference.MIN, Preference.MIN, Preference.MIN]
         self.dbToDict = DatabaseToDict(fp)
         self.fp = fp
+        print("fp", fp)
         self.r = self.dbToDict.toDict()
         self.k = k
         self.algo = algo.__name__
@@ -240,10 +241,8 @@ class DeepSky:
 
 if __name__ == "__main__":
     linesToInsertBack = []
-    k = 7
+    k = 5
     algos = [CoskySQL, CoskyAlgorithme, DpIdpDh, RankSky, SkyIR]
-    fp = "../Assets/Databases/cosky_db_C3_R10000.db"
     fp = "../Assets/DeepSkyTest.db"
-    deepSky = DeepSky(fp, k, CoskyAlgorithme)
+    deepSky = DeepSky(fp, k, CoskySQL)
     print("deepSky.topK", deepSky.topK)
-
