@@ -53,7 +53,7 @@ class AlgoCalculator:
         self.cursor.execute(sql_query)
         return self.cursor.fetchall()
 
-    def compareExecutionTime(self, algo, fp: str, cols=None, rows=None):
+    def compareExecutionTime(self, algo, fp: str, cols=None, rows=None, pref=None):
         """
         Measure and store the execution time of a given algorithm on several databases of different sizes.
 
@@ -75,7 +75,8 @@ class AlgoCalculator:
         self.jsonFilePath += "ExecutionRankSky369.json"
         max_rows = 0
         max_time = 0
-        pref = [Preference.MIN, Preference.MIN, Preference.MIN]
+        if pref is None:
+            pref = [Preference.MIN, Preference.MIN, Preference.MIN]
 
         root_databases = fr"..\..\Assets\databases"
         i = -1
@@ -92,7 +93,7 @@ class AlgoCalculator:
 
                 if algo_name == "CoskySQL":
                     time_calc = TimeCalc(row, algo_name)
-                    algo_obj = algo(database_filepath)
+                    algo_obj = algo(database_filepath, pref)
                     time_calc.stop()
 
                 elif algo_name == "SkyIR":
@@ -106,7 +107,7 @@ class AlgoCalculator:
                     sel = AlgoCalculator(database_filepath)
                     r = DataParser(sel.select_all()).r_dict
                     time_calc = TimeCalc(row, algo_name)
-                    algo_obj = algo(r)
+                    algo_obj = algo(r, pref)
                     time_calc.stop()
 
                 elif algo_name == "RankSky":
@@ -192,10 +193,4 @@ MODES = {
 
 
 if __name__ == "__main__":
-    calculator = AlgoCalculator("")
-    """calculator.compareExecutionTime(
-        CoskySQL,
-        "../../Assets/test.json",
-        cols=[],
-        rows=[]
-    )"""
+    pass
