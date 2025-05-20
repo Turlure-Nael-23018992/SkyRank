@@ -88,25 +88,31 @@ class AppUIPyQt(QMainWindow):
 
     def list_files(self, dtype):
         roots = {
-            "Database": "../Assets/Databases",
-            "JSON": "../Assets/AlgoExecution/JsonFiles",
-            "Dictionary": "../Assets/AlgoExecution/JsonFiles"
+            "Database": os.path.join("Assets", "Databases"),
+            "JSON": os.path.join("Assets", "AlgoExecution", "JsonFiles"),
+            "Dictionary": os.path.join("Assets", "AlgoExecution", "JsonFiles")
         }
         ext = ".db" if dtype == "Database" else ".json"
         folder = roots[dtype]
         return [f for f in os.listdir(folder) if f.endswith(ext)] if os.path.exists(folder) else []
 
     def on_data_type_changed(self):
-        for i in reversed(range(self.fileFrame.count())):
-            item = self.fileFrame.itemAt(i).widget()
-            if item: item.setParent(None)
+        # Nettoie complètement le layout fileFrame
+        while self.fileFrame.count():
+            child = self.fileFrame.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+            elif child.layout():
+                self.clear_layout(child.layout())
 
         choice = self.dataCombo.currentText()
         self.selectedDataPath = None
 
         if choice == "Generate Random Database":
-            self.columnEntry = QLineEdit(); self.columnEntry.setPlaceholderText("Columns (3/6/9)")
-            self.rowEntry = QLineEdit(); self.rowEntry.setPlaceholderText("Rows")
+            self.columnEntry = QLineEdit();
+            self.columnEntry.setPlaceholderText("Columns (3/6/9)")
+            self.rowEntry = QLineEdit();
+            self.rowEntry.setPlaceholderText("Rows")
             self.fileFrame.addWidget(self.columnEntry)
             self.fileFrame.addWidget(self.rowEntry)
 
@@ -121,17 +127,27 @@ class AppUIPyQt(QMainWindow):
             self.fileFrame.addWidget(browse_btn)
 
             if choice == "Dictionary":
-                self.dictTextArea = QTextEdit(); self.dictTextArea.setPlaceholderText("Enter dictionary manually")
+                self.dictTextArea = QTextEdit()
+                self.dictTextArea.setPlaceholderText("Enter dictionary manually")
                 self.fileFrame.addWidget(self.dictTextArea)
+
+    def clear_layout(self, layout):
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+            elif child.layout():
+                self.clear_layout(child.layout())
 
     def on_file_selected(self, filename):
         dtype = self.dataCombo.currentText()
         roots = {
-            "Database": "../Assets/Databases",
-            "JSON": "../Assets/AlgoExecution/JsonFiles",
-            "Dictionary": "../Assets/AlgoExecution/JsonFiles"
+            "Database": os.path.join("Assets", "Databases"),
+            "JSON": os.path.join("Assets", "AlgoExecution", "JsonFiles"),
+            "Dictionary": os.path.join("Assets", "AlgoExecution", "JsonFiles")
         }
-        self.selectedDataPath = os.path.join(roots[dtype], filename)
+        if filename:
+            self.selectedDataPath = os.path.normpath(os.path.join(roots[dtype], filename))
 
     def import_file(self):
         dtype = self.dataCombo.currentText()
@@ -148,7 +164,7 @@ class AppUIPyQt(QMainWindow):
             return DictObject(ast.literal_eval(txt)) if txt else DictObject(readJson(self.selectedDataPath))
         if dtype == "Generate Random Database":
             cols, rows = int(self.columnEntry.text()), int(self.rowEntry.text())
-            dbp = "../Assets/AlgoExecution/DbFiles/TestExecution.db"
+            dbp = "Assets/AlgoExecution/DbFiles/TestExecution.db"
             Database(dbp, cols, rows); return DbObject(dbp)
         raise ValueError("Unsupported data type")
 
@@ -284,6 +300,12 @@ class AppUIPyQt(QMainWindow):
         win.setLayout(layout)
         win.resize(600, 400)
         win.show()
+
+def main():
+    app = QApplication(sys.argv)
+    win = AppUIPyQt()
+    win.show()
+    sys.exit(app.exec_())
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -63,13 +63,18 @@ class App:
             self.exporter.export(self)
 
     def _dispatch(self):
-        match self.algo:
-            case "CoskyAlgorithme": self._start_cosky_algorithme()
-            case "CoskySQL":        self._start_cosky_sql()
-            case "DpIdpDh":         self._start_dp_idp_dh()
-            case "RankSky":         self._start_ranksky()
-            case "SkyIR":           self._start_skyir()
-            case _:                 raise ValueError("Unknown algorithm")
+        if self.algo == "CoskyAlgorithme":
+            self._start_cosky_algorithme()
+        elif self.algo == "CoskySQL":
+            self._start_cosky_sql()
+        elif self.algo == "DpIdpDh":
+            self._start_dp_idp_dh()
+        elif self.algo == "RankSky":
+            self._start_ranksky()
+        elif self.algo == "SkyIR":
+            self._start_skyir()
+        else:
+            raise ValueError("Unknown algorithm")
 
     def _start_cosky_sql(self):
         print_red("Starting CoskySQL")

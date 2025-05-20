@@ -1,53 +1,106 @@
-from Utils.DataTypes.JsonObject import JsonObject
-from Utils.DataModifier.JsonUtils import *
-from Utils.DataModifier.DictToDatabase import DictToDatabase
-from Utils.DataModifier.DatabaseToDict import DatabaseToDict
+import json
+import os
+import sqlite3
 
 class DataConverter:
     """
-    A utility class for converting data between different formats:
-    JSON, dictionaries (relations), and SQLite database files.
+    Utility class for converting data between JSON files, Python dictionaries (relations),
+    and SQLite databases using a standardized table format (named 'Pokemon').
+
+    Supported conversions:
+    - JSON → SQLite
+    - Dictionary → SQLite
+    - JSON → Python dict
+    - SQLite → Python dict
     """
 
-    def __init__(self, data):
+    def __init__(self, source):
         """
-        Initializes a DataConverter with the provided data.
+        Initialize the converter.
 
-        :param data: Can be a dictionary representing a relation, or a path to a JSON/database file.
+        :param source: Either a path to a JSON or SQLite file, or a Python dictionary (relation).
         """
-        self.data = data
-        self.DictToDatabase = DictToDatabase("../Assets/AlgoExecution/DbFiles/TestExecution.db")
+        self.source = source
+
+    def jsonToDb(self, output_path="../Assets/AlgoExecution/DbFiles/TestExecution.db"):
+        """
+        Convert a JSON file into a SQLite database.
+        The JSON should represent a dictionary of tuples/lists.
+
+        :param output_path: Output path of the SQLite database file.
+        """
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+        with open(self.source, 'r') as f:
+            data = json.load(f)
+
+        conn = sqlite3.connect(output_path)
+        cursor = conn.cursor()
+
+        # Drop existing table
+        cursor.execute("DROP TABLE IF EXISTS Pokemon")
+
+        # Determine number of attributes and create table
+        sample = next(iter(data.values()))
+        nb_cols = len(sample)
+        columns = ", ".join([f"A{i} REAL" for i in range(1, nb_cols + 1)])
+        cursor.execute(f"CREATE TABLE Pokemon (id INTEGER PRIMARY KEY AUTOINCREMENT, {columns})")
+
+        # Insert data
+        for values in data.values():
+            if not isinstance(values, (list, tuple)):
+                raise ValueError("Each value in the JSON must be a list or tuple")
+            if len(values) != nb_cols:
+                raise ValueError("All tuples must have the same length")
+            placeholders = ", ".join(["?"] * nb_cols)
+            cursor.execute(f"INSERT INTO Pokemon ({', '.join([f'A{i}' for i in range(1, nb_cols + 1)])}) VALUES ({placeholders})", values)
+
+        conn.commit()
+        conn.close()
+
+    def relationToDb(self, output_path="../Assets/AlgoExecution/DbFiles/TestExecution.db"):
+        """
+        Convert a Python dictionary (relation) into a SQLite database.
+
+        :param output_path: Output path of the SQLite database file.
+        """
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+        relation = self.source  # dict {id: tuple}
+        conn = sqlite3.connect(output_path)
+        cursor = conn.cursor()
+
+        cursor.execute("DROP TABLE IF EXISTS Pokemon")
+        nb_cols = len(next(iter(relation.values())))
+        columns = ", ".join([f"A{i} REAL" for i in range(1, nb_cols + 1)])
+        cursor.execute(f"CREATE TABLE Pokemon (id INTEGER PRIMARY KEY AUTOINCREMENT, {columns})")
+
+        for values in relation.values():
+            placeholders = ", ".join(["?"] * nb_cols)
+            cursor.execute(f"INSERT INTO Pokemon ({', '.join([f'A{i}' for i in range(1, nb_cols + 1)])}) VALUES ({placeholders})", values)
+
+        conn.commit()
+        conn.close()
 
     def jsonToRelation(self):
         """
-        Converts a JSON file to a dictionary with tuples (relation format).
+        Convert a JSON file into a Python dictionary.
 
-        :return: A dictionary where each key maps to a tuple of values.
+        :return: Dictionary {id: tuple}
         """
-        data = readJson(self.data)
-        data = {k: tuple(v) for k, v in data.items()}
-        return data
-
-    def jsonToDb(self):
-        """
-        Converts JSON data into a database.
-        The result is stored in TestExecution.db.
-        """
-        data = self.jsonToRelation()
-        self.DictToDatabase.toDatabase(data)
-
-    def relationToDb(self):
-        """
-        Converts a relation (dictionary) to a database.
-        The result is stored in TestExecution.db.
-        """
-        self.DictToDatabase.toDatabase(self.data)
+        with open(self.source, 'r') as f:
+            data = json.load(f)
+        return {int(k): tuple(v) for k, v in data.items()}
 
     def dbToRelation(self):
         """
-        Converts data from a database into a dictionary (relation).
+        Convert a SQLite database table 'Pokemon' into a Python dictionary.
 
-        :return: A dictionary representation of the database table.
+        :return: Dictionary {id: tuple of attribute values}
         """
-        databaseToDict = DatabaseToDict(self.data)
-        return databaseToDict.toDict()
+        conn = sqlite3.connect(self.source)
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM Pokemon")
+        rows = cursor.fetchall()
+        conn.close()
+        return {i + 1: tuple(row[1:]) for i, row in enumerate(rows)}
