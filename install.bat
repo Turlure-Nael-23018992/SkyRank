@@ -37,5 +37,6 @@ echo To run it:
 echo     .venv\Scripts\activate
 echo     skyrank-gui for PyQt5 Interface with Skyline Points visualization
 echo     skyrank-gui2 for Tkinter Interface
+echo     skyrank-graph for the LatexMaker
 echo.
 pause

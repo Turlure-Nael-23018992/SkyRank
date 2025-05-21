@@ -25,3 +25,4 @@ packages = ["Core", "Utils", "Database", "Algorithms"]
 [project.scripts]
 skyrank-gui = "Core.AppUIPyQT:main"
 skyrank-gui2 = "Core.AppUI:main"
+skyrank-graph = "Core.LatexMain:main"

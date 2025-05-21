@@ -106,6 +106,7 @@ On **Linux/macOS**:
 
     skyrank-gui     # PyQt5 GUI with Skyline visualizations
     skyrank-gui2    # Tkinter GUI (alternative interface)
+    skyrank-graph   # LatexMaker (create your own graphs)
 
 On **Windows**:
 
@@ -115,6 +116,7 @@ On **Windows**:
 
     skyrank-gui     # PyQt5 GUI with Skyline visualizations
     skyrank-gui2    # Tkinter GUI (alternative interface)
+    skyrank-graph   # LatexMaker (create your own graphs)
 
 📄 License
 ----------

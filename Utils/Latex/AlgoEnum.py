@@ -8,7 +8,7 @@ class AlgoEnum(Enum):
     CoskySql = ("CoSky 'Sql query'", "Assets/LatexData/OneAlgoData/CoskySql/ThreeColumnsData/ExecutionCoskySql369.json")
     CoskyAlgorithme = ("CoSky 'algorithm'", "Assets/LatexData/OneAlgoData/CoskyAlgo/ThreeColumnsData/ExecutionCoskyAlgo369.json")
     RankSky = ("RankSky", "Assets/LatexData/OneAlgoData/RankSky/ThreeColumnsData/ExecutionRankSky369.json")
-    DpIdpDh = ("dp-idp with dominance hierarchy", "Assets/LatexData/OneAlgoData/DpIdpDh/ThreeColumnsData/ExecutionDpIdpDh69.json")
+    DpIdpDh = ("dp-idp with dominance hierarchy", "Assets/LatexData/OneAlgoData/DpIdpDh/ThreeColumnsData/ExecutionDpIdpDh369.json")
     SkyIR = ("SkyIR-UBS", "Assets/LatexData/OneAlgoData/SkyIR/ThreeColumnsData/ExecutionSkyIR369.json")
 
     def __init__(self, label: str, filepath: str):

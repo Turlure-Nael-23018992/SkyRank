@@ -1,7 +1,7 @@
 import math
 import json
 import os
-from AlgoEnum import AlgoEnum  # assure-toi que ce fichier existe
+from Utils.Latex.AlgoEnum import AlgoEnum
 
 class UniversalLatexGenerator:
     def __init__(self, output_path="../../Assets/LatexFiles/UniversalLatexOutput.tex"):
@@ -60,7 +60,7 @@ class UniversalLatexGenerator:
 
             graph = [f"% Graph for {attr} attributes", r"\begin{tikzpicture}[line join=bevel]"]
 
-            graph.append(f"\\draw[-stealth] (0pt, 0pt) -- ({scaleX}pt, 0pt) node[anchor=north west] {{Cardinality}};")
+            graph.append(f"\\draw[-stealth] (0pt, 0pt) -- ({scaleX}pt, 0pt) node[anchor=north west, yshift=15pt] {{Cardinality}};")
             graph.append(f"\\draw[-stealth] (0pt, 0pt) -- (0pt, {scaleY}pt) node[anchor=south] {{Response time (s)}};")
 
             # X-axis ticks
@@ -103,12 +103,16 @@ class UniversalLatexGenerator:
                 line = f"        \\draw[{color}, line width=2pt]"
                 points = []
                 for k in sorted(timeDict.keys(), key=lambda x: int(x)):
+                    y_raw = timeDict[k][i] if i < len(timeDict[k]) else None
+                    if y_raw is None or not isinstance(y_raw, (int, float)):
+                        continue
                     xval = math.log(int(k) + 1) if is_log_x else int(k)
-                    yval = math.log(timeDict[k][i] + 1) if is_log_y else timeDict[k][i]
+                    yval = math.log(y_raw + 1) if is_log_y else y_raw
                     x = int(round(xval * ratioX))
                     y = int(round(yval * ratioY))
                     line += f" ({x}pt, {y}pt) --"
                     points.append(f"        \\filldraw[color=black, fill={color}] ({x}pt, {y}pt) circle (2pt);")
+
                 graph.append(line.rstrip(" --") + ";")
                 graph.extend(points)
 
@@ -127,35 +131,75 @@ class UniversalLatexGenerator:
         with open(self.output_path, "w") as f:
             f.write("\n".join(lines))
 
+    def normalizeTimeDicts(self, timeDicts, max_entries=None):
+        """
+        Normalize a list of timeDicts so they all have the same keys.
 
-def load_json_data(paths, attributes=[3, 6, 9]):
+        :param timeDicts: List of timeDicts (each a dict {int: [float, float, float]}).
+        :param max_entries: Optional maximum number of entries to keep (sorted by key).
+        :return: Normalized list of timeDicts (same keys, same length).
+        """
+        # Find common keys
+        key_sets = [set(map(int, td.keys())) for td in timeDicts]
+        common_keys = set.intersection(*key_sets)
+
+        # Sort the common keys
+        sorted_common_keys = sorted(common_keys)
+        if max_entries is not None:
+            sorted_common_keys = sorted_common_keys[:max_entries]
+
+        # Filter all dicts to only those keys
+        normalized = []
+        for td in timeDicts:
+            new_td = {int(k): td[int(k)] for k in sorted_common_keys}
+            normalized.append(new_td)
+
+        return normalized
+
+
+def load_json_data(paths, attributes=[3, 6, 9], max_entries=None):
     timeDicts = []
-    all_max_rows = []
-    all_max_times = [[] for _ in attributes]
-
     for path in paths:
         with open(path, "r") as file:
             data = json.load(file)
         time_dict = {int(k): v for k, v in data["time_data"].items()}
         timeDicts.append(time_dict)
-        all_max_rows.append(max(time_dict.keys()))
-        for i in range(len(attributes)):
-            all_max_times[i].extend([row[i] for row in time_dict.values()])
 
-    maxRowsList = [max(all_max_rows)] * len(attributes)
-    maxTimeList = [max(times) for times in all_max_times]
+    # Normalisation si demandée
+    if max_entries:
+        generator = UniversalLatexGenerator()
+        timeDicts = generator.normalizeTimeDicts(timeDicts, max_entries=max_entries)
+
+    maxRowsList = [max(td.keys()) for td in timeDicts] * len(attributes)
+    maxTimeList = [
+        max(td[k][i] for td in timeDicts for k in td)
+        for i in range(len(attributes))
+    ]
     return timeDicts, maxRowsList, maxTimeList
 
 
+
 if __name__ == "__main__":
+    generator = UniversalLatexGenerator()
     json_paths = [
         "../../Assets/LatexData/OneAlgoData/CoskyAlgo/ThreeColumnsData/ExecutionCoskyAlgo369.json",
         "../../Assets/LatexData/OneAlgoData/RankSky/ThreeColumnsData/ExecutionRankSky369.json"
     ]
     algos = [AlgoEnum.CoskyAlgorithme, AlgoEnum.RankSky]
-    output_tex = "../../Assets/LatexFiles/UniversalLatexOutput.tex"
-    scale_type = "LinX/LinY"
+    timeDicts, maxRowsList, maxTimeList = load_json_data(json_paths, max_entries=16)
 
-    generator = UniversalLatexGenerator(output_path=output_tex)
-    timeDicts, maxRowsList, maxTimeList = load_json_data(json_paths)
-    generator.generate_latex(timeDicts, maxRowsList, maxTimeList, algos, scaleType=scale_type)
+    generator.generate_latex(
+        timeDicts,
+        maxRowsList,
+        maxTimeList,
+        algos,
+        attributes=[3, 6, 9],
+        scaleX=280,
+        scaleY=280,
+        scaleType="LinX/LinY"
+    )
+
+    print(timeDicts[0])
+    print(timeDicts[1])
+
+
