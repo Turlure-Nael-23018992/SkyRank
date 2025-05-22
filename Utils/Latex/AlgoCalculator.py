@@ -36,32 +36,21 @@ class AlgoCalculator:
 
         :param db_filepath: Path to the SQLite database.
         """
-        self.conn = sqlite3.connect(db_filepath)
+        abs_db_path = os.path.abspath(db_filepath)
+        self.conn = sqlite3.connect(abs_db_path)
         self.cursor = self.conn.cursor()
         self.latexMaker = LatexMaker()
         self.jsonFilePath = "../Assets/LatexData/"
         self.tableName = "Pokemon"
-        self.conn = sqlite3.connect(fr"..\..\Assets\databases\{self.tableName}.db")
         self.cols = [3, 6, 9]
         self.rows = [10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000]
 
     def select_all(self):
-        """
-        Select and return all records from the configured database table.
-        """
         sql_query = f"SELECT * FROM {self.tableName}"
         self.cursor.execute(sql_query)
         return self.cursor.fetchall()
 
-    def compareExecutionTime(self, algo, fp: str, cols=None, rows=None, pref=None):
-        """
-        Measure and store the execution time of a given algorithm on several databases of different sizes.
-
-        :param algo: The algorithm class to execute (e.g., CoskySQL, RankSky, etc.)
-        :param fp: The JSON file path where execution times should be stored.
-        :param cols: List of column numbers (default: [3,6,9]).
-        :param rows: List of row numbers (default: common experimental settings).
-        """
+    def compareExecutionTime(self, algo, fp: str, cols=None, rows=None, pref=None, config=None):
         print(algo)
         if not cols:
             cols = self.cols
@@ -71,20 +60,21 @@ class AlgoCalculator:
         print("rows : ", rows)
         print("cols : ", cols)
 
-        time_dict = {k: [0 for i in range(len(self.cols))] for k in self.rows}
+        time_dict = {k: [0 for _ in range(len(self.cols))] for k in self.rows}
         self.jsonFilePath += "ExecutionRankSky369.json"
         max_rows = 0
         max_time = 0
+
         if pref is None:
             pref = [Preference.MIN, Preference.MIN, Preference.MIN]
 
-        root_databases = fr"..\..\Assets\databases"
+        root_databases = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'Assets', 'Databases'))
         i = -1
 
         for col in cols:
             i += 1
             for row in rows:
-                database_filepath = fr"{root_databases}\cosky_db_C{col}_R{row}.db"
+                database_filepath = os.path.join(root_databases, f"cosky_db_C{col}_R{row}.db")
                 algo_name = algo.__name__
                 beauty_print("Algorithm name ", algo_name)
                 beauty_print("Database path ", database_filepath)
@@ -93,6 +83,7 @@ class AlgoCalculator:
 
                 if algo_name == "CoskySQL":
                     time_calc = TimeCalc(row, algo_name)
+                    print("database_filepath", database_filepath)
                     algo_obj = algo(database_filepath, pref)
                     time_calc.stop()
 
@@ -171,7 +162,8 @@ class AlgoCalculator:
                 }
 
                 writeJson(fp, dataToSave)
-                addServerConfigToJson(fp, "../../Assets/ServerConfig/ConfigNael.json")
+                if config is not None:
+                    addServerConfigToJson(fp, "../../Assets/ServerConfig/ConfigNael.json")
                 sortJson(fp)
 
 
@@ -193,4 +185,7 @@ MODES = {
 
 
 if __name__ == "__main__":
-    pass
+    alg = AlgoCalculator(fr"../../Assets/databases/cosky_db_C3_R1000.db")
+    alg.compareExecutionTime(CoskySQL, "../../Assets/AlgoExecution/ExecutionTime/CoskySql.json", cols=[3], rows=[10, 20, 50, 1000], pref=[Preference.MIN] * 3)
+    alg.compareExecutionTime(CoskySQL, "../../Assets/AlgoExecution/ExecutionTime/CoskySql.json", cols=[6], rows=[10, 20, 50, 1000], pref=[Preference.MIN] * 6)
+    alg.compareExecutionTime(CoskySQL, "../../Assets/AlgoExecution/ExecutionTime/CoskySql.json", cols=[9], rows=[10, 20, 50, 1000], pref=[Preference.MIN] * 9)

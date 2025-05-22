@@ -172,7 +172,7 @@ class CoskySQL:
 
         results = cursor.fetchall()
         if len(results) == 1:
-            print("Only one skyline point found – automatic assignment of score 1.0")
+            #print("Only one skyline point found – automatic assignment of score 1.0")
             row = results[0]
             row = [r for r in row]
             row[-1] = 1.0
@@ -194,7 +194,7 @@ class CoskySQL:
         self.dict = dict
         #print(dict)
         #print(self.executionTime)
-        print(self.dict)
+        #print(self.dict)
 
         return self.dict
 

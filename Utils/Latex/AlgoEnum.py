@@ -1,4 +1,9 @@
 from enum import Enum
+from Algorithms.CoskyAlgorithme import CoskyAlgorithme
+from Algorithms.CoskySql import CoskySQL
+from Algorithms.DpIdpDh import DpIdpDh
+from Algorithms.RankSky import RankSky
+from Algorithms.SkyIR import SkyIR
 
 class AlgoEnum(Enum):
     """
@@ -20,6 +25,15 @@ class AlgoEnum(Enum):
         """
         self.label = label
         self.filepath = filepath
+
+    def get_algo_class(self):
+        return {
+            AlgoEnum.CoskySql: CoskySQL,
+            AlgoEnum.CoskyAlgorithme: CoskyAlgorithme,
+            AlgoEnum.RankSky: RankSky,
+            AlgoEnum.DpIdpDh: DpIdpDh,
+            AlgoEnum.SkyIR: SkyIR,
+        }[self]
 
 
 if __name__ == "__main__":

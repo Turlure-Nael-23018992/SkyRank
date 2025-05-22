@@ -222,11 +222,9 @@ class RankSky:
             first_key = next(iter(self.sky))
             self.sky[first_key].append(1)
             self.score = {first_key : self.sky[first_key]}
-            print("self.score", self.score)
-            print_red("1")
+            #print("self.score", self.score)
         else :
             self.skylineComputation()
-            print_red("2")
             time1.stop()
             self.unifyPreferencesMax(self.sky, self.pref)
             self.initMatrix()
@@ -238,7 +236,7 @@ class RankSky:
             self.sort()
             time2.stop()
             self.time = time1.execution_time + time2.execution_time
-        print(self.sky)
+        #print(self.sky)
 
 if __name__ == "__main__":
     """r = {
@@ -287,7 +285,7 @@ if __name__ == "__main__":
         time2.stop()
         rankSky.printOutcomes()
         print("Execution time : ", time1.execution_time + time2.execution_time)
-        print(rankSky.sky)
+        #print(rankSky.sky)
 
     elif i== "2":
         time1 = TimeCalc(100, "RankSky")
@@ -303,7 +301,7 @@ if __name__ == "__main__":
         rankSky.sort()
         time2.stop()
         rankSky.printOutcomes()
-        print("Execution time : ", time1.execution_time + time2.execution_time)
+        #print("Execution time : ", time1.execution_time + time2.execution_time)
 
 
 
