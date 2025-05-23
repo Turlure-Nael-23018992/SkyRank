@@ -8,7 +8,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 
 from Algorithms import CoskySql
 from Algorithms.CoskySql import CoskySQL
-from Utils.Latex.LatexMaker import LatexMaker
 from Algorithms.CoskyAlgorithme import CoskyAlgorithme
 from Utils.DisplayHelpers import beauty_print
 from Utils.DataParser import DataParser
@@ -26,134 +25,90 @@ ROWS_RATIO = [x * ROWS_RATIO_MULT for x in ROWS_RATIO_UNITS]
 
 
 class AlgoCalculator:
-    """
-    Class to calculate and store the response time of different Skyline algorithms.
-    """
-
     def __init__(self, db_filepath: str):
-        """
-        Initialize the AlgoCalculator with the given database filepath.
-
-        :param db_filepath: Path to the SQLite database.
-        """
         abs_db_path = os.path.abspath(db_filepath)
         self.conn = sqlite3.connect(abs_db_path)
         self.cursor = self.conn.cursor()
-        self.latexMaker = LatexMaker()
-        self.jsonFilePath = "../Assets/LatexData/"
         self.tableName = "Pokemon"
         self.cols = [3, 6, 9]
         self.rows = [10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000, 200000]
 
     def select_all(self):
-        sql_query = f"SELECT * FROM {self.tableName}"
-        self.cursor.execute(sql_query)
+        self.cursor.execute(f"SELECT * FROM {self.tableName}")
         return self.cursor.fetchall()
 
     def compareExecutionTime(self, algo, fp: str, cols=None, rows=None, pref=None, config=None):
-        print(algo)
         if not cols:
             cols = self.cols
         if not rows:
             rows = self.rows
 
-        print("rows : ", rows)
-        print("cols : ", cols)
+        root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+        root_databases = os.path.join(root_dir, 'Assets', 'Databases')
+        abs_json_path = os.path.abspath(fp)
 
-        time_dict = {k: [0 for _ in range(len(self.cols))] for k in self.rows}
-        self.jsonFilePath += "ExecutionRankSky369.json"
         max_rows = 0
         max_time = 0
-
         if pref is None:
-            pref = [Preference.MIN, Preference.MIN, Preference.MIN]
+            pref = [Preference.MIN] * 3
 
-        root_databases = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'Assets', 'Databases'))
-        i = -1
-
-        for col in cols:
-            i += 1
+        for i, col in enumerate(cols):
             for row in rows:
-                database_filepath = os.path.join(root_databases, f"cosky_db_C{col}_R{row}.db")
+                db_file = os.path.join(root_databases, f"cosky_db_C{col}_R{row}.db")
                 algo_name = algo.__name__
                 beauty_print("Algorithm name ", algo_name)
-                beauty_print("Database path ", database_filepath)
+                beauty_print("Database path ", db_file)
 
                 time_calc = None
 
                 if algo_name == "CoskySQL":
                     time_calc = TimeCalc(row, algo_name)
-                    print("database_filepath", database_filepath)
-                    algo_obj = algo(database_filepath, pref)
+                    algo_obj = algo(db_file, pref)
                     time_calc.stop()
 
                 elif algo_name == "SkyIR":
-                    sel = AlgoCalculator(database_filepath)
+                    sel = AlgoCalculator(db_file)
                     r = DataParser(sel.select_all()).r_dict
                     time_calc = TimeCalc(row, algo_name)
-                    algo_obj = algo(r).skyIR(10)
+                    algo(r).skyIR(10)
                     time_calc.stop()
 
-                elif algo_name == "CoskyAlgorithme":
-                    sel = AlgoCalculator(database_filepath)
+                elif algo_name in ["CoskyAlgorithme", "RankSky", "DpIdpDh"]:
+                    sel = AlgoCalculator(db_file)
                     r = DataParser(sel.select_all()).r_dict
                     time_calc = TimeCalc(row, algo_name)
-                    algo_obj = algo(r, pref)
-                    time_calc.stop()
-
-                elif algo_name == "RankSky":
-                    sel = AlgoCalculator(database_filepath)
-                    r = DataParser(sel.select_all()).r_dict
-                    print("algo lancé")
-                    time_calc = TimeCalc(row, algo_name)
-                    algo_obj = algo(r, pref)
-                    time_calc.stop()
-
-                elif algo_name == "DpIdpDh":
-                    sel = AlgoCalculator(database_filepath)
-                    r = DataParser(sel.select_all()).r_dict
-                    print("algo lancé")
-                    time_calc = TimeCalc(row, algo_name)
-                    algo_obj = algo(r)
+                    if algo_name == "CoskyAlgorithme":
+                        algo_obj = algo(r, pref)
+                    elif algo_name == "RankSky":
+                        algo_obj = algo(r, pref)
+                    else:
+                        algo_obj = algo(r)
                     time_calc.stop()
 
                 current_time = time_calc.execution_time
-                print(current_time)
 
-                if algo_name == "RankSky":
-                    time_dict[row][i] = algo_obj.time
-
-                if row > max_rows:
-                    max_rows = row
-                if current_time > max_time:
-                    max_time = current_time
-
-                row_str = str(row)
                 try:
-                    savedDatas = readJson(fp)
+                    saved = readJson(abs_json_path)
                 except (FileNotFoundError, json.JSONDecodeError):
-                    savedDatas = {}
+                    saved = {}
 
-                time_data = savedDatas.get("time_data", {})
+                time_data = saved.get("time_data", {})
+                row_str = str(row)
                 if row_str not in time_data:
                     time_data[row_str] = ["NA", "NA", "NA"]
 
                 col_to_index = {3: 0, 6: 1, 9: 2}
-                if col not in col_to_index:
-                    continue
-                k = col_to_index[col]
-
-                previous_time = time_data[row_str][k]
+                idx = col_to_index[col]
                 try:
-                    prev_val = float(previous_time)
+                    prev_val = float(time_data[row_str][idx])
                 except (ValueError, TypeError):
                     prev_val = float('inf')
 
                 if current_time < prev_val:
-                    time_data[row_str][k] = current_time
+                    time_data[row_str][idx] = current_time
 
-                max_rows = max(int(savedDatas.get("max_rows", 0)), row)
-                max_time = max(savedDatas.get("max_time", 0), current_time)
+                max_rows = max(int(saved.get("max_rows", 0)), row)
+                max_time = max(saved.get("max_time", 0), current_time)
 
                 dataToSave = {
                     "time_data": time_data,
@@ -161,10 +116,11 @@ class AlgoCalculator:
                     "max_time": max_time
                 }
 
-                writeJson(fp, dataToSave)
-                if config is not None:
-                    addServerConfigToJson(fp, "../../Assets/ServerConfig/ConfigNael.json")
-                sortJson(fp)
+                writeJson(abs_json_path, dataToSave)
+                if config:
+                    addServerConfigToJson(abs_json_path, os.path.join(root_dir, "Assets", "ServerConfig", "ConfigNael.json"))
+                sortJson(abs_json_path)
+
 
 
 # Algorithm declarations

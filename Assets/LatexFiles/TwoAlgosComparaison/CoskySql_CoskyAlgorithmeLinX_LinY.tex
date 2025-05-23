@@ -1,0 +1,136 @@
+\documentclass[tikz, border=10pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, shapes, positioning}
+\usepackage{xcolor}
+\begin{document}
+\definecolor{skyblue}{RGB}{135,206,235}
+\tikzset{smallskybluenode/.style={circle, fill=skyblue, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}}
+\definecolor{cyan}{RGB}{0,255,255}
+\tikzset{smallcyannode/.style={circle, fill=cyan, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}}
+% Graph for 3 attributes
+\begin{tikzpicture}[line join=bevel]
+\draw[-stealth] (0pt, 0pt) -- (280pt, 0pt) node[anchor=north west, yshift=15pt] {Cardinality};
+\draw[-stealth] (0pt, 0pt) -- (0pt, 280pt) node[anchor=south] {Response time (s)};
+        \foreach \x/\xtext in {
+            0pt/$0$,
+            56pt/$200$,
+            112pt/$400$,
+            168pt/$600$,
+            224pt/$800$,
+            280pt/$1 \times 10^{3}$} {
+            \draw (\x, 2pt) -- (\x, -2pt) node[below] {\xtext\strut};
+        }
+        \foreach \y/\ytext in {
+            0pt/$0$,
+            44pt/$0$,
+            89pt/$0$,
+            134pt/$0$,
+            179pt/$0$,
+            224pt/$1$} {
+            \draw (2pt, \y) -- (-2pt, \y) node[left] {\ytext\strut};
+        }
+        \draw[skyblue, line width=2pt] (3pt, 0pt) -- (6pt, 0pt) -- (14pt, 0pt) -- (28pt, 0pt) -- (140pt, 2pt) -- (280pt, 6pt);
+        \filldraw[color=black, fill=skyblue] (3pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (6pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (14pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (28pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (140pt, 2pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (280pt, 6pt) circle (2pt);
+        \draw[cyan, line width=2pt] (3pt, 0pt) -- (6pt, 0pt) -- (14pt, 1pt) -- (28pt, 2pt) -- (140pt, 33pt) -- (280pt, 187pt);
+        \filldraw[color=black, fill=cyan] (3pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (6pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (14pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (28pt, 2pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (140pt, 33pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (280pt, 187pt) circle (2pt);
+        \matrix [left=0cm of current bounding box.north east] at (current bounding box.north east) {
+            \node [smallskybluenode, label=right:CoSky 'Sql query' with 3 attributes] {}; \\
+            \node [smallcyannode, label=right:CoSky 'algorithm' with 3 attributes] {}; \\
+        };
+\end{tikzpicture}
+\clearpage
+% Graph for 6 attributes
+\begin{tikzpicture}[line join=bevel]
+\draw[-stealth] (0pt, 0pt) -- (280pt, 0pt) node[anchor=north west, yshift=15pt] {Cardinality};
+\draw[-stealth] (0pt, 0pt) -- (0pt, 280pt) node[anchor=south] {Response time (s)};
+        \foreach \x/\xtext in {
+            0pt/$0$,
+            56pt/$200$,
+            112pt/$400$,
+            168pt/$600$,
+            224pt/$800$,
+            280pt/$1 \times 10^{3}$} {
+            \draw (\x, 2pt) -- (\x, -2pt) node[below] {\xtext\strut};
+        }
+        \foreach \y/\ytext in {
+            0pt/$0$,
+            44pt/$0$,
+            89pt/$0$,
+            134pt/$1$,
+            179pt/$1$,
+            224pt/$2$} {
+            \draw (2pt, \y) -- (-2pt, \y) node[left] {\ytext\strut};
+        }
+        \draw[skyblue, line width=2pt] (3pt, 0pt) -- (6pt, 0pt) -- (14pt, 0pt) -- (28pt, 1pt) -- (140pt, 6pt) -- (280pt, 16pt);
+        \filldraw[color=black, fill=skyblue] (3pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (6pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (14pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (28pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (140pt, 6pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (280pt, 16pt) circle (2pt);
+        \draw[cyan, line width=2pt] (3pt, 0pt) -- (6pt, 0pt) -- (14pt, 0pt) -- (28pt, 1pt) -- (140pt, 24pt) -- (280pt, 135pt);
+        \filldraw[color=black, fill=cyan] (3pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (6pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (14pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (28pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (140pt, 24pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (280pt, 135pt) circle (2pt);
+        \matrix [left=0cm of current bounding box.north east] at (current bounding box.north east) {
+            \node [smallskybluenode, label=right:CoSky 'Sql query' with 6 attributes] {}; \\
+            \node [smallcyannode, label=right:CoSky 'algorithm' with 6 attributes] {}; \\
+        };
+\end{tikzpicture}
+\clearpage
+% Graph for 9 attributes
+\begin{tikzpicture}[line join=bevel]
+\draw[-stealth] (0pt, 0pt) -- (280pt, 0pt) node[anchor=north west, yshift=15pt] {Cardinality};
+\draw[-stealth] (0pt, 0pt) -- (0pt, 280pt) node[anchor=south] {Response time (s)};
+        \foreach \x/\xtext in {
+            0pt/$0$,
+            56pt/$200$,
+            112pt/$400$,
+            168pt/$600$,
+            224pt/$800$,
+            280pt/$1 \times 10^{3}$} {
+            \draw (\x, 2pt) -- (\x, -2pt) node[below] {\xtext\strut};
+        }
+        \foreach \y/\ytext in {
+            0pt/$0$,
+            44pt/$0$,
+            89pt/$0$,
+            134pt/$1$,
+            179pt/$1$,
+            224pt/$2$} {
+            \draw (2pt, \y) -- (-2pt, \y) node[left] {\ytext\strut};
+        }
+        \draw[skyblue, line width=2pt] (3pt, 0pt) -- (6pt, 0pt) -- (14pt, 0pt) -- (28pt, 1pt) -- (140pt, 11pt) -- (280pt, 38pt);
+        \filldraw[color=black, fill=skyblue] (3pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (6pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (14pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (28pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (140pt, 11pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (280pt, 38pt) circle (2pt);
+        \draw[cyan, line width=2pt] (3pt, 0pt) -- (6pt, 0pt) -- (14pt, 1pt) -- (28pt, 3pt) -- (140pt, 39pt) -- (280pt, 163pt);
+        \filldraw[color=black, fill=cyan] (3pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (6pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (14pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (28pt, 3pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (140pt, 39pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (280pt, 163pt) circle (2pt);
+        \matrix [left=0cm of current bounding box.north east] at (current bounding box.north east) {
+            \node [smallskybluenode, label=right:CoSky 'Sql query' with 9 attributes] {}; \\
+            \node [smallcyannode, label=right:CoSky 'algorithm' with 9 attributes] {}; \\
+        };
+\end{tikzpicture}
+\clearpage
+\end{document}

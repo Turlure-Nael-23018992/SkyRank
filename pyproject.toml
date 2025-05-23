@@ -20,7 +20,7 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["Core", "Utils", "Database", "Algorithms"]
+packages = ["Core", "Utils", "Database", "Algorithms", "external"]
 
 [project.scripts]
 skyrank-gui = "Core.AppUIPyQT:main"

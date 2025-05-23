@@ -1,0 +1,198 @@
+\documentclass[tikz, border=10pt]{standalone}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, shapes, positioning}
+\usepackage{xcolor}
+\begin{document}
+\definecolor{skyblue}{RGB}{135,206,235}
+\tikzset{smallskybluenode/.style={circle, fill=skyblue, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}}
+\definecolor{cyan}{RGB}{0,255,255}
+\tikzset{smallcyannode/.style={circle, fill=cyan, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}}
+\definecolor{brightmaroon}{RGB}{195,33,72}
+\tikzset{smallbrightmaroonnode/.style={circle, fill=brightmaroon, draw=black, line width=0.5pt, minimum size=4pt, inner sep=0pt}}
+% Graph for 3 attributes
+\begin{tikzpicture}[line join=bevel]
+\draw[-stealth] (0pt, 0pt) -- (280pt, 0pt) node[anchor=north west, yshift=15pt] {Cardinality};
+\draw[-stealth] (0pt, 0pt) -- (0pt, 280pt) node[anchor=south] {Response time (s)};
+        \foreach \x/\xtext in {
+            0pt/$0$,
+            56pt/$2 \times 10^{3}$,
+            112pt/$4 \times 10^{3}$,
+            168pt/$6 \times 10^{3}$,
+            224pt/$8 \times 10^{3}$,
+            280pt/$1 \times 10^{4}$} {
+            \draw (\x, 2pt) -- (\x, -2pt) node[below] {\xtext\strut};
+        }
+        \foreach \y/\ytext in {
+            0pt/$0$,
+            44pt/$0$,
+            89pt/$1$,
+            134pt/$2$,
+            179pt/$3$,
+            224pt/$4$} {
+            \draw (2pt, \y) -- (-2pt, \y) node[left] {\ytext\strut};
+        }
+        \draw[skyblue, line width=2pt] (0pt, 1pt) -- (1pt, 0pt) -- (1pt, 2pt) -- (3pt, 1pt) -- (6pt, 1pt) -- (14pt, 1pt) -- (28pt, 4pt) -- (56pt, 11pt) -- (140pt, 48pt) -- (280pt, 175pt);
+        \filldraw[color=black, fill=skyblue] (0pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (1pt, 2pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (3pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (6pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (14pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (28pt, 4pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (56pt, 11pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (140pt, 48pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (280pt, 175pt) circle (2pt);
+        \draw[cyan, line width=2pt] (0pt, 0pt) -- (1pt, 0pt) -- (1pt, 0pt) -- (3pt, 1pt) -- (6pt, 1pt) -- (14pt, 1pt) -- (28pt, 5pt) -- (56pt, 8pt) -- (140pt, 47pt) -- (280pt, 169pt);
+        \filldraw[color=black, fill=cyan] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (3pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (6pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (14pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (28pt, 5pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (56pt, 8pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (140pt, 47pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (280pt, 169pt) circle (2pt);
+        \draw[brightmaroon, line width=2pt] (0pt, 0pt) -- (1pt, 0pt) -- (1pt, 0pt) -- (3pt, 0pt) -- (6pt, 0pt) -- (14pt, 0pt) -- (28pt, 0pt) -- (56pt, 0pt) -- (140pt, 1pt) -- (280pt, 2pt);
+        \filldraw[color=black, fill=brightmaroon] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (3pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (6pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (14pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (28pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (56pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (140pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (280pt, 2pt) circle (2pt);
+        \matrix [left=0cm of current bounding box.north east] at (current bounding box.north east) {
+            \node [smallskybluenode, label=right:CoSky 'algorithm' with 3 attributes] {}; \\
+            \node [smallcyannode, label=right:RankSky with 3 attributes] {}; \\
+            \node [smallbrightmaroonnode, label=right:CoSky 'Sql query' with 3 attributes] {}; \\
+        };
+\end{tikzpicture}
+\clearpage
+% Graph for 6 attributes
+\begin{tikzpicture}[line join=bevel]
+\draw[-stealth] (0pt, 0pt) -- (280pt, 0pt) node[anchor=north west, yshift=15pt] {Cardinality};
+\draw[-stealth] (0pt, 0pt) -- (0pt, 280pt) node[anchor=south] {Response time (s)};
+        \foreach \x/\xtext in {
+            0pt/$0$,
+            56pt/$2 \times 10^{3}$,
+            112pt/$4 \times 10^{3}$,
+            168pt/$6 \times 10^{3}$,
+            224pt/$8 \times 10^{3}$,
+            280pt/$1 \times 10^{4}$} {
+            \draw (\x, 2pt) -- (\x, -2pt) node[below] {\xtext\strut};
+        }
+        \foreach \y/\ytext in {
+            0pt/$0$,
+            44pt/$1$,
+            89pt/$2$,
+            134pt/$3$,
+            179pt/$4$,
+            224pt/$6$} {
+            \draw (2pt, \y) -- (-2pt, \y) node[left] {\ytext\strut};
+        }
+        \draw[skyblue, line width=2pt] (0pt, 0pt) -- (1pt, 0pt) -- (1pt, 0pt) -- (3pt, 0pt) -- (6pt, 2pt) -- (14pt, 1pt) -- (28pt, 2pt) -- (56pt, 6pt) -- (140pt, 44pt) -- (280pt, 175pt);
+        \filldraw[color=black, fill=skyblue] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (3pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (6pt, 2pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (14pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (28pt, 2pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (56pt, 6pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (140pt, 44pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (280pt, 175pt) circle (2pt);
+        \draw[cyan, line width=2pt] (0pt, 0pt) -- (1pt, 0pt) -- (1pt, 0pt) -- (3pt, 0pt) -- (6pt, 1pt) -- (14pt, 3pt) -- (28pt, 5pt) -- (56pt, 21pt) -- (140pt, 58pt) -- (280pt, 190pt);
+        \filldraw[color=black, fill=cyan] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (3pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (6pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (14pt, 3pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (28pt, 5pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (56pt, 21pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (140pt, 58pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (280pt, 190pt) circle (2pt);
+        \draw[brightmaroon, line width=2pt] (0pt, 0pt) -- (1pt, 0pt) -- (1pt, 0pt) -- (3pt, 0pt) -- (6pt, 0pt) -- (14pt, 0pt) -- (28pt, 1pt) -- (56pt, 3pt) -- (140pt, 9pt) -- (280pt, 23pt);
+        \filldraw[color=black, fill=brightmaroon] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (3pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (6pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (14pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (28pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (56pt, 3pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (140pt, 9pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (280pt, 23pt) circle (2pt);
+        \matrix [left=0cm of current bounding box.north east] at (current bounding box.north east) {
+            \node [smallskybluenode, label=right:CoSky 'algorithm' with 6 attributes] {}; \\
+            \node [smallcyannode, label=right:RankSky with 6 attributes] {}; \\
+            \node [smallbrightmaroonnode, label=right:CoSky 'Sql query' with 6 attributes] {}; \\
+        };
+\end{tikzpicture}
+\clearpage
+% Graph for 9 attributes
+\begin{tikzpicture}[line join=bevel]
+\draw[-stealth] (0pt, 0pt) -- (280pt, 0pt) node[anchor=north west, yshift=15pt] {Cardinality};
+\draw[-stealth] (0pt, 0pt) -- (0pt, 280pt) node[anchor=south] {Response time (s)};
+        \foreach \x/\xtext in {
+            0pt/$0$,
+            56pt/$2 \times 10^{3}$,
+            112pt/$4 \times 10^{3}$,
+            168pt/$6 \times 10^{3}$,
+            224pt/$8 \times 10^{3}$,
+            280pt/$1 \times 10^{4}$} {
+            \draw (\x, 2pt) -- (\x, -2pt) node[below] {\xtext\strut};
+        }
+        \foreach \y/\ytext in {
+            0pt/$0$,
+            44pt/$6$,
+            89pt/$12$,
+            134pt/$18$,
+            179pt/$24$,
+            224pt/$30$} {
+            \draw (2pt, \y) -- (-2pt, \y) node[left] {\ytext\strut};
+        }
+        \draw[skyblue, line width=2pt] (0pt, 0pt) -- (1pt, 0pt) -- (1pt, 0pt) -- (3pt, 0pt) -- (6pt, 0pt) -- (14pt, 0pt) -- (28pt, 1pt) -- (56pt, 2pt) -- (140pt, 14pt) -- (280pt, 52pt);
+        \filldraw[color=black, fill=skyblue] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (3pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (6pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (14pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (28pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (56pt, 2pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (140pt, 14pt) circle (2pt);
+        \filldraw[color=black, fill=skyblue] (280pt, 52pt) circle (2pt);
+        \draw[cyan, line width=2pt] (0pt, 0pt) -- (1pt, 0pt) -- (1pt, 0pt) -- (3pt, 0pt) -- (6pt, 0pt) -- (14pt, 2pt) -- (28pt, 9pt) -- (56pt, 22pt) -- (140pt, 89pt) -- (280pt, 215pt);
+        \filldraw[color=black, fill=cyan] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (3pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (6pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (14pt, 2pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (28pt, 9pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (56pt, 22pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (140pt, 89pt) circle (2pt);
+        \filldraw[color=black, fill=cyan] (280pt, 215pt) circle (2pt);
+        \draw[brightmaroon, line width=2pt] (0pt, 0pt) -- (1pt, 0pt) -- (1pt, 0pt) -- (3pt, 0pt) -- (6pt, 0pt) -- (14pt, 0pt) -- (28pt, 0pt) -- (56pt, 1pt) -- (140pt, 6pt) -- (280pt, 19pt);
+        \filldraw[color=black, fill=brightmaroon] (0pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (1pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (3pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (6pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (14pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (28pt, 0pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (56pt, 1pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (140pt, 6pt) circle (2pt);
+        \filldraw[color=black, fill=brightmaroon] (280pt, 19pt) circle (2pt);
+        \matrix [left=0cm of current bounding box.north east] at (current bounding box.north east) {
+            \node [smallskybluenode, label=right:CoSky 'algorithm' with 9 attributes] {}; \\
+            \node [smallcyannode, label=right:RankSky with 9 attributes] {}; \\
+            \node [smallbrightmaroonnode, label=right:CoSky 'Sql query' with 9 attributes] {}; \\
+        };
+\end{tikzpicture}
+\clearpage
+\end{document}

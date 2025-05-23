@@ -9,7 +9,8 @@ from Utils.Preference import Preference
 class LatexMain:
     def __init__(self):
         self.generator = UniversalLatexGenerator()
-        self.base_path = "Assets/LatexFiles/"
+        self.root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        self.base_path = os.path.join(self.root_dir, "Assets", "LatexFiles")
 
     def ask_user_inputs(self):
         print("Welcome to the LaTeX Chart Generator!")
@@ -30,15 +31,17 @@ class LatexMain:
                 algos.append(algo_enum)
 
                 if use_existing:
-                    json_file = f"Assets/LatexData/OneAlgoData/{algo_enum.name}/ThreeColumnsData/Execution{algo_enum.name}369.json"
+                    if algo_enum.name == "CoskyAlgorithme":
+                        rel_path = os.path.join("Assets", "LatexData", "OneAlgoData", "CoskyAlgo", "ThreeColumnsData", "ExecutionCoskyAlgo369.json")
+                    else:
+                        rel_path = os.path.join("Assets", "LatexData", "OneAlgoData", algo_enum.name, "ThreeColumnsData", f"Execution{algo_enum.name}369.json")
                 else:
-                    json_file = os.path.abspath(
-                        os.path.join(os.path.dirname(__file__), "..", "Assets", "AlgoExecution", "ExecutionTime",
-                                     f"{algo_enum.name}.json"))
-                    self.calculate_execution_time(algo_enum, json_file)
+                    rel_path = os.path.join("Assets", "AlgoExecution", "ExecutionTime", f"{algo_enum.name}.json")
+                    abs_json_path = os.path.join(self.root_dir, rel_path)
+                    self.calculate_execution_time(algo_enum, abs_json_path)
 
-                json_paths.append(json_file)
-                print(f"✅ JSON path added: {json_file}")
+                json_paths.append(rel_path)
+                print(f"✅ JSON path added: {rel_path}")
 
                 if algo_enum.name in ["DpIdpDh", "SkyIR"]:
                     warning_algos.append(algo_enum.name)
@@ -56,15 +59,12 @@ class LatexMain:
         max_entries = int(max_entries) if max_entries.strip() else None
 
         scale_type = input("Scale type? (LinX/LinY, LogX/LogY, LinX/LogY, etc.): ").strip() or "LinX/LinY"
-        print("n_algos:", n_algos)
-        print("algos:", algos)
-        print("json_paths:", json_paths)
-        print("max_entries:", max_entries)
-        print("scale_type:", scale_type)
         return n_algos, algos, json_paths, max_entries, scale_type
 
     def calculate_execution_time(self, algo_enum, output_path):
-        calculator = AlgoCalculator("../Assets/Databases/cosky_db_C3_R1000.db")
+        db_path = os.path.join(self.root_dir, "Assets", "Databases", "cosky_db_C3_R1000.db")
+        calculator = AlgoCalculator(db_path)
+
         pref_map = {
             3: [Preference.MIN] * 3,
             6: [Preference.MIN] * 6,
@@ -83,23 +83,25 @@ class LatexMain:
 
     def load_data(self, paths):
         time_dicts = []
-        for path in paths:
-            with open(path, "r") as f:
+        for rel_path in paths:
+            abs_path = os.path.join(self.root_dir, rel_path)
+            if not os.path.exists(abs_path):
+                print(f"❌ File not found: {abs_path}")
+                raise FileNotFoundError(abs_path)
+
+            with open(abs_path, "r") as f:
                 data = json.load(f)
 
             time_dict = {}
             for k, v in data["time_data"].items():
                 try:
                     key = int(k)
-                    values = [
-                        float(val) if isinstance(val, (int, float)) or (
-                            isinstance(val, str) and val.replace('.', '', 1).isdigit())
-                        else None for val in v
-                    ]
+                    values = [float(val) if isinstance(val, (int, float)) or (isinstance(val, str) and val.replace('.', '', 1).isdigit()) else None for val in v]
                     time_dict[key] = values
                 except Exception as e:
-                    print(f"⚠️ Error processing key {k} in {path}: {e}")
+                    print(f"⚠️ Error processing key {k} in {rel_path}: {e}")
             time_dicts.append(time_dict)
+
         return time_dicts
 
     def compute_max_rows(self, time_dicts, attributes=[3, 6, 9]):
@@ -137,8 +139,8 @@ class LatexMain:
         folder = folder_map[count]
         base = "_".join(algo_names)
         scale_type = scale_type.replace("/", "_").replace("\\", "_")
-        base += scale_type
-        return os.path.join(folder, base + ".tex")
+        filename = base + scale_type + ".tex"
+        return os.path.join(folder, filename)
 
     def run(self):
         user_input = self.ask_user_inputs()
@@ -156,16 +158,13 @@ class LatexMain:
 
         algo_names = [a.name for a in algos]
         output_rel_path = self.build_output_path(algo_names, n_algos, scale_type)
-
-        root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-        output_abs_path = os.path.join(root_dir, 'Assets', 'LatexFiles', output_rel_path)
+        output_abs_path = os.path.join(self.base_path, output_rel_path)
 
         output_dir = os.path.dirname(output_abs_path)
         if not os.path.exists(output_dir):
             print(f"❌ Error: Output directory does not exist: {output_dir}")
             return
 
-        # Génération du fichier LaTeX
         generator = UniversalLatexGenerator(output_path=output_abs_path)
         generator.generate_latex(
             time_dicts,
