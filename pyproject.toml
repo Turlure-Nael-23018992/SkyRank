@@ -16,7 +16,10 @@ dependencies = [
   "scikit-learn==1.0.2",
   "PyQt5==5.15.10",
   "humanize",
-  "colorama"
+  "colorama",
+  "psutil",
+  "GPUtil",
+  "tabulate"
 ]
 
 [tool.setuptools]

@@ -909,16 +909,15 @@ class LatexMaker:
 
         column = int(column)
         dataPath = "../../Assets/LatexData/OneAlgoData/CoskySql/OneColumnsDatas/"
-        match column:
-            case 3:
-                self.path += "OneAlgoComparaison/CoskySql3.tex"
-                dataPath += "ExecutionCoskySql310^9.json"
-            case 6:
-                self.path += "CoskySql6.tex"
-                dataPath += "ExecutionCoskySql6.json"
-            case 9:
-                self.path += "CoskySql9.tex"
-                dataPath += "ExecutionCoskySql9.json"
+        if column == 3:
+            self.path += "OneAlgoComparaison/CoskySql3.tex"
+            dataPath += "ExecutionCoskySql310^9.json"
+        if column == 6:
+            self.path += "CoskySql6.tex"
+            dataPath += "ExecutionCoskySql6.json"
+        if column == 9:
+            self.path += "CoskySql9.tex"
+            dataPath += "ExecutionCoskySql9.json"
 
         with open(dataPath, "r") as file:
             data = json.load(file)
