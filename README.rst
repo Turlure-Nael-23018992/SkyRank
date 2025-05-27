@@ -121,6 +121,31 @@ On **Windows**:
     skyrank-gui2    # Tkinter GUI (alternative interface)
     skyrank-graph   # LatexMaker (create your own graphs)
 
+📂 Project Structure
+--------------------
+
+SkyRank is structured as a modular Python project relying on multiple Git repositories:
+
+- `SkyRank-Client <https://github.com/Turlure-Nael-23018992/SkyRank-Client>`_ serves as the main interface and execution environment for SkyRank, allowing it to be used as a Python API.
+
+- `SkyRank <https://github.com/Turlure-Nael-23018992/SkyRank>`_ is the core backend containing the main algorithms (`dp-idp`, `RankSky`, `CoSky`, etc.), benchmarking tools, data handling modules, and export systems and UI apps.
+
+- `BBS-Python-3.x- <https://github.com/Turlure-Nael-23018992/BBS-Python-3.x->`_ is a dedicated submodule that implements the Branch-and-Bound Skyline algorithm (BBS).
+
+- `R-Tree-Python-3.x- <https://github.com/Turlure-Nael-23018992/R-Tree-Python-3.x->`_ provides the spatial indexing structures used internally by BBS.
+
+These repositories are embedded hierarchically:
+
+::
+
+    SkyRank-Client
+      └── SkyRank
+            └── BBS-Python-3.x-
+                  └── R-Tree-Python-3.x-
+
+This structure enables clean separation of concerns, modular development, and reusability across different Skyline-related components.
+
+
 📖 Documentation
 ----------
 The full python documentation is available at `docs <https://github.com/Turlure-Nael-23018992/SkyRank/tree/main/docs>`_
