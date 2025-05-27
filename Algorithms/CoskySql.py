@@ -203,8 +203,6 @@ class CoskySQL:
         self.prefNext = dataUnifier.unifyPreferences()
 
     def unifyPreferencesQuery(self):
-        print("self.pref:", self.pref)
-        print("self.prefNext:", self.prefNext)
         querry = f"""T AS {"("}
         SELECT RowId, """
         col_offset = self.get_column_names(self.table_name)[1:]
