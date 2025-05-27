@@ -27,10 +27,4 @@ We propose to improve the **dp-idp** method — inspired by tf-idf — which com
 
 To complement this, we propose **CoSky**, a TOPSIS-based method designed to be embeddable in database management systems. It relies on automatic attribute weighting via the **Gini index**, then computes a cosine-based score (Salton’s similarity) toward an ideal solution.
 
-Finally, we present **DeepSky**, a framework that combines multi-level Skyline queries with dp-idp, RankSky, or CoSky. All three methods (dp-idp, RankSky, and CoSky) are implemented and evaluated experimentally.
-
-# Acknowledgements
-
-We thank our colleagues and mentors from Aix-Marseille Université for their insights during the development of this work.
-
-# References
+Finally, we present **DeepSky**, a method that builds on recent advances in Skyline ranking [@MartinNevot2024].
