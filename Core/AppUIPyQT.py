@@ -258,32 +258,41 @@ class AppUIPyQt(QMainWindow):
             max_vals = np.max(all_array, axis=0)
             norm_all = all_array / max_vals
             norm_sky = norm_all[sky_indices]
-            ax.scatter(norm_all[:, 0], norm_all[:, 1], norm_all[:, 2], color='lightgray')
-            ax.scatter(norm_sky[:, 0], norm_sky[:, 1], norm_sky[:, 2], color='blue')
-            try:
-                hull = ConvexHull(norm_sky)
-                for s in hull.simplices:
-                    tri = norm_sky[s]
-                    ax.plot(tri[:, 0], tri[:, 1], tri[:, 2], color='red', linestyle='--')
-            except Exception as e:
-                print("Erreur dans le tracé de la surface Pareto:", e)
+            ax.scatter(norm_all[:, 0], norm_all[:, 1], norm_all[:, 2], color='lightgray', label='All Points')
+            ax.scatter(norm_sky[:, 0], norm_sky[:, 1], norm_sky[:, 2], color='blue', label='Skyline')
+
+            # Message informatif sur l'enveloppe
+            ax.text2D(0.05, 0.95, "⚠️ Pareto envelope display under development",
+                      transform=ax.transAxes, fontsize=9, color='red')
+
             ax.set_xlabel("Dim 1")
             ax.set_ylabel("Dim 2")
             ax.set_zlabel("Dim 3")
-            ax.set_title("Skyline 3D (normalisé par max dimensionnel)")
+            ax.set_title("Skyline 3D (normalized by max of each dimension)")
+            ax.legend()
         else:
             ax = self.figure.add_subplot(111)
-            reduced = PCA(n_components=2).fit_transform(StandardScaler().fit_transform(all_array))
+            """reduced = PCA(n_components=2).fit_transform(StandardScaler().fit_transform(all_array))
             all_x, all_y = reduced[:, 0], reduced[:, 1]
             sky_x, sky_y = reduced[sky_indices, 0], reduced[sky_indices, 1]
-            ax.scatter(all_x, all_y, color='lightgray')
-            ax.scatter(sky_x, sky_y, color='blue')
+            ax.scatter(all_x, all_y, color='lightgray', label='All Points')
+            ax.scatter(sky_x, sky_y, color='blue', label='Skyline')
+
+            # Ligne reliant les points Skyline (approximation visuelle)
             skyline_proj = np.column_stack((sky_x, sky_y))
             skyline_sorted = skyline_proj[np.argsort(skyline_proj[:, 0])]
-            ax.plot(skyline_sorted[:, 0], skyline_sorted[:, 1], color='red', linestyle='--')
-            ax.set_title("Skyline (bleu) vs Tous les points")
-            ax.set_xlabel("Composante 1")
-            ax.set_ylabel("Composante 2")
+            ax.plot(skyline_sorted[:, 0], skyline_sorted[:, 1], color='red', linestyle='--')"""
+
+            # Message informatif
+            ax.text(0.05, 0.95,
+                    "🔧 Work in progress: visualization for n > 3\n⚠️ Pareto envelope display under development",
+                    transform=ax.transAxes, fontsize=9, color='darkred', verticalalignment='top')
+
+            """ax.set_title("Skyline (blue) vs All Points")
+            ax.set_xlabel("Component 1")
+            ax.set_ylabel("Component 2")
+            ax.legend()"""
+
         self.canvas.draw()
 
     def view_skyline_points(self):
