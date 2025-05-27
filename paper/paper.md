@@ -28,7 +28,7 @@ SkyRank is designed for researchers, students, and practitioners working on **mu
 
 # Statement of Need
 
-While the Skyline operator is widely studied, **few open-source tools** exist to explore, rank, and visualize Skyline points across diverse datasets and scoring models. Implementations are often scattered, hard to reproduce, and lack integrated visual support.
+While the Skyline [@Borzsony2001] operator is widely studied, **few open-source tools** exist to explore, rank, and visualize Skyline points across diverse datasets and scoring models. Implementations are often scattered, hard to reproduce, and lack integrated visual support.
 
 SkyRank addresses this gap by:
 
@@ -72,7 +72,7 @@ SkyRank addresses this gap by:
 
 - `paper/` contains the JOSS submission material (`paper.md`, `paper.bib`).
 
-- `external/` hosts Git submodules for third-party algorithms (`BBS`, `RTree`).
+- `external/` hosts Git submodules for third-party algorithms ([BBS](https://github.com/Turlure-Nael-23018992/BBS-Python-3.x-), [RTree](https://github.com/Turlure-Nael-23018992/R-Tree-Python-3.x-)).
 
 # Acknowledgements
 
