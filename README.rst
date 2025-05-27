@@ -121,6 +121,10 @@ On **Windows**:
     skyrank-gui2    # Tkinter GUI (alternative interface)
     skyrank-graph   # LatexMaker (create your own graphs)
 
+📖 Documentation
+----------
+The full python documentation is available at `docs <https://github.com/Turlure-Nael-23018992/SkyRank/tree/main/docs>`_
+
 📄 License
 ----------
 
