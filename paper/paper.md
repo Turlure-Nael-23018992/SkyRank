@@ -22,13 +22,13 @@ bibliography: paper.bib
 
 # Summary
 
-SkyRank is an open-source Python framework that implements and compares various **Skyline ranking algorithms**, including `dp-idp`, `RankSky`, `CoSky`, and `DeepSky`. While these methods have been independently introduced in the literature, SkyRank provides a **unified, reproducible, and extensible platform** to evaluate and visualize them interactively [@Borzsony2001].
+SkyRank is an open-source Python framework that implements and compares various **Skyline [@Borzsony2001] ranking algorithms**, including `dp-idp` [@Valkanas2014], `RankSky`, `CoSky` [@MartinNevot2024], and `DeepSky`. While these methods have been independently introduced in the literature, SkyRank provides a **unified, reproducible, and extensible platform** to evaluate and visualize them interactively.
 
 SkyRank is designed for researchers, students, and practitioners working on **multi-criteria decision making**, **Pareto optimality**, and **database preference queries**. It includes a modular benchmarking backend, a LaTeX-compatible graph generator, and two graphical user interfaces (based on PyQt5 and Tkinter) for interactive data exploration.
 
 # Statement of Need
 
-While the Skyline [@Borzsony2001] operator is widely studied, **few open-source tools** exist to explore, rank, and visualize Skyline points across diverse datasets and scoring models. Implementations are often scattered, hard to reproduce, and lack integrated visual support.
+While the Skyline operator is widely studied, **few open-source tools** exist to explore, rank, and visualize Skyline points across diverse datasets and scoring models. Implementations are often scattered, hard to reproduce, and lack integrated visual support.
 
 SkyRank addresses this gap by:
 
@@ -40,7 +40,7 @@ SkyRank addresses this gap by:
 # Features
 
 - ✅ Implementations of `dp-idp`, `RankSky`, `CoSky`, `DeepSky`
-- ✅ Automatic scoring using PageRank [@Page1998], cosine similarity, and TOPSIS scoring [@Lai1994]
+- ✅ Automatic scoring using PageRank [@Page1998] and [@Langville2006], cosine similarity, and TOPSIS scoring [@Lai1994]
 - ✅ Modular architecture for adding new ranking strategies
 - ✅ GUI interfaces for ranking and visual inspection of results
 - ✅ Graph export in TikZ/LaTeX format
@@ -49,6 +49,19 @@ SkyRank addresses this gap by:
 - ✅ Benchmarking on synthetic uncorrelated datasets with 3, 6, and 9 dimensions, ranging from 10 to 1,000,000,000 tuples
 
 # Software Architecture
+
+SkyRank relies on several Git repositories that are integrated as submodules to promote modularity and reuse:
+
+- [`SkyRank-Client`](https://github.com/Turlure-Nael-23018992/SkyRank-Client) serves as the main interface and execution environment for SkyRank, allowing it to be used as a Python API.
+- [`BBS-Python-3.x-`](https://github.com/Turlure-Nael-23018992/BBS-Python-3.x-) provides an implementation of the BBS (Branch and Bound Skyline) algorithm.
+- [`R-Tree-Python-3.x-`](https://github.com/Turlure-Nael-23018992/R-Tree-Python-3.x-) implements spatial indexing structures required by BBS.
+
+These repositories are hierarchically embedded as follows:
+`SkyRank-Client` → `SkyRank` → `BBS-Python-3.x-` → `R-Tree-Python-3.x-`.
+
+This structure enables clean separation of concerns, encourages reusability, and simplifies algorithmic extensions across the Skyline ecosystem.
+
+The repository is organized into logically separated modules, with each directory serving a dedicated purpose—from algorithmic implementation to UI, benchmarking tools, and export features—ensuring modularity and clarity throughout the codebase.
 
 - `Algorithms/` contains the core implementations of Skyline ranking methods, including `dp-idp`, `RankSky`, `CoSky`, and `DeepSky`.
 
