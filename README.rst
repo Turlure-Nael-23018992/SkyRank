@@ -1,7 +1,10 @@
 📦 SkyRank — Installation Guide
 ===============================
 
-This guide explains how to install and run the **SkyRank** project with its visual interfaces using **CPython 3.8** and virtual environments.
+SkyRank is an open-source benchmarking and visualization framework for multi-dimensional Skyline algorithms.
+It provides a modular architecture to run, compare, and visualize advanced preference queries over large datasets.
+SkyRank includes multiple algorithmic implementations (e.g., Cosky, BBS, RankSky), graphical user interfaces (PyQt5 and Tkinter), and tools to generate publication-ready visualizations using LaTeX.
+It is designed for researchers, students, and practitioners interested in preference-based data analysis, algorithm evaluation, and Skyline computation.
 
 ⚙️ Requirements
 ---------------
@@ -121,6 +124,10 @@ On **Windows**:
 📄 License
 ----------
 
-MIT License. See ``LICENSE`` file for details.
+``Skyrank`` is a free software made available under the MIT License. For details see
+the `LICENSE <https://github.com/Turlure-Nael-23018992/SkyRank/blob/main/LICENSE>`_ file.
 
-``SkyRank`` is developed and maintained by Naël Turlure and Mickael Martin-Nevot.
+Contributor
+-----------
+See the `AUTHORS.rst <https://github.com/Turlure-Nael-23018992/SkyRank/blob/main/AUTHORS.rst>`_
+file for a complete list of contributors to the project.
