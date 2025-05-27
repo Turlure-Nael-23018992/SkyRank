@@ -203,6 +203,8 @@ class CoskySQL:
         self.prefNext = dataUnifier.unifyPreferences()
 
     def unifyPreferencesQuery(self):
+        print("self.pref:", self.pref)
+        print("self.prefNext:", self.prefNext)
         querry = f"""T AS {"("}
         SELECT RowId, """
         col_offset = self.get_column_names(self.table_name)[1:]
@@ -210,7 +212,7 @@ class CoskySQL:
             print("Erreur : le nombre de colonnes ne correspond pas au nombre de préférences.")
             return None
         for i in range(len(col_offset)):
-            if self.pref[i] != self.prefNext[i]:
+            if self.pref[i].name != self.prefNext[i].name:
                 querry += f""" {1.0} / {col_offset[i]} AS {col_offset[i]},"""
             else :
                 querry += f""" {col_offset[i]},"""

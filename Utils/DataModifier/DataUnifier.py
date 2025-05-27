@@ -69,13 +69,18 @@ class DataUnifier:
         Unify the preferences based on the given mode.
         :return: unified preferences
         """
+        countMin = 0
+        countMax = 0
         if self.mode == "Min":
             return [Preference.MIN] * len(self.preferences)
         elif self.mode == "Max":
             return [Preference.MAX] * len(self.preferences)
         elif self.mode == "auto":
-            countMin = self.preferences.count(Preference.MIN)
-            countMax = self.preferences.count(Preference.MAX)
+            for pref in self.preferences:
+                if str(pref) == "Preference.MIN":
+                    countMin += 1
+                else:
+                    countMax += 1
             if countMin > countMax:
                 return [Preference.MIN] * len(self.preferences)
             elif countMax > countMin:
