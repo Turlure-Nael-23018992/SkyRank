@@ -35,11 +35,11 @@ SkyRank addresses this gap by:
 - Providing **ready-to-use implementations** of major Skyline ranking approaches.
 - Offering **graphical interfaces** to run algorithms and compare results visually.
 
-![Graphical interface with Skyline points visualization.\label{mylabel}](/img/SkyrankUI.png)
+![Graphical interface with Skyline points visualization.\label{mylabel}](/SkyrankUI.png)
 
 - Supporting **LaTeX-based chart generation** for scientific reporting.
 
-![Latex graph generation.\label{mylabel}](/img/SkyrankLatex.png)
+![Latex graph generation.\label{mylabel}](/SkyrankLatex.png)
 - Enabling **fast experimentation** and educational use.
 
 # Features
