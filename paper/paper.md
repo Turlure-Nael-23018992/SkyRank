@@ -40,6 +40,7 @@ SkyRank addresses this gap by:
 - Supporting **LaTeX-based chart generation** for scientific reporting.
 
 ![Latex graph generation.\label{mylabel}](SkyrankLatex.png)
+
 - Enabling **fast experimentation** and educational use.
 
 # Features
@@ -95,3 +96,5 @@ The repository is organized into logically separated modules, with each director
 
 The CoSky method and the overall Skyline ranking approach are based on work by M. Martin Nevot et al. [@MartinNevot2024].  
 SkyRank implements and adapts these methods in a unified open-source environment.
+
+# References
