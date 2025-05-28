@@ -3,7 +3,7 @@
 
 SkyRank is an open-source benchmarking and visualization framework for multi-dimensional Skyline algorithms.
 It provides a modular architecture to run, compare, and visualize advanced preference queries over large datasets.
-SkyRank includes multiple algorithmic implementations (e.g., Cosky, BBS, RankSky), graphical user interfaces (PyQt5 and Tkinter), and tools to generate publication-ready visualizations using LaTeX.
+SkyRank includes multiple algorithmic implementations (e.g., BBS, RankSky, Cosky), graphical user interfaces (PyQt5 and Tkinter), and tools to generate publication-ready visualizations using LaTeX.
 It is designed for researchers, students, and practitioners interested in preference-based data analysis, algorithm evaluation, and Skyline computation.
 
 ⚙️ Requirements
@@ -68,7 +68,7 @@ To launch it:
 
     install.bat
 
-If you encounter a permissions issue, try launching the terminal **as administrator**.
+If you encounter a permissions issue, try running the terminal **as administrator**.
 
 🧪 Manual Setup (Alternative)
 -----------------------------
@@ -99,7 +99,7 @@ On **Windows**:
 🏁 Usage
 --------
 
-Once installed, activate the environment and launch one of the interfaces:
+Once installed, launch one of the interfaces:
 
 On **Linux/macOS**:
 
@@ -124,13 +124,13 @@ On **Windows**:
 📂 Project Structure
 --------------------
 
-SkyRank is structured as a modular Python project relying on multiple Git repositories:
+SkyRank is structured as a modular Python project relying on several Git repositories:
 
 - `SkyRank-Client <https://github.com/Turlure-Nael-23018992/SkyRank-Client>`_ serves as the main interface and execution environment for SkyRank, allowing it to be used as a Python API.
 
-- `SkyRank <https://github.com/Turlure-Nael-23018992/SkyRank>`_ is the core backend containing the main algorithms (`dp-idp`, `RankSky`, `CoSky`, etc.), benchmarking tools, data handling modules, and export systems and UI apps.
+- `SkyRank <https://github.com/Turlure-Nael-23018992/SkyRank>`_ is the core backend containing the main algorithms (`dp-idp` improved with dominance hierarchy, `RankSky`, `CoSky`, etc.), benchmarking tools, data handling modules, and export systems and UI apps.
 
-- `BBS-Python-3.x- <https://github.com/Turlure-Nael-23018992/BBS-Python-3.x->`_ is a dedicated submodule that implements the Branch-and-Bound Skyline algorithm (BBS).
+- `BBS-Python-3.x- <https://github.com/Turlure-Nael-23018992/BBS-Python-3.x->`_ is a dedicated submodule that implements the Branch-and-Bound Skyline (BBS) algorithm.
 
 - `R-Tree-Python-3.x- <https://github.com/Turlure-Nael-23018992/R-Tree-Python-3.x->`_ provides the spatial indexing structures used internally by BBS.
 
@@ -143,7 +143,7 @@ These repositories are embedded hierarchically:
             └── BBS-Python-3.x-
                   └── R-Tree-Python-3.x-
 
-This structure enables clean separation of concerns, modular development, and reusability across different Skyline-related components.
+This structure enables clean separation of features, modular development, and reusability across different Skyline-related components.
 
 
 📖 Documentation
