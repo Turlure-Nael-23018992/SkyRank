@@ -1,5 +1,5 @@
 ---
-title: "SkyRank: a unified toolkit for Skyline ranking and visualization"
+title: "SkyRank: a unified toolkit for Skyline ranking, benchmarking and visualization"
 tags:
   - skyline
   - multi-criteria decision making
@@ -34,7 +34,10 @@ SkyRank addresses this gap by:
 
 - Providing **ready-to-use implementations** of major Skyline ranking approaches.
 - Offering **graphical interfaces** to run algorithms and compare results visually.
+![{SkyRank UI}](/img/Skyrank%20UI.png)
 - Supporting **LaTeX-based chart generation** for scientific reporting.
+
+![{SkyRank Latex}](/img/Skyrank%20Latex.png)
 - Enabling **fast experimentation** and educational use.
 
 # Features
