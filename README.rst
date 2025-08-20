@@ -1,6 +1,10 @@
 📦 SkyRank — Installation Guide
 ===============================
 
+.. image:: https://joss.theoj.org/papers/5f3289355fa004bf243ef2533b3d2117/status.svg
+   :target: https://joss.theoj.org/papers/5f3289355fa004bf243ef2533b3d2117
+   :alt: JOSS status
+
 SkyRank is an open-source benchmarking and visualization framework for multi-dimensional Skyline algorithms.
 It provides a modular architecture to run, compare, and visualize advanced preference queries over large datasets.
 SkyRank includes multiple algorithmic implementations (e.g., BBS, RankSky, Cosky), graphical user interfaces (PyQt5 and Tkinter), and tools to generate publication-ready visualizations using LaTeX.
