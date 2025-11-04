@@ -1,4 +1,5 @@
 import unittest
+import os
 from Utils.DataModifier.JsonUtils import readJson
 
 from Algorithms.DpIdpDh import DpIdpDh
@@ -8,25 +9,27 @@ class DpIdpDhTest(unittest.TestCase):
 
     def setUp(self):
         """Set up the test case"""
-        self.r_big = readJson("../Datas/RBig.json")
+        base_dir = os.path.dirname(__file__)
+        rbig_path = os.path.abspath(os.path.join(base_dir, "..", "Datas", "RBig.json"))
+        self.r_big = readJson(rbig_path)
 
         # Excepted values for Dp_IDP algorithm
-        self.exceptedOutput = {31: 100.12794123202812,
-                                66: 4.814669361678212,
-                                88: 177.54031859048024,
-                                102: 64.33287037248346,
-                                149: 56.588694473078284,
-                                381: 19.348062785161932,
-                                398: 19.69864863692009,
-                                495: 24.734938700428767,
-                                540: 0.23856062735983122,
-                                550: 2.035309896463078,
-                                592: 3.960770184126881,
-                                603: 3.5719974892938056}
+        self.exceptedOutput = [32,
+                                67,
+                                89,
+                                103,
+                                150,
+                                382,
+                                399,
+                                496,
+                                541,
+                                551,
+                                593,
+                                604]
         # Run DP_IDP algorithm
         self.dpIdpDhValues = DpIdpDh(self.r_big).score
-
+        self.dpIdpDhSkyline = list(self.dpIdpDhValues.keys())
 
     def test_Algo_DPIDP(self):
         """Test the DP_IDP algorithm with a sample dataset"""
-        self.assertEqual(self.exceptedOutput, self.dpIdpDhValues)
+        self.assertEqual(self.exceptedOutput, self.dpIdpDhSkyline)

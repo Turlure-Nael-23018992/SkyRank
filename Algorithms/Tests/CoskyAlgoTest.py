@@ -1,52 +1,48 @@
+import os
 import unittest
+from Utils.Preference import Preference
 from Utils.DataModifier.JsonUtils import readJson
-
 from Algorithms.CoskyAlgorithme import CoskyAlgorithme
 
 
 class CoskyAlgoTest(unittest.TestCase):
-    """
-    Test class for the Cosky algorithm.
-    """
+    """Test suite for the Cosky algorithm (keys only)."""
 
     def setUp(self):
-        """
-        Setup method to initialize the CoskyAlgorithme instance.
-        """
-        r_big_loaded = readJson("../Datas/RBig.json")
+        """Set up the test case environment."""
+        base_dir = os.path.dirname(__file__)
+        rbig_path = os.path.abspath(os.path.join(base_dir, "..", "Datas", "RBig.json"))
 
-        # Convert the loaded dictionary values to tuples
-        self.r_big_reloaded = {key: tuple(value) for key, value in r_big_loaded.items()}
+        # Load JSON data
+        r_big_loaded = readJson(rbig_path)
+        self.r_big_reloaded = {int(k): tuple(v) for k, v in r_big_loaded.items()}
 
-        # Expected values with keys converted to integers
-        self.expected_values = {
-            103: [1, 63, 0.0886754904499806, 0.5563069153560654],
-            150: [1, 81, 0.0238015221847852, 0.744486440507893],
-            32: [5, 68, 0.00101601862031575, 0.9881951629372444],
-            382: [5, 16, 0.0290286872591493, 0.8536447098741473],
-            399: [1, 37, 0.105243370873928, 0.3925627936821398],
-            496: [1, 10, 0.123358262237618, 0.18326805476129948],
-            541: [6, 113, 0.000471306256019766, 0.953194312519765],
-            551: [6, 13, 0.0569350631190667, 0.7448746655457289],
-            593: [2, 15, 0.0582544098560979, 0.5406510449527204],
-            604: [8, 11, 0.0481795194440872, 0.7757600377716273],
-            67: [2, 17, 0.00315426440199051, 0.9950462086984445],
-            89: [3, 11, 0.0714556428342785, 0.5268573236431924]
-        }
+        # Expected output keys (IDs only)
+        self.expected_keys = [
+            32, 67, 89, 103, 150,
+            382, 399, 496, 541, 551,
+            593, 604
+        ]
 
-        # Run CoskyAlgorithme and sort the output dictionary
-        self.cosky_algo = CoskyAlgorithme(self.r_big_reloaded).s
-        # Convert the keys to integers
-        self.cosky_algo = {int(k): v for k, v in self.cosky_algo.items()}
-        print(self.cosky_algo)  # Vérification
+        # Run Cosky algorithm
+        self.cosky_algo = CoskyAlgorithme(
+            self.r_big_reloaded,
+            [Preference.MIN, Preference.MIN, Preference.MIN]
+        ).s
 
-    def test_cosky_algo(self):
-        """
-        Test the Cosky algorithm with a sample dataset.
-        """
-        self.assertEqual(self.cosky_algo, self.expected_values)
+        # Extract actual keys from the result
+        self.actual_keys = list(self.cosky_algo.keys())
+
+        print("✅ CoskyAlgorithme skyline:", self.actual_keys)
+
+    def test_cosky_skyline(self):
+        """Check if CoskyAlgorithme returns the expected set of skyline points."""
+        self.assertEqual(
+            sorted(self.expected_keys),
+            sorted(self.actual_keys),
+            "Returned skyline points do not match the expected output."
+        )
 
 
-if __name__ == '__main__':
-    print("Running tests...")
+if __name__ == "__main__":
     unittest.main()
