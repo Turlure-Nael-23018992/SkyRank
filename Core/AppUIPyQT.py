@@ -258,7 +258,7 @@ class AppUIPyQt(QMainWindow):
             max_vals = np.max(all_array, axis=0)
             norm_all = all_array / max_vals
             norm_sky = norm_all[sky_indices]
-            ax.scatter(norm_all[:, 0], norm_all[:, 1], norm_all[:, 2], color='lightgray', label='All Points')
+            ax.scatter(norm_all[:, 0], norm_all[:, 1], norm_all[:, 2], color='purple', label='All Points')
             ax.scatter(norm_sky[:, 0], norm_sky[:, 1], norm_sky[:, 2], color='blue', label='Skyline')
 
             # Message informatif sur l'enveloppe

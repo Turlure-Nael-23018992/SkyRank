@@ -224,13 +224,10 @@ class CoskySQL:
 
 if __name__ == '__main__':
     #print("Sqlite version : ", sqlite3.sqlite_version)
-    db_filepath= "../Assets/DeepSkyTest.db"
-    #startTime = time.time()
+    db_filepath= "../Assets/Databases/cosky_db_C3_R200000.db"
+    startTime = time.time()
     CoskySQL(db_filepath, [Preference.MIN, Preference.MIN, Preference.MIN])
+    endTime = time.time()
+    print("Execution time:", endTime - startTime, "seconds")
 
-
-
-
-    #print("cosky_sql:",cosky_sql.rows_res)
-    #print(f"temps: {time.time() - startTime}")
 

@@ -63,7 +63,7 @@ if __name__ == "__main__":
     Example usage of DictToDatabase.
     """
 
-    databaseFilepath = "../../Assets/DeepSkyTest.db"
+    databaseFilepath = "../../Algorithms/Datas/DeepSkyTest.db"
     db = DictToDatabase(databaseFilepath)
 
     r = {

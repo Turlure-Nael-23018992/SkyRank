@@ -1,11 +1,20 @@
 {
     "skyline_points": [
-        2,
-        4,
-        1
+        32,
+        67,
+        89,
+        103,
+        150,
+        382,
+        399,
+        496,
+        541,
+        551,
+        593,
+        604
     ],
-    "execution_time": 0.0010006427764892578,
-    "algorithm": "CoskySQL",
+    "execution_time": 4.080654859542847,
+    "algorithm": "DpIdpDh",
     "input_type": "JSON",
-    "input_file": "RTuples8.json"
+    "input_file": "RBig.json"
 }

@@ -243,6 +243,6 @@ if __name__ == "__main__":
     linesToInsertBack = []
     k = 5
     algos = [CoskySQL, CoskyAlgorithme, DpIdpDh, RankSky, SkyIR]
-    fp = "../Assets/DeepSkyTest.db"
-    deepSky = DeepSky(fp, k, CoskySQL)
+    fp = "../../Algorithms/Datas/DeepSkyTest.db"
+    deepSky = DeepSky(fp, k, DpIdpDh)
     print("deepSky.topK", deepSky.topK)
