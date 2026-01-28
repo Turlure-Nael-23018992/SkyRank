@@ -198,8 +198,8 @@ class AppUIPyQt(QMainWindow):
                         "CoskyAlgorithme": CoskyAlgorithme, "CoskySQL": CoskySQL,
                         "RankSky": RankSky}[algo_name]
 
-            exporter = CsvExporterImpl("../Assets/Export/CSVFiles/Results.csv") if out_fmt == "CSV" \
-                      else JsonExporterImpl("../Assets/Export/JsonFiles/Result.json")
+            exporter = CsvExporterImpl("Assets/Export/CSVFiles/Results.csv") if out_fmt == "CSV" \
+                      else JsonExporterImpl("Assets/Export/JsonFiles/Result.json")
 
             app = App(data, algo_cls, exporter=exporter,
                       input_type=dtype, input_file=self.selectedDataPath or "inline",
