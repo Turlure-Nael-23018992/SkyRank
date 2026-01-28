@@ -15,7 +15,7 @@ import numpy as np
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from Core.App import App
-from Core.Styles.StyleManager import StyleManager
+
 from Utils.Preference import Preference
 from Utils.Exporter.CsvExporterImpl import CsvExporterImpl
 from Utils.Exporter.JsonExporterImpl import JsonExporterImpl
