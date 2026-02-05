@@ -197,8 +197,11 @@ This structure enables clean separation of features, modular development, and re
 📖 Documentation
 ----------------
 
-The full Python documentation is available at `docs <https://github.com/Turlure-Nael-23018992/SkyRank/tree/main/docs>`_
+The full Python documentation is available online via GitHub Pages:
+https://turlure-nael-23018992.github.io/SkyRank/
 
+The source files for the documentation are available in the repository:
+`docs <https://github.com/Turlure-Nael-23018992/SkyRank/tree/main/docs>`_
 
 
 🤝 Community Guidelines
