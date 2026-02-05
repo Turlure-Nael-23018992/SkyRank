@@ -200,6 +200,25 @@ This structure enables clean separation of features, modular development, and re
 The full Python documentation is available at `docs <https://github.com/Turlure-Nael-23018992/SkyRank/tree/main/docs>`_
 
 
+
+🤝 Community Guidelines
+----------------------
+
+We welcome contributions from the community and encourage users to get involved in the development and improvement of SkyRank.
+
+**Contributing**
+  Guidelines for contributing to the project (code, documentation, bug fixes, feature requests) are described in the
+  `CONTRIBUTING <https://github.com/Turlure-Nael-23018992/SkyRank/blob/main/CONTRIBUTING.rst>`_ file.
+
+**Reporting issues**
+  Bugs, unexpected behavior, and feature requests can be reported via the GitHub issue tracker:
+  https://github.com/Turlure-Nael-23018992/SkyRank/issues
+
+**Support and questions**
+  For general questions, usage help, or discussions, please open a GitHub issue with the *question* label.
+  This allows the discussion to remain public and useful to the community.
+
+
 📄 License
 ----------
 
