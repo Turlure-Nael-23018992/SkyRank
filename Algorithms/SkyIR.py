@@ -248,8 +248,10 @@ class SkyIR:
         good_K=min(k, len(topK))
         time2.stop()
         self.time = time2.execution_time + self.time
-        self.result = topK[-good_K:]
-        return topK[-good_K:]
+        # self.result = topK[-good_K:]
+        # return topK[-good_K:]
+        self.result = [(topkLbl[i-1], topK[i-1]) for i in range(len(topK)-good_K+1, len(topK)+1)]
+        return self.result
 
 
 

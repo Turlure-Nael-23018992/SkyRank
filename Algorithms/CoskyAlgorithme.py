@@ -124,7 +124,7 @@ class CoskyAlgorithme:
         if self.is_debug:
             beauty_print("totIdealP", self.totIdealP)
         self.sort("Desc")
-        print("CoskyAlgorithme Result : ", self.s)
+        # print("CoskyAlgorithme Result : ", self.s)
         return self.s
 
     def sort(self,rev):

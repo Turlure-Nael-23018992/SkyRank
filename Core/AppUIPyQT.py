@@ -206,8 +206,9 @@ class AppUIPyQt(QMainWindow):
                       preferences=prefs)
             self.lastAppInstance = app
             self.statusLabel.setText(f"Done in {app.execution_time}s")
-
-            all_data = self._extract_all_points(data)
+             
+            # Use raw data keys if available, otherwise fallback
+            all_data = {k: list(v) for k, v in data.r.items()} if hasattr(data, 'r') and isinstance(data.r, dict) else {i: row for i, row in enumerate(self._extract_all_points(data))}
             skyline = self.get_skyline_points()
             self.display_graph(all_data, skyline)
 
@@ -231,24 +232,55 @@ class AppUIPyQt(QMainWindow):
         algo = self.lastAppInstance.algo
         inst = self.lastAppInstance.algo_instance
         result = []
-        if algo == "SkyIR": result = inst.result
-        elif algo == "DpIdpDh": result = inst.score
-        elif algo == "CoskyAlgorithme": result = getattr(inst, "s", [])
+        # if algo == "SkyIR": result = inst.result
+        # elif algo == "DpIdpDh": result = inst.score
+        if algo == "SkyIR":
+            # SkyIR.result is now a list of (id, score)
+            result = inst.result
+            if not result: return {}
+            try:
+                # Return {id: [val1, val2, ..., score]}
+                return {item[0]: list(inst.r[item[0]]) + [item[1]] for item in result}
+            except Exception as e:
+                return {}
+        elif algo == "DpIdpDh":
+            # DpIdpDh.score is a dict {id: score}
+            result = inst.score
+            if not result: return {}
+            # Return {id: [val1, val2, ..., score]}
+            return {k: list(inst.r[k]) + [v] for k, v in result.items()}
+        elif algo == "CoskyAlgorithme": result = getattr(inst, "s", {})
         elif algo == "CoskySQL": result = inst.dict
         elif algo == "RankSky": result = inst.score
-        if isinstance(result, dict): return [v[:3] for v in result.values()]
-        return [r[:3] if isinstance(r, (list, tuple)) and len(r) > 3 else r for r in result]
+        
+        if isinstance(result, dict): return result
+        # Fallback for unexpected types, though we aim for dict everywhere
+        return {i: r for i, r in enumerate(result)}
 
     def display_graph(self, all_points, skyline_points):
         self.figure.clear()
-        n_dim = len(all_points[0]) if all_points else 0
-        all_array = np.array(all_points)
+        
+        # Convert dicts to lists for plotting
+        all_values = list(all_points.values()) if isinstance(all_points, dict) else all_points
+        sky_values = list(skyline_points.values()) if isinstance(skyline_points, dict) else skyline_points
+
+        # Use only first 3 coords for dimensionality check and plotting
+        n_dim = len(all_values[0]) if all_values else 0
+        all_array = np.array([p[:3] for p in all_values]) if all_values else np.array([])
+        sky_array = np.array([p[:3] for p in sky_values]) if sky_values else np.array([])
+
         sky_indices = []
-        for i, pt in enumerate(all_points):
-            for sp in skyline_points:
+        for i, pt in enumerate(all_values):
+            for sp in sky_values:
+                # Compare only spatial coordinates
                 if np.allclose(pt[:3], sp[:3], atol=1e-6):
                     sky_indices.append(i)
                     break
+        
+        if n_dim >= 3:
+             # Repurpose n_dim logic to use all_array which is now safe
+             pass # logic continues below using all_array...
+
 
         if n_dim == 3:
             ax = self.figure.add_subplot(111, projection='3d')
@@ -298,14 +330,23 @@ class AppUIPyQt(QMainWindow):
         if not pts:
             QMessageBox.information(self, "Skyline", "No points.")
             return
-        win = QWidget(); win.setWindowTitle("Skyline Points")
-        layout = QVBoxLayout(win)
-        ta = QTextEdit(); ta.setReadOnly(True)
-        ta.setText("\n".join(str(p) for p in pts))
+        self.skyline_win = QWidget()
+        self.skyline_win.setWindowTitle("Skyline Points")
+        layout = QVBoxLayout(self.skyline_win)
+        ta = QTextEdit()
+        ta.setReadOnly(True)
+        # Format matches console output (raw dictionary or list)
+        if isinstance(pts, dict):
+             # Format with newlines between items: {k: v,\n k: v}
+             items = [f"{repr(k)}: {repr(v)}" for k, v in pts.items()]
+             text = "{" + ",\n ".join(items) + "}"
+        else:
+             text = "\n".join(str(p) for p in pts)
+        ta.setText(text)
         layout.addWidget(ta)
-        win.setLayout(layout)
-        win.resize(600, 400)
-        win.show()
+        self.skyline_win.setLayout(layout)
+        self.skyline_win.resize(600, 400)
+        self.skyline_win.show()
 
 def main():
     app = QApplication(sys.argv)

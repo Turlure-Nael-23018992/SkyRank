@@ -554,7 +554,7 @@ class DpIdpDh:
         self.dom, self.sky, self.spTot, self.skyCard, self.domCard = self.calculGrapheDeCouverture(self.dom, self.sp)
         self.sky = self.calculLm(self.dom, self.sky, self.skyCard)
         self.score = self.calculScore(self.sky, self.domCard, self.spTot)
-        print(self.score)
+        # print(self.score)
 
 
 

@@ -77,7 +77,7 @@ class App:
             raise ValueError("Unknown algorithm")
 
     def _start_cosky_sql(self):
-        print_red("Starting CoskySQL")
+        # print_red("Starting CoskySQL")
         if self.dataName == "DbObject":
             self.algo_instance = CoskySQL(self.dbFp, self.pref)
         elif self.dataName == "JsonObject":
@@ -88,7 +88,7 @@ class App:
             self.algo_instance = CoskySQL("../Assets/AlgoExecution/DbFiles/TestExecution.db", self.pref)
 
     def _start_cosky_algorithme(self):
-        print_red("Starting CoskyAlgorithme")
+        # print_red("Starting CoskyAlgorithme")
         if self.dataName == "DbObject":
             rel = DataConverter(self.dbFp).dbToRelation()
             self.algo_instance = CoskyAlgorithme(rel, self.pref)
@@ -100,7 +100,7 @@ class App:
             self.algo_instance = CoskyAlgorithme(self.r, self.pref)
 
     def _start_dp_idp_dh(self):
-        print_red("Starting DpIdpDh")
+        # print_red("Starting DpIdpDh")
         if self.dataName == "DbObject":
             rel = DataConverter(self.dbFp).dbToRelation()
             self.algo_instance = DpIdpDh(rel)
@@ -112,7 +112,7 @@ class App:
             self.algo_instance = DpIdpDh(self.r)
 
     def _start_ranksky(self):
-        print_red("Starting RankSky")
+        # print_red("Starting RankSky")
         if self.pref is None:
             raise ValueError("RankSky requires a preference list")
         if self.dataName == "DbObject":
@@ -126,7 +126,7 @@ class App:
             self.algo_instance = RankSky(self.r, self.pref)
 
     def _start_skyir(self):
-        print_red("Starting SkyIR")
+        # print_red("Starting SkyIR")
         if self.dataName == "DbObject":
             rel = DataConverter(self.dbFp).dbToRelation()
             self.algo_instance = SkyIR(rel); self.algo_instance.skyIR(10)

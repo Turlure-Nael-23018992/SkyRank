@@ -1,2 +1,2 @@
 algorithm,input_type,input_file,execution_time,skyline_points
-DpIdpDh,JSON,RBig.json,4.021692276000977,32;67;89;103;150;382;399;496;541;551;593;604
+DpIdpDh,JSON,Assets\AlgoExecution\JsonFiles\RTuples8.json,0.0,1;2;4
