@@ -277,50 +277,53 @@ class AppUIPyQt(QMainWindow):
                     sky_indices.append(i)
                     break
         
-        if n_dim >= 3:
-             # Repurpose n_dim logic to use all_array which is now safe
-             pass # logic continues below using all_array...
+        if n_dim > 4:
+            ax = self.figure.add_subplot(111)
+            ax.text(0.5, 0.5, f"Graph disabled for {n_dim}-column data\n(Max 3 spatial columns supported)", 
+                    ha='center', va='center', fontsize=10, color='red')
+            self.canvas.draw()
+            return
+            
+        plot_dim = all_array.shape[1] if all_array.size > 0 else 0
 
-
-        if n_dim == 3:
+        if plot_dim == 3:
             ax = self.figure.add_subplot(111, projection='3d')
             max_vals = np.max(all_array, axis=0)
+            # Avoid division by zero
+            max_vals[max_vals == 0] = 1
             norm_all = all_array / max_vals
-            norm_sky = norm_all[sky_indices]
-            ax.scatter(norm_all[:, 0], norm_all[:, 1], norm_all[:, 2], color='purple', label='All Points')
-            ax.scatter(norm_sky[:, 0], norm_sky[:, 1], norm_sky[:, 2], color='blue', label='Skyline')
+            norm_sky = norm_all[sky_indices] if sky_indices else np.empty((0, 3))
+            
+            ax.scatter(norm_all[:, 0], norm_all[:, 1], norm_all[:, 2], color='lightgray', label='All Points', alpha=0.5)
+            if norm_sky.size > 0:
+                ax.scatter(norm_sky[:, 0], norm_sky[:, 1], norm_sky[:, 2], color='red', label='Skyline', s=50)
 
-            # Message informatif sur l'enveloppe
-            ax.text2D(0.05, 0.95, "⚠️ Pareto envelope display under development",
-                      transform=ax.transAxes, fontsize=9, color='red')
+            ax.text2D(0.05, 0.95, "Skyline 3D (normalized)", transform=ax.transAxes, fontsize=9, color='black')
 
             ax.set_xlabel("Dim 1")
             ax.set_ylabel("Dim 2")
             ax.set_zlabel("Dim 3")
             ax.set_title("Skyline 3D (normalized by max of each dimension)")
             ax.legend()
+        elif plot_dim == 2:
+            ax = self.figure.add_subplot(111)
+            
+            all_x, all_y = all_array[:, 0], all_array[:, 1]
+            sky_x = all_array[sky_indices, 0] if sky_indices else []
+            sky_y = all_array[sky_indices, 1] if sky_indices else []
+            
+            ax.scatter(all_x, all_y, color='lightgray', label='All Points', alpha=0.5)
+            if len(sky_x) > 0:
+                ax.scatter(sky_x, sky_y, color='red', label='Skyline', s=50)
+
+            ax.set_title("Skyline 2D")
+            ax.set_xlabel("Dim 1")
+            ax.set_ylabel("Dim 2")
+            ax.legend()
         else:
             ax = self.figure.add_subplot(111)
-            """reduced = PCA(n_components=2).fit_transform(StandardScaler().fit_transform(all_array))
-            all_x, all_y = reduced[:, 0], reduced[:, 1]
-            sky_x, sky_y = reduced[sky_indices, 0], reduced[sky_indices, 1]
-            ax.scatter(all_x, all_y, color='lightgray', label='All Points')
-            ax.scatter(sky_x, sky_y, color='blue', label='Skyline')
+            ax.text(0.5, 0.5, "No displayable data found", ha='center', va='center')
 
-            # Ligne reliant les points Skyline (approximation visuelle)
-            skyline_proj = np.column_stack((sky_x, sky_y))
-            skyline_sorted = skyline_proj[np.argsort(skyline_proj[:, 0])]
-            ax.plot(skyline_sorted[:, 0], skyline_sorted[:, 1], color='red', linestyle='--')"""
-
-            # Message informatif
-            ax.text(0.05, 0.95,
-                    "🔧 Work in progress: visualization for n > 3\n⚠️ Pareto envelope display under development",
-                    transform=ax.transAxes, fontsize=9, color='darkred', verticalalignment='top')
-
-            """ax.set_title("Skyline (blue) vs All Points")
-            ax.set_xlabel("Component 1")
-            ax.set_ylabel("Component 2")
-            ax.legend()"""
 
         self.canvas.draw()
 
