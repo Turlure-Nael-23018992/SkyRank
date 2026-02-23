@@ -98,11 +98,24 @@ class CoskySQL:
 
         col_offset = self.colonne_names[1:]
         #print(col_offset)
-        # "<=" de S. (skyline)
-        s1 = " AND ".join([f"R2.{name} <= R1.{name}" for name in col_offset])
+        self.unifyPreferences()
+        q1= self.unifyPreferencesQuery()
 
-        # "<" de S.
-        s2 = " OR ".join([f"R2.{name} < R1.{name}" for name in col_offset])
+        # Adaptive operators based on majority preference (unified direction)
+        # We assume all target preferences are the same after unification
+        is_min = (self.prefNext[0] == Preference.MIN)
+        op_dom = "<=" if is_min else ">="
+        op_strict = "<" if is_min else ">"
+        ideal_func = "MIN" if is_min else "MAX"
+        
+        # "<=" de S. (skyline) - now adaptive
+        s1 = " AND ".join([f"R2.{name} {op_dom} R1.{name}" for name in col_offset])
+
+        # "<" de S. - now adaptive
+        s2 = " OR ".join([f"R2.{name} {op_strict} R1.{name}" for name in col_offset])
+        
+        # Ideal - now adaptive
+        ideal = ", ".join([f"{ideal_func}(P{name}) AS I{name}" for name in col_offset])
 
         # N de SN.
         snn = ", ".join([f"CAST({name} AS REAL) / T{name} AS N{name}" for name in col_offset])
@@ -122,9 +135,6 @@ class CoskySQL:
         # SP.
         sp = ", ".join([f"W{name} * N{name} AS P{name}" for name in col_offset])
 
-        # Ideal.
-        ideal = ", ".join([f"MIN(P{name}) AS I{name}" for name in col_offset])
-
         # score numerator.
         scoreNum = " + ".join([f"I{name} * P{name}" for name in col_offset])
 
@@ -137,21 +147,18 @@ class CoskySQL:
         # Projection finale.
         proj = ", ".join(col_offset)
 
-        self.unifyPreferences()
-        q1= self.unifyPreferencesQuery()
-
         sql_queries = f"""
            WITH {q1},
-            S AS (SELECT * FROM {"T"} AS R1
-            WHERE NOT EXISTS (SELECT * FROM {"T"} AS R2 WHERE ({s1}) AND ({s2}))),
+            S AS (SELECT * FROM T AS R1
+            WHERE NOT EXISTS (SELECT * FROM T AS R2 WHERE ({s1}) AND ({s2}))),
             SN AS (SELECT RowId, {snn} FROM S, (SELECT {snt} FROM S) AS ST),
             SGini AS (SELECT {sgini} FROM SN),
             SW AS (SELECT {sw} FROM SGini),
             SP AS (SELECT RowId, {sp} FROM SN, SW),
             Ideal AS (SELECT {ideal} FROM SP),
             SScore AS (SELECT RowId, ({scoreNum}) / (SQRT({pp}) * SQRT({ii})) AS Score FROM Ideal, SP)
-            SELECT {self.table_name}.RowId, {proj}, Score AS Score
-            FROM {self.table_name} INNER JOIN SScore rs ON {self.table_name}.RowId = rs.RowId
+            SELECT T.RowId, {proj}, Score AS Score
+            FROM T INNER JOIN SScore rs ON T.RowId = rs.RowId
             ORDER BY Score DESC;
             """
         #print(sql_queries)
@@ -199,10 +206,12 @@ class CoskySQL:
         return self.dict
 
     def unifyPreferences(self):
-        dataUnifier = DataUnifier(self.dbFilepath, self.pref)
+        dataUnifier = DataUnifier(None, self.pref, mode="auto")
         self.prefNext = dataUnifier.unifyPreferences()
 
     def unifyPreferencesQuery(self):
+        print("self.pref", self.pref)
+        print("self.prefNext", self.prefNext)
         querry = f"""T AS {"("}
         SELECT RowId, """
         col_offset = self.get_column_names(self.table_name)[1:]
