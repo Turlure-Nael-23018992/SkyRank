@@ -1,3 +1,14 @@
+"""
+SkyRank GUI (PyQt5)
+===================
+
+This module provides a graphical user interface for the SkyRank project.
+It allows users to:
+1. Load data from various sources (JSON, SQLite, Dictionary).
+2. Choose between different Skyline algorithms (SkyIR, DpIdpDh, etc.).
+3. Visualize the results in 2D or 3D using Matplotlib.
+4. Export the findings to CSV or JSON formats.
+"""
 import os, sys, ast, sqlite3
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QHBoxLayout, QVBoxLayout, QPushButton,
@@ -28,6 +39,12 @@ from Algorithms.RankSky import RankSky
 from Algorithms.SkyIR import SkyIR
 
 class AppUIPyQt(QMainWindow):
+    """
+    Main Window for the SkyRank algorithm runner using PyQt5.
+
+    This class provides a graphical interface to select datasets, algorithms, 
+    and output formats, and to visualize the results.
+    """
     def __init__(self):
         super().__init__()
         self.setWindowTitle("SkyRank - Algorithm Runner [PyQt]")
@@ -38,6 +55,9 @@ class AppUIPyQt(QMainWindow):
         self.initUI()
 
     def initUI(self):
+        """
+        Initializes the user interface components and layout.
+        """
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         main_layout = QHBoxLayout(central_widget)
@@ -176,6 +196,10 @@ class AppUIPyQt(QMainWindow):
         raise ValueError("Cannot count columns")
 
     def run_algorithm(self):
+        """
+        Loads the selected data, configures choices, and executes the algorithm.
+        Displays execution time and updates the visualization graph.
+        """
         try:
             dtype = self.dataCombo.currentText()
             algo_name = self.algoCombo.currentText()
@@ -229,6 +253,15 @@ class AppUIPyQt(QMainWindow):
         return []
 
     def get_skyline_points(self):
+        """
+        Retrieves the skyline points from the last executed algorithm.
+
+        This function extracts the resulting points and their scores from
+        the algorithm instance to prepare them for visualization.
+
+        Returns:
+            dict: A mapping of point IDs to [coordinates..., score].
+        """
         algo = self.lastAppInstance.algo
         inst = self.lastAppInstance.algo_instance
         result = []
@@ -258,6 +291,18 @@ class AppUIPyQt(QMainWindow):
         return {i: r for i, r in enumerate(result)}
 
     def display_graph(self, all_points, skyline_points):
+        """
+        Generates and displays a plot of the results.
+
+        Depending on the dimensionality of the data:
+        - 2D: Standard scatter plot.
+        - 3D: Interactive 3D scatter plot with normalized coordinates.
+        - >3D: Shows a message that plotting is restricted to 3 spatial columns.
+
+        Args:
+            all_points (dict): The complete dataset.
+            skyline_points (dict): High-scored points to highlight in red.
+        """
         self.figure.clear()
         
         # Convert dicts to lists for plotting

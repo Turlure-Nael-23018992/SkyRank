@@ -532,13 +532,19 @@ def calculScore(sky, domCard, spTot):
 
 class DpIdpDh:
     """
-    Class to implement the dp-idp-dh algorithm for ranking and sorting data based on multiple criteria.
+    Implementation of the DP-IDP-DH algorithm for ranking points using dominance hierarchy.
+
+    This class computes scores for points based on their dominance relationship 
+    within a multi-dimensional dataset.
     """
 
-    def __init__(self, r):
+    def __init__(self, r: dict):
         """
-        Constructor to initialize the dp-idp-dh algorithm.
-        :param r: the relation
+        Initializes the DpIdpDh algorithm with a dataset.
+
+        Args:
+            r (dict): The dataset. A dictionary mapping point IDs to tuples
+                     of numerical coordinates.
         """
         time = TimeCalc(100, "DpIdpDh")
         self.r=r
@@ -561,9 +567,18 @@ class DpIdpDh:
 
     def calculMatriceDesDominants(self, r):
         """
-        Calculate the dominance matrix and the skyline points.
-        :param r: the relation
-        :return: the dominance matrix and the skyline points
+        Computes which points are dominated by which others.
+
+        This is the first step of the algorithm. It builds a matrix where
+        matrix[i][j] = True if point i dominates point j.
+
+        Args:
+            r (dict): The input dataset.
+
+        Returns:
+            tuple: (dom, sp)
+                - dom (list[list]): Dominance matrix.
+                - sp (list[bool]): Boolean indicators for being in the skyline.
         """
         len_ = len(r)
         dom = [["/" if x == y else False for y in range(len_)] for x in range(len_)]
@@ -590,13 +605,19 @@ class DpIdpDh:
 
     def calculGrapheDeCouverture(self, dom, sp, display_graph=False):
         """
-        Calculate the coverage graph of the dominance matrix.
-        :param dom: the dominance matrix
-        :param sp: the skyline points
-        :param display_graph: flag to display the graph
-        :return: the dominance matrix, the skyline points, the total skyline points, the skyline cardinality, and the dominance cardinality
-        """
+        Builds the dominance coverage graph and statistics.
 
+        It simplifies the dominance matrix into a directed graph structure
+        and counts how many points each skyline point dominates.
+
+        Args:
+            dom (list[list]): Precomputed dominance matrix.
+            sp (list[bool]): Skyline point indicators.
+            display_graph (bool): Optional flag for visual debugging.
+
+        Returns:
+            tuple: (dom, sky, spTot, skyCard, domCard)
+        """
         n = len(dom)
         sky = {}
         skyCard = {}
@@ -767,13 +788,17 @@ class DpIdpDh:
 
     def calculLm(self, dom, sky, skyCard):
         """
-        Initializes and calls the 'lm' function for each point in the skyline.
-        Updates the sky structure incrementally using intermediate results from 'lm'.
+        Computes the dominance levels (lm) for all points.
 
-        :param dom: list[list[bool]] - dominance matrix
-        :param sky: dict - skyline point structure
-        :param skyCard: dict - remaining dominance count for each point
-        :return: dict - final updated sky structure
+        Calculates how deeply points are dominated within the hierarchy.
+
+        Args:
+            dom (list[list]): Dominance matrix.
+            sky (dict): Skyline relationships dictionary.
+            skyCard (dict): Cardinality counts for dominances.
+
+        Returns:
+            dict: The updated 'sky' structure with dominance levels.
         """
         for k in sky.keys():
             for updated_sky in self.lm(dom, sky, skyCard, k, k, 2):
@@ -799,15 +824,18 @@ class DpIdpDh:
 
     def calculScore(self, sky, domCard, spTot):
         """
-        Calculates a score for each skyline entry based on dominance levels and frequency.
+        Final scoring calculation for points.
 
-        The score is computed as a sum over all dimensions where the skyline value > 0:
-        (1 / level) * log10(total support / cardinality of dominators)
+        Calculates a numerical score for each skyline entry based on its
+        influence power and the depth of points it dominates.
 
-        :param sky: dict - skyline structure (matrix-like: sky[i][j] gives dominance level of j for skyline i)
-        :param domCard: dict - number of dominators for each point
-        :param spTot: int - total number of support points
-        :return: dict - scores per skyline index
+        Args:
+            sky (dict): Completed skyline structure with dominance levels.
+            domCard (list[int]): Dominator counts for each point.
+            spTot (int): Total number of points in the skyline.
+
+        Returns:
+            dict: Final scores per skyline entry ID.
         """
         score = {}
         for i in sky:

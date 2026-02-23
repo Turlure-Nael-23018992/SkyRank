@@ -1,3 +1,11 @@
+"""
+Cosky Algorithm
+===============
+
+This module implements the Cosky algorithm for ranking points in a dataset.
+Cosky focuses on "diverse" ranking, aiming to find points that are part of 
+the skyline and are representative of the overall dataset's variation.
+"""
 import math
 import time
 
@@ -12,10 +20,21 @@ from Utils.DataModifier.DataUnifier import DataUnifier
 
 class CoskyAlgorithme:
     """
-    Class to implement the Cosky algorithm for ranking and sorting data based on multiple criteria.
+    Implementation of the Cosky algorithm for diversity-aware ranking.
+
+    Cosky evaluates skyline points based on their 'rarity' and 'variation'
+    across different dimensions.
     """
 
     def __init__(self, r, pref, is_debug=False):
+        """
+        Initializes the Cosky algorithm.
+
+        Args:
+            r (dict): The dataset (mapping ID to coordinates).
+            pref (list): List of preferences (e.g., Preference.MIN).
+            is_debug (bool): Enable internal logging for debugging.
+        """
         time = TimeCalc(100, "CoskyAlgorithme")
         self.is_debug=is_debug
         self.pref = pref
@@ -23,7 +42,7 @@ class CoskyAlgorithme:
         self.r = self.unifyMin()
         self.bbs = BbsCosky(r, 1, 2)
         self.s= {k:list(v) for k,v in self.bbs.skyline.items()}
-        #beauty_print("s",self.s)
+        # Initializing internal data structures for the ranking steps
         self.data_keys=self.s.keys()
         self.n = len(self.s)
         self.m = len(list(self.s.values())[0])
@@ -51,7 +70,16 @@ class CoskyAlgorithme:
 
     def run(self):
         """
-        Run the Cosky algorithm to compute the ranking and sorting of data based on multiple criteria.
+        Executes the main steps of the Cosky algorithm.
+
+        1. Totals coordinates across dimensions.
+        2. Normalizes values (ni).
+        3. Computes Gini impurity per dimension (diversity measure).
+        4. Calculates final representative weights (p).
+        5. Assigns final ranking scores using cosine similarity to an 'ideal' vector.
+
+        Returns:
+            dict: Skyline points with an appended score column.
         """
         if len(self.s) == 1:
             for i in self.s:

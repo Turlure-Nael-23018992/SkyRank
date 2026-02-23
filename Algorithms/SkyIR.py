@@ -10,20 +10,41 @@ from Utils.TimerUtils import TimeCalc
 
 class SkyIR:
     """
-    Algorithm about SkyIR
+    Implementation of the SkyIR (Skyline-based Information Retrieval) algorithm.
+
+    This algorithm ranks items based on their skyline dominance and scoring metrics.
     """
 
     def __init__(self, r):
+        """
+        Initializes the SkyIR algorithm with a dataset.
+
+        SkyIR (Skyline-based Information Retrieval) is designed to find and rank
+        representative points from a dataset based on their dominance levels.
+
+        Args:
+            r (dict): The dataset. A dictionary where keys are point IDs and 
+                     values are lists or tuples of numerical coordinates.
+        """
         time1 = TimeCalc(100, "SkyIR")
-        self.r=r
+        self.r = r
         time1.stop()
         self.time = time1.execution_time
 
 
     def calculSkylineEtNbDominants(self):
         """
+        Initial pass: Identifies the first layer of skyline points.
 
-        :return:
+        A skyline point is one that is not "dominated" by any other point.
+        A point A dominates point B if A is at least as good as B in all 
+        dimensions and strictly better in at least one.
+
+        Returns:
+            tuple: (s, gamma, spTot)
+                - s (dict): Coordinates of points in the first skyline layer.
+                - gamma (dict): Maps each point ID to the number of points it dominates.
+                - spTot (int): Total count of points in the first skyline.
         """
         keys=list(self.r.keys())
         gamma={k:0 for k in self.r.keys()}
@@ -57,6 +78,23 @@ class SkyIR:
 
 
     def upperBound(self, s, poi, minIdp, layer, pending, gamma):
+        """
+        Calculates an optimistic 'upper bound' score for a Point of Interest (POI).
+
+        Used for pruning: if even the best possible score (upper bound) for this
+        point is lower than our current Top-K scores, we can stop processing it.
+
+        Args:
+            s (dict): Skyline points.
+            poi (int/str): The point ID being evaluated.
+            minIdp (dict): Current Influence-Dominance Power values.
+            layer (int): Depth of processing.
+            pending (dict): Remaining dominance counts for points.
+            gamma (dict): Initial dominance counts.
+
+        Returns:
+            float: The maximum potential score this point could achieve.
+        """
         #vidp=[]
         #vpnd=[]
         ub=0
@@ -102,6 +140,19 @@ class SkyIR:
 
 
     def nextLayer(self, poi, rLayer, sLayer, layer, minIdp):
+        """
+        Peels back a layer of dominance to find points 'hidden' behind the POI.
+
+        Args:
+            poi (int/str): The point being processed.
+            rLayer (dict): Data candidates for the next layer.
+            sLayer (dict): Current skyline layer.
+            layer (int): Current recursion/iteration depth.
+            minIdp (dict): Running minimum IDP status.
+
+        Returns:
+            tuple: Updated (rLayer, sLayer, lm, minIdp, see)
+        """
         minIdpInit = minIdp.copy()
 
         sNextLayer = {key: sLayer[key] for key in sLayer if poi != key}
@@ -116,23 +167,42 @@ class SkyIR:
 
 
     def updateScore(self, poi, lm, minIdp, spTot):
+        """
+        Computes the ranking score for a point.
+
+        The score balances how many points it dominates (influence) vs how
+        deeply those points are dominated (rank depth).
+
+        Args:
+            poi (int/str): Point ID.
+            lm (dict): Dominance level metrics.
+            minIdp (dict): Influence-Dominance Power values.
+            spTot (int): Total skyline size.
+
+        Returns:
+            float: The computed score for ranking.
+        """
         score=0
-        """
-        beauty_print("lm", lm)
-        print("poi", poi)
-        print("minIdp", minIdp)
-        print("spTot", spTot)
-        """
+        # Iterate through points dominated by 'poi' and sum their contributions
         for j in lm[poi].keys():
-            """
-            print("j", j)
-            print(f"lm[{poi}][{j}]", lm[poi][j])
-            """
+            # Contribution formula: inverse of level * log of (total skyline / influence power)
             score += 1 / lm[poi][j] * math.log10(spTot / minIdp[j])
         return score
 
 
     def insererTrie(self, topkLbl, topk, poi, score):
+        """
+        Inserts a new score into the top-K list if it's high enough.
+
+        Args:
+            topkLbl (list): Current top-K point IDs.
+            topk (list): Current top-K scores.
+            poi (int/str): Potential new point ID.
+            score (float): Score of the new point.
+
+        Returns:
+            tuple: (topkLbl, topk, inserted)
+        """
         inserted=False
         # Insertion tout en maintenant la liste triée
         '''
@@ -157,18 +227,32 @@ class SkyIR:
 
 
     def skyIR(self, k):
+        """
+        Main execution loop for the SkyIR algorithm.
+
+        Runs iteratively to find the best 'k' representative points by 
+        layering the dominance relationships.
+
+        Args:
+            k (int): Number of representative items to return.
+
+        Returns:
+            list: Top-K items as a list of tuples (ID, score).
+        """
         time2 = TimeCalc(100, "SkyIR")
+        # Step 1: Initial skyline layer
         s, gamma, spTot = self.calculSkylineEtNbDominants()
         lm={}
         pending={}
         fileDePriorite=PriorityQueue()
         minIdp = {}
+
+        # Initialize priority queue based on initial dominance counts (gamma)
         for sp in s.keys():
             spg=gamma[sp]
             lm[sp]={}
             pending[sp]=spg
             fileDePriorite.put((spg, sp))
-            #print("sp[poids] :", sp, "[", spg, "]")
 
         rLayer = self.r
         sLayer = s
@@ -178,78 +262,48 @@ class SkyIR:
         score={k:0 for k in sLayer.keys()}
         kScore=0
 
+        # Iteratively process points in the priority queue
         while not fileDePriorite.empty():
             poi=fileDePriorite.get()[1]
-            #"""
-            #print("minIdp: ", minIdp, f" - minIdp.get({poi}) : ", minIdp.get(poi))
-            #if minIdp.get(poi):
-            #val=self.upperBound(s, poi, minIdp[poi], layer, pending[poi], gamma)
+            
+            # Use upper bound pruning to skip points that cannot enter Top-K
             val=self.upperBound(s, poi, minIdp, layer, pending, gamma)
-            #print("YYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
-            #print("val :", val, " - kScore :", kScore)
-            """
-            if val and val<kScore:
-                #print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
-                continue
-            """
-            #"""
+            
             if pending[poi]>0:
                 layer+=1
-                #print("************************************************************")
-                #print(f"poi[{poi}] : ", pending[poi], " - layer : ", layer)
-                #print(f"rLayer : {poi} :", rLayer)
-                #beauty_print(f"rLayer Before", rLayer)
-                #beauty_print(f"sLayer Before", sLayer)
-                #beauty_print(f"minIdp Before", minIdp)
+                # Explore the next layer of dominance recursively
                 rLayer, sLayer, lm_nextLayer, minIdp, see= self.nextLayer(poi, rLayer, sLayer, layer, minIdp)
-                #beauty_print(f"minIdp After", minIdp)
-                #beauty_print(f"rLayer After", rLayer)
-                #beauty_print(f"sLayer After", sLayer)
-                #beauty_print(f"lm_nextLayer", lm_nextLayer)
-                #beauty_print(f"LM[{poi}] Before ", lm[poi])
                 lm[poi].update(lm_nextLayer)
-                #beauty_print(f"LM[{poi}] After ", lm[poi])
-                #print(f"pending[{poi}] Before ", pending[poi])
-                #print("see",see)
+                
+                # Update dominance stats
                 pending[poi] -= see
-                #print(f"pending[{poi}] After ", pending[poi])
                 score[poi]=self.updateScore(poi, lm, minIdp, spTot)
-                #beauty_print(f"score[{poi}]", score[poi])
 
                 inserted = False
                 if pending[poi] == 0:
-                    #beauty_print("topK Before", topK)
+                    # Point fully processed, try to add to Top-K
                     topkLbl, topK, inserted = self.insererTrie(topkLbl, topK, poi, score[poi])
-                    #beauty_print("topK After", topK)
 
-                #print("inserted :", inserted, f" - pending[{poi}] :", pending[poi])
-                #if !inserted and pending[poi]==0:
                 if pending[poi]==0:
-                    #print("------------------------------------------------------------")
+                    # Reset layer tracking for next POI
                     rLayer = self.r
                     sLayer = s
                     layer = 1
                     continue
-                #print("============================================================")
-                #print(f"k", k)
-                #print(f"len(topK)", len(topK))
-                #print(f"kScore", kScore)
+                
+                # Update the threshold for Top-K insertion
                 if len(topK)>=k and topK[-k]>kScore:
-                    #print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
                     kScore=topK[-k]
-                    #print("kScore", kScore)
 
-                """
-                if layer == 6:
-                    break
-                """
+            # Re-queue if more layers remain for this point
             if pending[poi] > 0:
                 fileDePriorite.put((gamma[poi], poi))
+        
         good_K=min(k, len(topK))
         time2.stop()
         self.time = time2.execution_time + self.time
-        # self.result = topK[-good_K:]
-        # return topK[-good_K:]
+        
+        # Result formatting: list of (ID, score) for the top-K
         self.result = [(topkLbl[i-1], topK[i-1]) for i in range(len(topK)-good_K+1, len(topK)+1)]
         return self.result
 
