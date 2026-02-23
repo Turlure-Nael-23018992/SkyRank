@@ -1,3 +1,16 @@
+"""
+SkyRank Application Core
+========================
+
+This module serves as the central orchestration layer for the SkyRank project.
+It provides a unified `App` class that abstracts away the complexities of 
+different data formats and algorithm-specific initialization.
+
+Supported Input Types:
+- `DictObject`: Python dictionaries.
+- `JsonObject`: JSON files.
+- `DbObject`: SQLite database files.
+"""
 import os, sys, sqlite3, time
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 

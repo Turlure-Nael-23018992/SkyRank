@@ -1,3 +1,17 @@
+"""
+RankSky Algorithm
+==================
+
+This module implements the RankSky algorithm, which combines Skyline computation
+with the PageRank algorithm to provide a more sophisticated ranking of 
+multi-dimensional data points.
+
+The process involves:
+1. Finding the skyline (non-dominated points).
+2. Building a similarity matrix based on point coordinates.
+3. Applying a stochastic normalization.
+4. Computing PageRank scores to determine the final order.
+"""
 import numpy as np
 import math
 from Utils.Preference import Preference
@@ -102,10 +116,13 @@ class RankSky:
 
     def skylineComputation(self):
         """
-        Computes the skyline of the current dataset using the BBS (Branch and Bound Skyline) algorithm.
+        Computes the skyline of the current dataset.
 
-        The result is stored in self.sky as a dictionary of non-dominated tuples.
-        This is a key step before performing any ranking or PageRank-based processing.
+        Uses the BBS (Branch and Bound Skyline) algorithm to filter out dominated
+        points. Only these points will proceed to the PageRank scoring stage.
+
+        Returns:
+            bool: True if only one point was found in the skyline, False otherwise.
         """
         bbs = BbsCosky(self.r, 1, 2)  # Create BBS object
         self.sky = {k: list(v) for k, v in bbs.skyline.items()}
@@ -122,14 +139,22 @@ class RankSky:
         self.a = np.dot(self.rm, self.rt)
 
     def stochasticMatrix(self):
+        """
+        Normalizes the similarity matrix to be stochastic.
+
+        Ensures that each row sums up to 1, effectively turning the similarities
+        into transition probabilities for the PageRank algorithm.
+        """
         self.s = np.array(self.a, dtype=float)
         self.n = len(self.s)
         for i in range(self.n):
             tot = 0
             for j in range(self.n):
                 tot += self.s[i][j]
-            for j in range(self.n):
-                self.s[i][j] = self.s[i][j] / tot
+            # Avoid division by zero if a row is all zeros
+            if tot != 0:
+                for j in range(self.n):
+                    self.s[i][j] = self.s[i][j] / tot
 
     def googlePageRank(self):
         """
@@ -141,8 +166,13 @@ class RankSky:
 
     def Ipl(self, p=3):
         """
-        Computes the PageRank vector using the Ipl method.
-        :param p: int - precision for convergence (default is 3)
+        Computes the PageRank vector using iterative power method.
+
+        This method iterates until the change in the score vector is less 
+        than the specified precision.
+
+        Args:
+            p (int): Precision for convergence (10^-p). Defaults to 3.
         """
         eps = math.pow(10, -p)
         self.vk = [1 / self.n] * self.n
@@ -150,13 +180,22 @@ class RankSky:
         zknorm = 0
         while True:
             vknorm = zknorm
+            # Main transition step: multiply vector by PageRank matrix
             zk = np.dot(self.vk, self.g)
             zknorm = np.linalg.norm(zk, ord=1)
+            # Normalize to maintain vector sum
             self.vk = zk / zknorm
+            # Check for convergence
             if abs(zknorm - vknorm) < eps:
                 break
 
     def IplDom(self, p=3):
+        """
+        Alternative PageRank calculation with fixed iteration count.
+
+        Args:
+            p (int): Accuracy parameter determining the iteration limit.
+        """
         vdom = -p / math.log10(self.alpha)
         self.vk = [1 / self.n] * self.n
         k = 0
@@ -164,7 +203,6 @@ class RankSky:
             k += 1
             self.vk = np.dot(self.vk, self.g)
             if k > vdom:
-                print("IplDom", k)
                 break
 
     def sort(self,rev="Desc"):

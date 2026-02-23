@@ -1,3 +1,11 @@
+"""
+BbsCosky Wrapper
+================
+
+This module provides a wrapper around the external BBS (Branch and Bound Skyline)
+algorithm. It manages the R-Tree indexing and facilitates the skyline 
+computation used by various ranking algorithms in the project.
+"""
 from Utils.DisplayHelpers import beauty_print
 from external.BBS.Bbs.Bbs import Bbs
 from external.BBS.RTree.RTree.rTree import RTree
@@ -5,7 +13,10 @@ from external.BBS.RTree.RTree.rTree import RTree
 
 class BbsCosky:
     """
-    BBS Algorithm
+    Manager for the BBS algorithm execution.
+
+    Handles the conversion between internal project data and the R-Tree 
+    structures required by the external BBS implementation.
     """
     DISK_PAGE_SIZE=2048
     POINTER=4
@@ -16,11 +27,13 @@ class BbsCosky:
     M=DISK_PAGE_SIZE/(POINTER+KEYS)
     def __init__(self, relation, sp, layer, minIdp={}):
         """
-        Initialize the BBS algorithm with the given relation, sp, layer, and minIdp.
-        :param relation: the relation to be processed
-        :param sp: the skyline point
-        :param layer: the layer of the skyline
-        :param minIdp: the minimum idp
+        Initializes the BBS manager and computes the skyline.
+
+        Args:
+            relation (dict): The dataset to process.
+            sp (int): Parameter for skyline computation (e.g., number of points).
+            layer (int): The target layer of dominance to extract.
+            minIdp (dict): Optional Influence-Dominance Power constraints.
         """
         self.relation=relation
         self.minIdp=minIdp
