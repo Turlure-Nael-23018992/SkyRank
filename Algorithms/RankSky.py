@@ -259,7 +259,7 @@ class RankSky:
             self.time = time1.execution_time
             first_key = next(iter(self.sky))
             self.sky[first_key].append(1)
-            self.score = {first_key : self.sky[first_key]}
+            self.score = {first_key : tuple(self.sky[first_key])}
             #print("self.score", self.score)
         else :
             self.skylineComputation()
@@ -283,6 +283,7 @@ if __name__ == "__main__":
         4: [1, 80, 60], # mettre en tuples
     }"""
 
+    '''
     r = {
         1: (5, 20, 1/70),
         2: (4, 60, 1/50),
@@ -348,3 +349,25 @@ if __name__ == "__main__":
     #[0.15630708 0.36914946 0.47454346]
 
     #[0.25400163 0.59434898 0.76304159]
+    '''
+
+    pref = [Preference.MAX,Preference.MAX,Preference.MAX]
+    prefs = [Preference.MIN,Preference.MIN,Preference.MIN]
+    r = {
+        1: (5, 20, 1/70),
+        2: (4, 60, 1/50),
+        3: (5, 30, 1/60),
+        4: (1, 80, 1/60),
+        5: (5, 90, 1/40),
+        6: (9, 30, 1/50),
+        7: (7, 80, 1/40),
+        8: (9, 90, 1/30)
+    }
+
+    rankSky = RankSky(r, pref)
+    rankSky.run()
+    print(rankSky.score)
+    rankSky = RankSky(r, prefs)
+    rankSky.run()
+    print(rankSky.score)
+

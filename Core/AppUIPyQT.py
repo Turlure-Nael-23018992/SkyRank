@@ -252,7 +252,7 @@ class AppUIPyQt(QMainWindow):
             return rows
         return []
 
-    def get_skyline_points(self):
+    def get_skyline_points(self) -> dict:
         """
         Retrieves the skyline points from the last executed algorithm.
 
@@ -290,7 +290,7 @@ class AppUIPyQt(QMainWindow):
         # Fallback for unexpected types, though we aim for dict everywhere
         return {i: r for i, r in enumerate(result)}
 
-    def display_graph(self, all_points, skyline_points):
+    def display_graph(self, all_points: dict, skyline_points: dict):
         """
         Generates and displays a plot of the results.
 

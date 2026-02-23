@@ -271,39 +271,62 @@ class SkyIR:
             
             if pending[poi]>0:
                 layer+=1
-                # Explore the next layer of dominance recursively
+                #print("************************************************************")
+                #print(f"poi[{poi}] : ", pending[poi], " - layer : ", layer)
+                #print(f"rLayer : {poi} :", rLayer)
+                #beauty_print(f"rLayer Before", rLayer)
+                #beauty_print(f"sLayer Before", sLayer)
+                #beauty_print(f"minIdp Before", minIdp)
                 rLayer, sLayer, lm_nextLayer, minIdp, see= self.nextLayer(poi, rLayer, sLayer, layer, minIdp)
+                #beauty_print(f"minIdp After", minIdp)
+                #beauty_print(f"rLayer After", rLayer)
+                #beauty_print(f"sLayer After", sLayer)
+                #beauty_print(f"lm_nextLayer", lm_nextLayer)
+                #beauty_print(f"LM[{poi}] Before ", lm[poi])
                 lm[poi].update(lm_nextLayer)
-                
-                # Update dominance stats
+                #beauty_print(f"LM[{poi}] After ", lm[poi])
+                #print(f"pending[{poi}] Before ", pending[poi])
+                #print("see",see)
                 pending[poi] -= see
+                #print(f"pending[{poi}] After ", pending[poi])
                 score[poi]=self.updateScore(poi, lm, minIdp, spTot)
+                #beauty_print(f"score[{poi}]", score[poi])
 
                 inserted = False
                 if pending[poi] == 0:
-                    # Point fully processed, try to add to Top-K
+                    #beauty_print("topK Before", topK)
                     topkLbl, topK, inserted = self.insererTrie(topkLbl, topK, poi, score[poi])
+                    #beauty_print("topK After", topK)
 
+                #print("inserted :", inserted, f" - pending[{poi}] :", pending[poi])
+                #if !inserted and pending[poi]==0:
                 if pending[poi]==0:
-                    # Reset layer tracking for next POI
+                    #print("------------------------------------------------------------")
                     rLayer = self.r
                     sLayer = s
                     layer = 1
                     continue
-                
-                # Update the threshold for Top-K insertion
+                #print("============================================================")
+                #print(f"k", k)
+                #print(f"len(topK)", len(topK))
+                #print(f"kScore", kScore)
                 if len(topK)>=k and topK[-k]>kScore:
+                    #print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
                     kScore=topK[-k]
+                    #print("kScore", kScore)
 
-            # Re-queue if more layers remain for this point
+                """
+                if layer == 6:
+                    break
+                """
             if pending[poi] > 0:
                 fileDePriorite.put((gamma[poi], poi))
         
         good_K=min(k, len(topK))
         time2.stop()
         self.time = time2.execution_time + self.time
-        
-        # Result formatting: list of (ID, score) for the top-K
+        # self.result = topK[-good_K:]
+        # return topK[-good_K:]
         self.result = [(topkLbl[i-1], topK[i-1]) for i in range(len(topK)-good_K+1, len(topK)+1)]
         return self.result
 
