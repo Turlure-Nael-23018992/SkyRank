@@ -7,8 +7,106 @@
 
 SkyRank is an open-source benchmarking and visualization framework for multi-dimensional Skyline algorithms.
 It provides a modular architecture to run, compare, and visualize advanced preference queries over large datasets.
-SkyRank includes multiple algorithmic implementations (e.g., BBS, RankSky, Cosky), graphical user interfaces (PyQt5 and Tkinter), and tools to generate publication-ready visualizations using LaTeX.
-It is designed for researchers, students, and practitioners interested in preference-based data analysis, algorithm evaluation, and Skyline computation.
+
+✨ Features
+
+----------
+
+* **Multiple Algorithms**: Implementation of ``SkyIR``, ``RankSky``, ``CoSky``, and ``DP-IDP-DH`` (with dominance hierarchy).
+* **Visual Exploration**: Built-in PyQt5 and Tkinter GUIs for 2D and 3D data visualization.
+* **Flexible Data Inputs**: Supports Python dictionaries, JSON files, and SQLite databases.
+* **Scientific Readiness**: Export tools to generate publication-ready LaTeX graphs.
+* **High Accessibility**: Clean Python code with extensive documentation and minimal technical barriers for new researchers.
+
+🚀 Minimal Working Example (MWE)
+--------------------------------
+
+A minimal working example has been incorporated to illustrate a comprehensive fundamental workflow. 
+SkyRank provides a unified ``App`` class that serves as the primary entry point for all algorithms. 
+To use it, you wrap your raw data in a **Data Object** (like ``DictObject``) and choose an algorithm.
+
+.. code-block:: python
+
+    from Core.App import App
+    from Algorithms.CoskySql import CoskySQL
+    from Utils.DataTypes.DictObject import DictObject
+    from Utils.Preference import Preference
+
+    # 1. Prepare your data {id: (coord1, coord2, ...)}
+    # This data matches the Algorithms/Datas/RTuples8.json dataset
+    raw_data = {
+        1: (5, 20, 0.014), 
+        2: (4, 60, 0.02), 
+        3: (5, 30, 0.016),
+        4: (1, 80, 0.016),
+        5: (5, 90, 0.025),
+        6: (9, 30, 0.02),
+        7: (7, 80, 0.025),
+        8: (9, 90, 0.033)
+    }
+    
+    # 2. Wrap data and define preferences
+    data = DictObject(raw_data)
+    prefs = [Preference.MIN, Preference.MIN, Preference.MIN]
+    
+    # 3. Execute the workflow through the App
+    app = App(data, CoskySQL, preferences=prefs)
+    
+    # 4. Access results
+    print(f"Algorithm: {app.algo}")
+    print(f"Execution Time: {app.execution_time}s")
+    print(f"Skyline Points: {app.algo_instance.dict}")
+
+💡 Why Use Data Objects?
+
+-----------------------
+
+SkyRank uses wrapper classes (``DictObject``, ``JsonObject``, ``DbObject``) to provide a consistent interface to the ``App`` class. This abstraction allows the ``App`` to automatically handle file loading, database connections, and format conversions without you worrying about the underlying storage.
+
+🔄 Switching Data Sources
+
+-------------------------
+
+Depending on where your data is stored, you only need to change the object passed to the ``App``:
+
+* **From a JSON file**:
+  
+  .. code-block:: python
+
+      from Utils.DataTypes.JsonObject import JsonObject
+      data = JsonObject("path/to/your_data.json")
+      app = App(data, SkyIR)
+
+* **From a SQLite database**:
+  
+  .. code-block:: python
+
+      from Utils.DataTypes.DbObject import DbObject
+      data = DbObject("path/to/database.db")
+      app = App(data, SkyIR)
+
+  *(Note: Databases must contain a table named 'Pokemon' with columns A1, A2, etc. See* `Data Formats Guide <docs/data_formats.rst>`_ *)*
+
+🔧 App Parameters
+
+----------------
+
+The ``App`` constructor accepts several parameters to customize its behavior:
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Parameter
+     - Description
+   * - ``data``
+     - A ``DictObject``, ``JsonObject``, or ``DbObject`` instance.
+   * - ``algo``
+     - The algorithm class to run (e.g., ``SkyIR``, ``RankSky``, ``DpIdpDh``, ``CoskyAlgorithme``, ``CoskySQL``).
+   * - ``preferences``
+     - (Optional) A list of ``Preference.MIN`` or ``Preference.MAX`` for each dimension. Required for ``RankSky``, ``CoskySQL`` and ``CoskyAlgorithme``.
+   * - ``exporter``
+     - (Optional) An instance of an exporter (e.g., ``CsvExporter``) to automatically save results.
 
 ⚙️ Requirements
 ---------------
@@ -55,6 +153,39 @@ This script will:
 - Install all dependencies
 - Initialize Git submodules
 - Make the ``skyrank-gui`` and ``skyrank-gui2`` commands available inside the virtual environment
+
+
+�️ Troubleshooting & Common Failure Modes
+-----------------------------------------
+
+The following guide addresses common issues and technical "paper cuts" that may occur during setup or execution.
+
+**1. ModuleNotFoundError (BBS or RTree)**
+  If you see an error related to missing modules inside ``external/``, it means the Git submodules were not correctly initialized. Run:
+
+  .. code-block:: bash
+
+      git submodule update --init --recursive
+
+**2. GUI Dependencies (Linux)**
+  If you encounter ``ModuleNotFoundError: No module named '_tkinter'`` or PyQt5 library errors, install the missing system packages:
+
+  .. code-block:: bash
+
+      sudo apt update
+      sudo apt install python3-tk libxcb-cursor0
+
+**3. Data Structure Errors**
+  SkyRank expects specific naming conventions for SQLite databases:
+  
+  * The table must be named **'Pokemon'**.
+  * Numerical columns must be named **'A1', 'A2', 'A3', ...**.
+  * If your columns are named differently, the algorithm will fail to find the attributes. 
+  * See the `Data Formats Guide <docs/data_formats.rst>`_ for details.
+
+**4. Execution Time / Performance**
+  For very large datasets, algorithms like ``RankSky`` (which uses a square matrix for PageRank) may require significant memory.
+  If the application crashes or hangs, try using a smaller sample or a more pruning-efficient algorithm like ``CoskySQL``.
 
 
 🐧 Installing on Ubuntu 23 and newer versions
@@ -205,6 +336,7 @@ The source files for the documentation are available in the repository:
 
 
 🤝 Community Guidelines
+
 ----------------------
 
 We welcome contributions from the community and encourage users to get involved in the development and improvement of SkyRank.
