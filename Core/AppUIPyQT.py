@@ -283,30 +283,31 @@ class AppUIPyQt(QMainWindow):
         """
         if not self.lastAppInstance: return {}
         
-        # 1. Get raw data from the last app instance data source
-        data_obj = self.lastAppInstance.r if hasattr(self.lastAppInstance, 'r') else None
+        algo_name = getattr(self.lastAppInstance, 'algo', None)
+        inst = getattr(self.lastAppInstance, 'algo_instance', None)
         
-        # If we don't have r, we need to extract it from the input file
+        # For algorithms that store the fully unified dataset in inst.r,
+        # we read directly from there to guarantee consistency with skyline coords.
+        if algo_name in ("CoskyAlgorithme",) and inst and hasattr(inst, 'r'):
+            return {k: list(v) for k, v in inst.r.items()}
+        
+        # For other algorithms, load raw data then apply the algorithm-specific unification.
+        data_obj = getattr(self.lastAppInstance, 'r', None)
+        
         if data_obj is None:
             dtype = self.dataCombo.currentText()
             data_wrapper = self.load_data(dtype)
             all_pts = self._extract_all_points(data_wrapper)
         else:
-            # data_obj is already a dict in App for DictObject
             all_pts = {k: list(v) for k, v in data_obj.items()}
 
-        # 2. Apply unification if preferences exist
         prefs = getattr(self.lastAppInstance, 'pref', None)
-        algo_name = getattr(self.lastAppInstance, 'algo', None)
         
         if prefs:
-            # Coherence: each algorithm has its own unification requirement
-            if algo_name in ("CoskyAlgorithme", "CoskySQL"):
-                mode = "auto"
-            elif algo_name == "RankSky":
+            if algo_name == "RankSky":
                 mode = "Max"
             else:
-                mode = "auto" # Default
+                mode = "auto"
                 
             unifier = DataUnifier(all_pts, list(prefs), mode=mode)
             all_pts = unifier.unify()

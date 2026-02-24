@@ -1,11 +1,10 @@
 {
     "skyline_points": [
-        2,
-        4,
-        1
+        1,
+        6
     ],
     "execution_time": 0.0,
-    "algorithm": "CoskyAlgorithme",
+    "algorithm": "RankSky",
     "input_type": "JSON",
     "input_file": "Assets\\AlgoExecution\\JsonFiles\\RTuples8.json"
 }
