@@ -1,2 +1,2 @@
 algorithm,input_type,input_file,execution_time,skyline_points
-DpIdpDh,JSON,Assets\AlgoExecution\JsonFiles\RTuples8.json,0.0,1;2;4
+CoskyAlgorithme,Database,Assets\Databases\cosky_db_C3_R100.db,0.007025718688964844,72;57;31;5;46;80;28;4;48;54;22;14;45;2;64
