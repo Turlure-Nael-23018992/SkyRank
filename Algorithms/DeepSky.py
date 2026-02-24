@@ -134,8 +134,6 @@ def addBest(k, topK, s):
     """
     n = k - len(topK)  # Number of elements to add
     # Sort elements in `s` by the last value of the tuple (score) in descending order
-    print("s", s)
-    print("s type", type(s))
     sorted_s = sorted(s.items(), key=lambda x: x[1][-1] if x[1][-1] is not None else float('-inf'), reverse=True)
 
     # Add the top `n` elements to `topK`
@@ -159,7 +157,6 @@ class DeepSky:
             pref = [Preference.MIN, Preference.MIN, Preference.MIN]
         self.dbToDict = DatabaseToDict(fp)
         self.fp = fp
-        print("fp", fp)
         self.r = self.dbToDict.toDict()
         self.k = k
         self.algo = algo.__name__
@@ -201,13 +198,11 @@ class DeepSky:
                 s = DpIdpDh(rl).score"""
             elif self.algo == "RankSky":
                 s = RankSky(rl, self.preference).score
-                print("s 1", s)
             """elif self.algo == "SkyIR":
                 s = SkyIR(rl).r"""
             tot+=len(s)
             if tot<=self.k:
                 self.topK.update(s)
-                print("self.topK", self.topK)
                 rl = {k:v for k,v in rl.items() if k not in s.keys()}
             else:
                 self.topK = addBest(self.k, self.topK, s)
@@ -231,7 +226,6 @@ class DeepSky:
         Run the DeepSky algorithm.
         :return: the top-k tuples
         """
-        print(self.algo)
         if self.algo == "CoskySQL":
             self.DeepSkyCoskySql()
             self.dataNorm.addLinesDb(self.lineToInsertBack)

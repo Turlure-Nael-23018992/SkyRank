@@ -27,7 +27,6 @@ class DictToDatabase:
         try:
             # Drop the table if it already exists
             self.cursor.execute(f"DROP TABLE IF EXISTS {self.tableName}")
-            print(f"Table {self.tableName} dropped.")
 
             # Create a new table
             self.cursor.execute(
@@ -35,27 +34,22 @@ class DictToDatabase:
                 f"(RowId INTEGER PRIMARY KEY AUTOINCREMENT, "
                 f"Col_A NUMERIC, Col_B NUMERIC, Col_C NUMERIC)"
             )
-            print(f"Table {self.tableName} created.")
         except sqlite3.OperationalError as e:
             print(f"Error creating table: {e}")
 
         try:
             # Insert all records into the table
             for value in self.data.values():
-                print(f"Inserting: {value}")
                 self.cursor.execute(
                     f"INSERT INTO {self.tableName} (Col_A, Col_B, Col_C) VALUES (?, ?, ?)",
                     value
                 )
-            print("All data inserted.")
         except sqlite3.OperationalError as e:
             print(f"Error inserting data: {e}")
 
         # Commit changes and close the connection
         self.conn.commit()
-        print("Changes committed.")
         self.conn.close()
-        print("Connection closed.")
 
 
 if __name__ == "__main__":
