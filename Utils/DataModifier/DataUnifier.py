@@ -34,12 +34,28 @@ class DataUnifier:
         """
         Converts all preferences in the relation to MAX by inverting MIN dimensions.
         """
+        self.tupleToTab(self.data)
         for i in range(len(self.preferences)):
             if self.preferences[i] == Preference.MIN:
                 self.preferences[i] = Preference.MAX
                 for val in self.data.values():
                     val[i] = 1 / val[i]
+        self.tabToTuple(self.data)
         return self.data
+
+    def unifyAuto(self):
+        """
+        Unifies data 'au plus présent' (majority preference).
+        """
+        target_prefs = self.unifyPreferences()
+        if not target_prefs:
+            return self.data
+        
+        # All target preferences are the same in 'auto' mode
+        if target_prefs[0] == Preference.MIN:
+            return self.unifyPreferencesMin()
+        else:
+            return self.unifyPreferencesMax()
 
     def tupleToTab(self, rTuple):
         """
@@ -50,8 +66,9 @@ class DataUnifier:
 
         :param rTuple: dict - the relation dictionary with tuple values to be converted
         """
-        for key, val in rTuple.items():
-            rTuple[key] = list(val)
+        if isinstance(rTuple, dict):
+            for key, val in rTuple.items():
+                rTuple[key] = list(val)
 
     def tabToTuple(self, rTab):
         """
@@ -61,14 +78,18 @@ class DataUnifier:
 
         :param rTab: dict - the relation dictionary with list values to be converted
         """
-        for key, val in rTab.items():
-            rTab[key] = tuple(val)
+        if isinstance(rTab, dict):
+            for key, val in rTab.items():
+                rTab[key] = tuple(val)
 
     def unifyPreferences(self):
         """
         Unify the preferences based on the given mode.
         :return: unified preferences
         """
+        if not self.preferences:
+            return None
+            
         countMin = 0
         countMax = 0
         if self.mode == "Min":
@@ -77,14 +98,15 @@ class DataUnifier:
             return [Preference.MAX] * len(self.preferences)
         elif self.mode == "auto":
             for pref in self.preferences:
-                if str(pref) == "Preference.MIN":
+                # Use str(pref) or direct comparison depending on how Preference is used
+                if pref == Preference.MIN or "MIN" in str(pref):
                     countMin += 1
                 else:
                     countMax += 1
-            if countMin > countMax:
+            
+            # Unify to the majority (most frequent)
+            if countMin >= countMax:
                 return [Preference.MIN] * len(self.preferences)
-            elif countMax > countMin:
-                return [Preference.MAX] * len(self.preferences)
             else:
                 return [Preference.MAX] * len(self.preferences)
         return None

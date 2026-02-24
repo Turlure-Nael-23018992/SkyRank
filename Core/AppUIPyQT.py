@@ -16,8 +16,6 @@ from PyQt5.QtWidgets import (
     QFrame, QMainWindow, QStackedWidget, QInputDialog
 )
 from PyQt5.QtCore import Qt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
 import numpy as np
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -37,6 +35,8 @@ from Algorithms.CoskyAlgorithme import CoskyAlgorithme
 from Algorithms.DpIdpDh import DpIdpDh
 from Algorithms.RankSky import RankSky
 from Algorithms.SkyIR import SkyIR
+from Utils.DataModifier.DataUnifier import DataUnifier
+from Utils.DisplayHelpers import beauty_print
 
 class AppUIPyQt(QMainWindow):
     """
@@ -95,11 +95,7 @@ class AppUIPyQt(QMainWindow):
         self.statusLabel = QLabel("")
         control_layout.addWidget(self.statusLabel)
 
-        self.figure = Figure()
-        self.canvas = FigureCanvas(self.figure)
-
         main_layout.addLayout(control_layout, 1)
-        main_layout.addWidget(self.canvas, 2)
 
         self.on_data_type_changed()
 
@@ -230,170 +226,138 @@ class AppUIPyQt(QMainWindow):
                       preferences=prefs)
             self.lastAppInstance = app
             self.statusLabel.setText(f"Done in {app.execution_time}s")
-             
-            # Use raw data keys if available, otherwise fallback
-            all_data = {k: list(v) for k, v in data.r.items()} if hasattr(data, 'r') and isinstance(data.r, dict) else {i: row for i, row in enumerate(self._extract_all_points(data))}
-            skyline = self.get_skyline_points()
-            self.display_graph(all_data, skyline)
+            
+            # Print data to terminal for debugging/verification
+            all_pts = self.get_all_points()
+            sky_pts = self.get_skyline_points()
+            
+            print("\n" + "="*50)
+            beauty_print("ALL POINTS (UNIFIED)", all_pts)
+            print("-" * 30)
+            beauty_print("SKYLINE POINTS", sky_pts)
+            print("="*50 + "\n")
 
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e))
             self.statusLabel.setText(f"Error: {e}")
 
     def _extract_all_points(self, data_obj):
-        if isinstance(data_obj, DictObject): return list(data_obj.r.values())
-        if isinstance(data_obj, JsonObject): return list(readJson(data_obj.fp).values())
+        """
+        Extracts all points from the data object as a dictionary mapping ID to coordinates.
+        """
+        if isinstance(data_obj, DictObject): 
+            return {k: list(v) for k, v in data_obj.r.items()}
+        if isinstance(data_obj, JsonObject): 
+            return {k: list(v) for k, v in readJson(data_obj.fp).items()}
         if isinstance(data_obj, DbObject):
             con = sqlite3.connect(data_obj.fp)
             cur = con.cursor()
             cur.execute(f"SELECT * FROM {self.tableName}")
-            rows = [list(row[1:]) for row in cur.fetchall()]
+            rows = {row[0]: list(row[1:]) for row in cur.fetchall()}
             con.close()
             return rows
-        return []
+        return {}
 
-    def get_skyline_points(self) -> dict:
+
+    def get_all_points(self) -> dict:
+        """
+        Retrieves all points from the dataset and applies preference-based unification.
+        Returns: dict: {id: [unified_coords...]}
+        """
+        if not self.lastAppInstance: return {}
+        
+        # 1. Get raw data from the last app instance data source
+        data_obj = self.lastAppInstance.r if hasattr(self.lastAppInstance, 'r') else None
+        
+        # If we don't have r, we need to extract it from the input file
+        if data_obj is None:
+            dtype = self.dataCombo.currentText()
+            data_wrapper = self.load_data(dtype)
+            all_pts = self._extract_all_points(data_wrapper)
+        else:
+            # data_obj is already a dict in App for DictObject
+            all_pts = {k: list(v) for k, v in data_obj.items()}
+
+        # 2. Apply unification if preferences exist
+        prefs = getattr(self.lastAppInstance, 'pref', None)
+        if prefs:
+            unifier = DataUnifier(all_pts, list(prefs), mode="auto")
+            all_pts = unifier.unifyAuto()
+            
+        return all_pts
+
+    def get_skyline_points(self):
         """
         Retrieves the skyline points from the last executed algorithm.
-
-        This function extracts the resulting points and their scores from
-        the algorithm instance to prepare them for visualization.
-
-        Returns:
-            dict: A mapping of point IDs to [coordinates..., score].
+        Standardized format: {id: {'coords': [v1, v2, ...], 'score': value}}
         """
+        if not self.lastAppInstance: return {}
         algo = self.lastAppInstance.algo
         inst = self.lastAppInstance.algo_instance
-        result = []
-        # if algo == "SkyIR": result = inst.result
-        # elif algo == "DpIdpDh": result = inst.score
+        
+        result_data = {}
+        
         if algo == "SkyIR":
-            # SkyIR.result is now a list of (id, score)
-            result = inst.result
-            if not result: return {}
-            try:
-                # Return {id: [val1, val2, ..., score]}
-                return {item[0]: list(inst.r[item[0]]) + [item[1]] for item in result}
-            except Exception as e:
-                return {}
+            # inst.result is [(id, score), ...]
+            for item in getattr(inst, 'result', []):
+                p_id, score = item[0], item[1]
+                coords = list(inst.r.get(p_id, []))
+                result_data[p_id] = {'coords': coords, 'score': score}
+                
         elif algo == "DpIdpDh":
-            # DpIdpDh.score is a dict {id: score}
-            result = inst.score
-            if not result: return {}
-            # Return {id: [val1, val2, ..., score]}
-            return {k: list(inst.r[k]) + [v] for k, v in result.items()}
-        elif algo == "CoskyAlgorithme": result = getattr(inst, "s", {})
-        elif algo == "CoskySQL": result = inst.dict
-        elif algo == "RankSky": result = inst.score
-        
-        if isinstance(result, dict): return result
-        # Fallback for unexpected types, though we aim for dict everywhere
-        return {i: r for i, r in enumerate(result)}
+            # inst.score is {id: score}
+            for p_id, score in getattr(inst, 'score', {}).items():
+                coords = list(inst.r.get(p_id, []))
+                result_data[p_id] = {'coords': coords, 'score': score}
+                
+        elif algo == "CoskyAlgorithme":
+            # inst.s is {id: score}
+            s_dict = getattr(inst, "s", {})
+            for p_id, _ in s_dict.items():
+                coords = list(inst.r.get(p_id, []))
+                result_data[p_id] = {'coords': coords, 'score': s_dict[p_id][-1]}
+                
+        elif algo == "CoskySQL":
+            # inst.dict is {id: [coords..., score]}
+            for p_id, vals in getattr(inst, 'dict', {}).items():
+                result_data[p_id] = {'coords': vals[:-1], 'score': vals[-1]}
+                
+        elif algo == "RankSky":
+            # inst.score is {id: (coords..., score)}
+            s_dict = getattr(inst, 'score', {})
+            for p_id, score in s_dict.items():
+                coords = list(inst.r.get(p_id, []))
+                result_data[p_id] = {'coords': coords, 'score': s_dict[p_id][-1]}
 
-    def display_graph(self, all_points: dict, skyline_points: dict):
-        """
-        Generates and displays a plot of the results.
-
-        Depending on the dimensionality of the data:
-        - 2D: Standard scatter plot.
-        - 3D: Interactive 3D scatter plot with normalized coordinates.
-        - >3D: Shows a message that plotting is restricted to 3 spatial columns.
-
-        Args:
-            all_points (dict): The complete dataset.
-            skyline_points (dict): High-scored points to highlight in red.
-        """
-        self.figure.clear()
-        
-        # Convert dicts to lists for plotting
-        all_values = list(all_points.values()) if isinstance(all_points, dict) else all_points
-        sky_values = list(skyline_points.values()) if isinstance(skyline_points, dict) else skyline_points
-
-        # Use only first 3 coords for dimensionality check and plotting
-        n_dim = len(all_values[0]) if all_values else 0
-        all_array = np.array([p[:3] for p in all_values]) if all_values else np.array([])
-        sky_array = np.array([p[:3] for p in sky_values]) if sky_values else np.array([])
-
-        sky_indices = []
-        for i, pt in enumerate(all_values):
-            for sp in sky_values:
-                # Compare only spatial coordinates
-                if np.allclose(pt[:3], sp[:3], atol=1e-6):
-                    sky_indices.append(i)
-                    break
-        
-        if n_dim > 4:
-            ax = self.figure.add_subplot(111)
-            ax.text(0.5, 0.5, f"Graph disabled for {n_dim}-column data\n(Max 3 spatial columns supported)", 
-                    ha='center', va='center', fontsize=10, color='red')
-            self.canvas.draw()
-            return
-            
-        plot_dim = all_array.shape[1] if all_array.size > 0 else 0
-
-        if plot_dim == 3:
-            ax = self.figure.add_subplot(111, projection='3d')
-            max_vals = np.max(all_array, axis=0)
-            # Avoid division by zero
-            max_vals[max_vals == 0] = 1
-            norm_all = all_array / max_vals
-            norm_sky = norm_all[sky_indices] if sky_indices else np.empty((0, 3))
-            
-            ax.scatter(norm_all[:, 0], norm_all[:, 1], norm_all[:, 2], color='lightgray', label='All Points', alpha=0.5)
-            if norm_sky.size > 0:
-                ax.scatter(norm_sky[:, 0], norm_sky[:, 1], norm_sky[:, 2], color='red', label='Skyline', s=50)
-
-            ax.text2D(0.05, 0.95, "Skyline 3D (normalized)", transform=ax.transAxes, fontsize=9, color='black')
-
-            ax.set_xlabel("Dim 1")
-            ax.set_ylabel("Dim 2")
-            ax.set_zlabel("Dim 3")
-            ax.set_title("Skyline 3D (normalized by max of each dimension)")
-            ax.legend()
-        elif plot_dim == 2:
-            ax = self.figure.add_subplot(111)
-            
-            all_x, all_y = all_array[:, 0], all_array[:, 1]
-            sky_x = all_array[sky_indices, 0] if sky_indices else []
-            sky_y = all_array[sky_indices, 1] if sky_indices else []
-            
-            ax.scatter(all_x, all_y, color='lightgray', label='All Points', alpha=0.5)
-            if len(sky_x) > 0:
-                ax.scatter(sky_x, sky_y, color='red', label='Skyline', s=50)
-
-            ax.set_title("Skyline 2D")
-            ax.set_xlabel("Dim 1")
-            ax.set_ylabel("Dim 2")
-            ax.legend()
-        else:
-            ax = self.figure.add_subplot(111)
-            ax.text(0.5, 0.5, "No displayable data found", ha='center', va='center')
-
-
-        self.canvas.draw()
+        return result_data
 
     def view_skyline_points(self):
         if not self.lastAppInstance: return
         pts = self.get_skyline_points()
+        all_pts = self.get_all_points()
+        
         if not pts:
-            QMessageBox.information(self, "Skyline", "No points.")
+            QMessageBox.information(self, "Skyline", "No points found.")
             return
         self.skyline_win = QWidget()
         self.skyline_win.setWindowTitle("Skyline Points")
         layout = QVBoxLayout(self.skyline_win)
+        
+        info_label = QLabel(f"Total Points in Dataset (Unified): {len(all_pts)} | Skyline Points: {len(pts)}")
+        layout.addWidget(info_label)
+        
         ta = QTextEdit()
         ta.setReadOnly(True)
-        # Format matches console output (raw dictionary or list)
-        if isinstance(pts, dict):
-             # Format with newlines between items: {k: v,\n k: v}
-             items = [f"{repr(k)}: {repr(v)}" for k, v in pts.items()]
-             text = "{" + ",\n ".join(items) + "}"
-        else:
-             text = "\n".join(str(p) for p in pts)
-        ta.setText(text)
+        
+        # Format for display: simple list of points with their scores
+        lines = []
+        for p_id, data in pts.items():
+            lines.append(f"ID: {p_id} | Coords: {data['coords']} | Score: {data['score']}")
+        
+        ta.setText("\n".join(lines))
         layout.addWidget(ta)
         self.skyline_win.setLayout(layout)
-        self.skyline_win.resize(600, 400)
+        self.skyline_win.resize(800, 500)
         self.skyline_win.show()
 
 def main():
