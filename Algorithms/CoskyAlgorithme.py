@@ -39,9 +39,9 @@ class CoskyAlgorithme:
         self.is_debug=is_debug
         self.pref = pref
         self.r = r
-        self.r = self.unifyMin()
-        self.bbs = BbsCosky(r, 1, 2)
-        self.s= {k:list(v) for k,v in self.bbs.skyline.items()}
+        self.unifyData()
+        self.bbs = BbsCosky(self.r, 1, 2)
+        self.s = {k: list(v) for k, v in self.bbs.skyline.items()}
         # Initializing internal data structures for the ranking steps
         self.data_keys=self.s.keys()
         self.n = len(self.s)
@@ -62,10 +62,9 @@ class CoskyAlgorithme:
         time.stop()
         self.time = time.execution_time
 
-    def unifyMin(self):
-        dataUnifier = DataUnifier(self.r, self.pref, mode="Min")
-        #print(f"Pre Unify data: {self.r}")
-        self.r = dataUnifier.unifyPreferencesMin()
+    def unifyData(self):
+        dataUnifier = DataUnifier(self.r, self.pref, mode="auto")
+        self.r = dataUnifier.unifyAuto()
         return self.r
 
     def run(self):
