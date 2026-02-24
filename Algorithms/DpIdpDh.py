@@ -558,6 +558,11 @@ class DpIdpDh:
         """
         self.dom, self.sp = self.calculMatriceDesDominants(self.r)
         self.dom, self.sky, self.spTot, self.skyCard, self.domCard = self.calculGrapheDeCouverture(self.dom, self.sp)
+        #print("self.dom", self.dom)
+        #print("self.sky", self.sky)
+        #print('self.spTot', self.spTot)
+        #print('self.skyCard', self.skyCard)
+        #print('self.domCard', self.domCard)
         self.sky = self.calculLm(self.dom, self.sky, self.skyCard)
         self.score = self.calculScore(self.sky, self.domCard, self.spTot)
         # print(self.score)
@@ -584,18 +589,20 @@ class DpIdpDh:
         dom = [["/" if x == y else False for y in range(len_)] for x in range(len_)]
         sp = [True] * len_
         r_keys = list(r.keys())
-        print()
         col_len = len(r.get(r_keys[0]))
         for row_index in range(len_):
             for col_index in range(len_):
                 if row_index != col_index:
-                    sup = True
+                    is_better_or_equal = True
+                    is_strictly_better = False
                     for k in range(col_len):
                         r_val = list(r.values())
                         if r_val[col_index][k] > r_val[row_index][k]:
-                            sup = False
+                            is_better_or_equal = False
                             break
-                    if sup:
+                        if r_val[col_index][k] < r_val[row_index][k]:
+                            is_strictly_better = True
+                    if is_better_or_equal and is_strictly_better:
                         dom[row_index][col_index] = True
                         sp[row_index] = False
                     else:
@@ -925,10 +932,10 @@ def dpIdpAvecHierarchieDeDominance():
 if __name__ == '__main__':
     import time
 
-    r_big = readJson("Datas/RTuples8.json")
+    #r_big = readJson("Datas/RTuples8.json")
 
     # Convert the loaded dictionary values to tuples
-    r_big = {key: tuple(value) for key, value in r_big.items()}
+    #r_big = {key: tuple(value) for key, value in r_big.items()}
 
     r = {
         1: (5, 20, 1 / 70),
@@ -940,6 +947,8 @@ if __name__ == '__main__':
         7: (7, 80, 1 / 40),
         8: (9, 90, 1 / 30)
     }
+
+    r =  {1: (5.0, 10.0, 0.5), 2: (5.0, 10.0, 0.5), 3: (5.0, 10.0, 0.5), 4: (5.0, 10.0, 0.5), 5: (5.0, 10.0, 0.5)}
 
     startTime=time.time()
     dp_idp = DpIdpDh(r)
