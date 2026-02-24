@@ -37,11 +37,23 @@ class CoskyAlgorithme:
         """
         time = TimeCalc(100, "CoskyAlgorithme")
         self.is_debug=is_debug
+        # Store raw input data and preferences
         self.pref = pref
-        self.r = r
-        self.unifyData()
-        self.bbs = BbsCosky(self.r, 1, 2)
-        self.s = {k: list(v) for k, v in self.bbs.skyline.items()}
+        self.r = r  # raw data
+
+        # Work on a copy for BBS: unify to MIN so BBS (which minimizes) computes the correct skyline
+        r_min = {k: list(v) for k, v in self.r.items()}
+        pref_min = self.pref.copy()
+        DataUnifier(r_min, pref_min, mode="Min").unify()  # modifies r_min in-place
+        self.bbs = BbsCosky(r_min, 1, 2)
+        sky_ids = list(self.bbs.skyline.keys())
+
+        # Unify the original raw data in 'auto' mode (majority-based) for Cosky ranking
+        self.r = self.unifyData()  # called on original raw data
+        # self.pref is updated in-place by DataUnifier to reflect the unified direction
+
+        # Extract skyline points from the auto-unified dataset using IDs found by BBS
+        self.s = {k: list(self.r[k]) for k in sky_ids}
         # Initializing internal data structures for the ranking steps
         self.data_keys=self.s.keys()
         self.n = len(self.s)
@@ -53,7 +65,10 @@ class CoskyAlgorithme:
         self.totNN=[0]*self.m
         self.p = {k:[0]*len(v) for k,v in self.s.items()}
         self.totPP={k:0 for k in self.data_keys}
-        self.ideal=[1]*self.m
+        # Ideal: start at 1 for MIN (find minimum p), start at 0 for MAX (find maximum p)
+        # This mirrors CoskySQL: MIN(P) if is_min else MAX(P)
+        is_min = (self.pref[0] == Preference.MIN)
+        self.ideal = [1]*self.m if is_min else [0]*self.m
         self.totIdealIdeal=0
         self.sqrtTotPP= {k:0 for k in self.data_keys}
         self.sqrtTotIdealIdeal=0
@@ -61,6 +76,11 @@ class CoskyAlgorithme:
         self.run()
         time.stop()
         self.time = time.execution_time
+
+    def unifyPreferenceMin(self):
+        dataUnifier = DataUnifier(self.r, self.pref, mode="Min")
+        self.r = dataUnifier.unify()
+        return self.r
 
     def unifyData(self):
         dataUnifier = DataUnifier(self.r, self.pref, mode="auto")
@@ -107,6 +127,10 @@ class CoskyAlgorithme:
         if self.is_debug:
             beauty_print("gini", self.gini)
             beauty_print("totGini", self.totGini)
+        # Determine ideal direction based on unified preferences (mirrors CoskySQL logic)
+        # CoskySQL uses MIN(P) if is_min else MAX(P) for the ideal vector
+        is_min = (self.pref[0] == Preference.MIN)
+        
         # for each key (row) of s
         for i in self.data_keys:
             # for each element of s's values (column)
@@ -118,8 +142,13 @@ class CoskyAlgorithme:
                 self.p[i][j]=self.gini[j]/self.totGini*self.ni[i][j]
                 p_i_j=self.p[i][j]
                 self.totPP[i]+=pow(p_i_j, 2)
-                if p_i_j<self.ideal[j]:
-                    self.ideal[j]=p_i_j
+                # Ideal: MIN(p) if unified to MIN, MAX(p) if unified to MAX
+                if is_min:
+                    if p_i_j < self.ideal[j]:
+                        self.ideal[j] = p_i_j
+                else:
+                    if p_i_j > self.ideal[j]:
+                        self.ideal[j] = p_i_j
         if self.is_debug:
             beauty_print("p", self.p)
             beauty_print("totPP", self.totPP)

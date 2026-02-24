@@ -23,10 +23,11 @@ class DataUnifier:
         """
         self.tupleToTab(self.data)
         for i in range(len(self.preferences)):
-            if self.preferences[i] == Preference.MAX:
+            if str(self.preferences[i]) == "Preference.MAX":
                 self.preferences[i] = Preference.MIN
                 for val in self.data.values():
-                    val[i] = 1 / val[i]
+                    if val[i] != 0:
+                        val[i] = 1 / val[i]
         self.tabToTuple(self.data)
         return self.data
 
@@ -36,10 +37,11 @@ class DataUnifier:
         """
         self.tupleToTab(self.data)
         for i in range(len(self.preferences)):
-            if self.preferences[i] == Preference.MIN:
+            if str(self.preferences[i]) == "Preference.MIN":
                 self.preferences[i] = Preference.MAX
                 for val in self.data.values():
-                    val[i] = 1 / val[i]
+                    if val[i] != 0:
+                        val[i] = 1 / val[i]
         self.tabToTuple(self.data)
         return self.data
 
