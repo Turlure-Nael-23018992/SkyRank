@@ -43,19 +43,25 @@ class DataUnifier:
         self.tabToTuple(self.data)
         return self.data
 
-    def unifyAuto(self):
+    def unify(self):
         """
-        Unifies data 'au plus présent' (majority preference).
+        Unifies data based on the mode set in __init__.
         """
         target_prefs = self.unifyPreferences()
         if not target_prefs:
             return self.data
-        
-        # All target preferences are the same in 'auto' mode
+            
         if target_prefs[0] == Preference.MIN:
             return self.unifyPreferencesMin()
         else:
             return self.unifyPreferencesMax()
+
+    def unifyAuto(self):
+        """
+        Unifies data 'au plus présent' (majority preference).
+        """
+        self.mode = "auto"
+        return self.unify()
 
     def tupleToTab(self, rTuple):
         """
