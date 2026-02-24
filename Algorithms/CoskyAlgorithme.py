@@ -163,18 +163,7 @@ class CoskyAlgorithme:
         self.s = dict(sorted(self.s.items(), key=lambda item: item[1][-1], reverse=reverse))
 
 if __name__ == '__main__':
-    r_petit = {
-        1: (5, 20, 0.014285714),
-        2: (4, 60,0.02),
-        3: (5, 30, 0.016666667),
-        4: (1, 80, 0.016666667),
-        5: (5, 90, 0.025),
-        6: (9, 30, 0.02),
-        7: (7, 80, 0.025),
-        8: (9, 90, 0.033333333)
-    }
-
-    r_petit = {
+    r = {
         1: (5, 20, 0.014285714),
         2: (4, 60, 0.02),
         3: (5, 30, 0.016666667),
@@ -184,23 +173,7 @@ if __name__ == '__main__':
         7: (7, 80, 0.025),
         8: (9, 90, 0.033333333)
     }
-
-    r_big = readJson("Datas/RBig.json")
-
-    r = {
-        1: (5, 20, 1 / 70),
-        2: (4, 60, 1 / 50),
-        4: (1, 80, 1 / 60)
-    }
-
-    r = {
-        1 : (5, 20, 1/70),
-    }
-    import os
-
-    print(os.path.abspath("../Assets/Databases/cosky_db_C3_R100.db"))
-    db = DatabaseToDict("../Assets/Databases/cosky_db_C3_R100.db")
-    db_dict = db.toDict()
+    
     startTime = time.time()
     cosky = CoskyAlgorithme(r, [Preference.MIN, Preference.MIN, Preference.MIN])
     print("-----------------Avant-----------------")
