@@ -1,10 +1,26 @@
 {
     "skyline_points": [
-        1,
-        6
+        586,
+        6900,
+        4197,
+        259,
+        7284,
+        9564,
+        8936,
+        2315,
+        9908,
+        9013,
+        1419,
+        419,
+        5813,
+        5660,
+        4357,
+        1300,
+        6416,
+        4005
     ],
-    "execution_time": 0.0,
-    "algorithm": "RankSky",
-    "input_type": "JSON",
-    "input_file": "Assets\\AlgoExecution\\JsonFiles\\RTuples8.json"
+    "execution_time": 56.381197690963745,
+    "algorithm": "CoskyAlgorithme",
+    "input_type": "Database",
+    "input_file": "Assets\\Databases\\cosky_db_C3_R10000.db"
 }

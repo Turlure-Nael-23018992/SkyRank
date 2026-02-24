@@ -1,2 +1,2 @@
 algorithm,input_type,input_file,execution_time,skyline_points
-CoskyAlgorithme,Database,Assets\Databases\cosky_db_C3_R100.db,0.007025718688964844,72;57;31;5;46;80;28;4;48;54;22;14;45;2;64
+CoskyAlgorithme,Database,Assets\Databases\cosky_db_C3_R1000.db,0.4970278739929199,630;785;622;365;319;905;464;634;723;501;342;428;851;727;993;187;913;659;68;871;964
