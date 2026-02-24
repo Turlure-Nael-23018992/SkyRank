@@ -17,6 +17,11 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import Qt
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
+from mpl_toolkits.mplot3d import Axes3D
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -96,6 +101,15 @@ class AppUIPyQt(QMainWindow):
         control_layout.addWidget(self.statusLabel)
 
         main_layout.addLayout(control_layout, 1)
+
+        # Matplotlib visualization container
+        viz_layout = QVBoxLayout()
+        self.figure = Figure()
+        self.canvas = FigureCanvas(self.figure)
+        self.toolbar = NavigationToolbar(self.canvas, self)
+        viz_layout.addWidget(self.toolbar)
+        viz_layout.addWidget(self.canvas)
+        main_layout.addLayout(viz_layout, 3)
 
         self.on_data_type_changed()
 
@@ -237,6 +251,9 @@ class AppUIPyQt(QMainWindow):
             beauty_print("SKYLINE POINTS", sky_pts)
             print("="*50 + "\n")
 
+            # Update visualization
+            self.display_graph(all_pts, sky_pts)
+
         except Exception as e:
             QMessageBox.critical(self, "Error", str(e))
             self.statusLabel.setText(f"Error: {e}")
@@ -261,8 +278,8 @@ class AppUIPyQt(QMainWindow):
 
     def get_all_points(self) -> dict:
         """
-        Retrieves all points from the dataset and applies preference-based unification.
-        Returns: dict: {id: [unified_coords...]}
+        Retrieves all points from the dataset.
+        Returns: dict: {id: [coords...]}
         """
         if not self.lastAppInstance: return {}
         
@@ -280,9 +297,19 @@ class AppUIPyQt(QMainWindow):
 
         # 2. Apply unification if preferences exist
         prefs = getattr(self.lastAppInstance, 'pref', None)
+        algo_name = getattr(self.lastAppInstance, 'algo', None)
+        
         if prefs:
-            unifier = DataUnifier(all_pts, list(prefs), mode="auto")
-            all_pts = unifier.unifyAuto()
+            # Coherence: each algorithm has its own unification requirement
+            if algo_name in ("CoskyAlgorithme", "CoskySQL"):
+                mode = "auto"
+            elif algo_name == "RankSky":
+                mode = "Max"
+            else:
+                mode = "auto" # Default
+                
+            unifier = DataUnifier(all_pts, list(prefs), mode=mode)
+            all_pts = unifier.unify()
             
         return all_pts
 
@@ -301,20 +328,20 @@ class AppUIPyQt(QMainWindow):
             # inst.result is [(id, score), ...]
             for item in getattr(inst, 'result', []):
                 p_id, score = item[0], item[1]
-                coords = list(inst.r.get(p_id, []))
+                coords = list(inst.r.get(p_id) or inst.r.get(str(p_id)) or [])
                 result_data[p_id] = {'coords': coords, 'score': score}
                 
         elif algo == "DpIdpDh":
             # inst.score is {id: score}
             for p_id, score in getattr(inst, 'score', {}).items():
-                coords = list(inst.r.get(p_id, []))
+                coords = list(inst.r.get(p_id) or inst.r.get(str(p_id)) or [])
                 result_data[p_id] = {'coords': coords, 'score': score}
                 
         elif algo == "CoskyAlgorithme":
             # inst.s is {id: score}
             s_dict = getattr(inst, "s", {})
-            for p_id, _ in s_dict.items():
-                coords = list(inst.r.get(p_id, []))
+            for p_id in s_dict:
+                coords = list(inst.r.get(p_id) or inst.r.get(str(p_id)) or [])
                 result_data[p_id] = {'coords': coords, 'score': s_dict[p_id][-1]}
                 
         elif algo == "CoskySQL":
@@ -325,8 +352,8 @@ class AppUIPyQt(QMainWindow):
         elif algo == "RankSky":
             # inst.score is {id: (coords..., score)}
             s_dict = getattr(inst, 'score', {})
-            for p_id, score in s_dict.items():
-                coords = list(inst.r.get(p_id, []))
+            for p_id in s_dict:
+                coords = list(inst.r.get(p_id) or inst.r.get(str(p_id)) or [])
                 result_data[p_id] = {'coords': coords, 'score': s_dict[p_id][-1]}
 
         return result_data
@@ -359,6 +386,66 @@ class AppUIPyQt(QMainWindow):
         self.skyline_win.setLayout(layout)
         self.skyline_win.resize(800, 500)
         self.skyline_win.show()
+
+    def display_graph(self, all_pts, sky_pts):
+        """
+        Displays a 3D scatter plot of the unified data points.
+        Red points represent the skyline, blue points represent the rest.
+        """
+        # 1. Verification: only for 3D data
+        if not all_pts:
+            return
+        
+        dim = len(next(iter(all_pts.values())))
+        if dim != 3:
+            # We only implement 3D for exactly 3 dimensions as requested
+            self.figure.clear()
+            ax = self.figure.add_subplot(111)
+            ax.text(0.5, 0.5, f"Visualization only supported for 3D data\n(Current: {dim}D)", 
+                    ha='center', va='center', transform=ax.transAxes)
+            self.canvas.draw()
+            return
+
+        # 2. Extract coordinates
+        self.figure.clear()
+        ax = self.figure.add_subplot(111, projection='3d')
+
+        # Normalize lookups by using string keys
+        all_pts_str = {str(k): v for k, v in all_pts.items()}
+        sky_ids_str = {str(k) for k in sky_pts.keys()}
+        all_ids_str = set(all_pts_str.keys())
+        other_ids_str = all_ids_str - sky_ids_str
+
+        # Gather points for "Others" (Blue)
+        if other_ids_str:
+            other_coords = np.array([all_pts_str[i] for i in other_ids_str])
+            ax.scatter(other_coords[:, 0], other_coords[:, 1], other_coords[:, 2], 
+                       c='blue', label='Others', s=20, alpha=0.6)
+
+        # Gather points for "Skyline" (Red)
+        if sky_ids_str:
+            sky_coords = np.array([all_pts_str[i] for i in sky_ids_str if i in all_pts_str])
+            if sky_coords.size > 0:
+                ax.scatter(sky_coords[:, 0], sky_coords[:, 1], sky_coords[:, 2], 
+                           c='red', label='Skyline', s=50, edgecolors='black')
+                
+                # 3. Pareto Front Surface (plot_trisurf)
+                # Requires at least 4 non-collinear points for Delaunay triangulation
+                if len(sky_coords) >= 4:
+                    try:
+                        ax.plot_trisurf(sky_coords[:, 0], sky_coords[:, 1], sky_coords[:, 2], 
+                                        color='red', alpha=0.3)
+                    except Exception as e:
+                        print(f"Pareto surface plotting failed (triangulation): {e}")
+
+        # Formatting
+        ax.set_xlabel('Dim 1')
+        ax.set_ylabel('Dim 2')
+        ax.set_zlabel('Dim 3')
+        ax.set_title(f'Skyline Visualization (3D)')
+        ax.legend()
+        
+        self.canvas.draw()
 
 def main():
     app = QApplication(sys.argv)
