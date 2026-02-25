@@ -241,16 +241,9 @@ class AppUIPyQt(QMainWindow):
             self.lastAppInstance = app
             self.statusLabel.setText(f"Done in {app.execution_time}s")
             
-            # Print data to terminal for debugging/verification
             all_pts = self.get_all_points()
             sky_pts = self.get_skyline_points()
             
-            print("\n" + "="*50)
-            beauty_print("ALL POINTS (UNIFIED)", all_pts)
-            print("-" * 30)
-            beauty_print("SKYLINE POINTS", sky_pts)
-            print("="*50 + "\n")
-
             # Update visualization
             self.display_graph(all_pts, sky_pts)
 
@@ -291,6 +284,17 @@ class AppUIPyQt(QMainWindow):
         if algo_name in ("CoskyAlgorithme",) and inst and hasattr(inst, 'r'):
             return {k: list(v) for k, v in inst.r.items()}
         
+        if algo_name == "RankSky" and inst:
+            # inst.pref is mutated to [MAX,MAX,MAX] after the algorithm runs.
+            # We must use prefInit (original prefs) and rTupleInit (raw data)
+            # to apply the correct "auto" unification, which respects original MIN prefs for display.
+            raw = {k: list(v) for k, v in getattr(inst, 'rTupleInit', {}).items()}
+            prefs_orig = list(getattr(inst, 'prefInit', []))
+            if raw and prefs_orig:
+                unifier = DataUnifier(raw, prefs_orig, mode="auto")
+                return unifier.unify()
+            return raw
+
         # For other algorithms, load raw data then apply the algorithm-specific unification.
         data_obj = getattr(self.lastAppInstance, 'r', None)
         
@@ -304,12 +308,7 @@ class AppUIPyQt(QMainWindow):
         prefs = getattr(self.lastAppInstance, 'pref', None)
         
         if prefs:
-            if algo_name == "RankSky":
-                mode = "Max"
-            else:
-                mode = "auto"
-                
-            unifier = DataUnifier(all_pts, list(prefs), mode=mode)
+            unifier = DataUnifier(all_pts, list(prefs), mode="auto")
             all_pts = unifier.unify()
             
         return all_pts
@@ -352,9 +351,16 @@ class AppUIPyQt(QMainWindow):
                 
         elif algo == "RankSky":
             # inst.score is {id: (coords..., score)}
+            # inst.r is MIN-unified; we need MAX-unified coords to match all_pts.
+            # So we re-unify rTupleInit with MAX to get the same coordinate space.
             s_dict = getattr(inst, 'score', {})
+            raw = {k: list(v) for k, v in getattr(inst, 'rTupleInit', {}).items()}
+            prefs_list = list(getattr(inst, 'prefInit', []))
+            if raw and prefs_list:
+                unifier = DataUnifier(raw, prefs_list, mode="auto")
+                raw = unifier.unify()
             for p_id in s_dict:
-                coords = list(inst.r.get(p_id) or inst.r.get(str(p_id)) or [])
+                coords = list(raw.get(p_id) or raw.get(str(p_id)) or [])
                 result_data[p_id] = {'coords': coords, 'score': s_dict[p_id][-1]}
 
         return result_data
