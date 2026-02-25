@@ -28,7 +28,15 @@ SkyRank is designed for researchers, students, and practitioners working on **mu
 
 # Statement of need
 
-While the Skyline operator is widely studied, **few open source tools** exist to explore, rank, and visualize Skyline points across various datasets and ranking models. Implementations are often scattered, hard to reproduce, and lack integrated visual support.
+Although the Skyline operator has been widely studied, **few open-source tools** exist for exploring, ranking, and visualizing Skyline points across various datasets and ranking models. 
+
+Interpreting Skyline remains difficult because Skyline queries do not provide visual or explanatory insight by default [@zhaoSkyLensVisualAnalysis2017]. Implementations are often scattered, difficult to reproduce, and lack integrated visual support.
+
+Most Skyline tools focus only on computation, not exploration or visualization, and even less so ranking.
+
+To our knowledge, the only open-source visualization-focused Skyline tools are Skylens implementations such as: [https://www.cg.tuwien.ac.at/courses/Visualisierung2/HallOfFame/2019/Zhao2018/html/html_doku.html](https://www.cg.tuwien.ac.at/courses/Visualisierung2/HallOfFame/2019/Zhao2018/html/html_doku.html), [https://github.com/miguelmota/skyline](https://github.com/miguelmota/skyline) / [https://lab.miguelmota.com/skyline](https://lab.miguelmota.com/skyline) and [https://github.com/github/gh-skyline](https://github.com/github/gh-skyline). SkyLens is a visual analytics system designed specifically to explore, compare, and interpret Skyline points across multidimensional datasets [@zhaoSkyLensVisualAnalysis2017].
+
+There are a few open-source tools for queries and Skyline visualization, but none for ranking. Examples include: gkoos/skyline ([https://github.com/gkoos/skyline](https://github.com/gkoos/skyline)), SkylineProf ([https://skylineprof.github.io/](https://skylineprof.github.io/)), SkylineDet-YOLOv11Seg ([https://github.com/kuazhangxiaoai/SkylineDet-YOLOv11Seg](https://github.com/kuazhangxiaoai/SkylineDet-YOLOv11Seg)).
 
 SkyRank addresses this gap by:
 
