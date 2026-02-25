@@ -171,7 +171,14 @@ class AppUI:
             requires_pref = algo_name in ("RankSky", "CoskyAlgorithme", "CoskySQL")
             prefs = None
             if requires_pref:
-                s = askstring("Preferences", f"{nb_cols} columns detected.\nEnter {nb_cols} values (min/max) comma‑separated:")
+                prompt_msg = (
+                    f"{nb_cols} columns detected.\n"
+                    "For each column, enter 'min' (lower is better) or 'max' (higher is better),\n"
+                    "separated by commas.\n\n"
+                    "Example: " + ",".join(["min" if i % 2 == 0 else "max" for i in range(min(3, nb_cols))]) + (",..." if nb_cols > 3 else "") + "\n\n"
+                    f"Enter {nb_cols} values:"
+                )
+                s = askstring("Preferences", prompt_msg)
                 if not s:
                     return
                 parts = [p.strip().lower() for p in s.split(",")]

@@ -220,7 +220,14 @@ class AppUIPyQt(QMainWindow):
 
             prefs = None
             if algo_name in ("RankSky", "CoskyAlgorithme", "CoskySQL"):
-                s, ok = QInputDialog.getText(self, "Preferences", f"{nb_cols} columns detected.\nEnter {nb_cols} values (min/max) comma-separated:")
+                prompt_msg = (
+                    f"{nb_cols} columns detected.\n"
+                    "For each column, enter 'min' (lower is better) or 'max' (higher is better),\n"
+                    "separated by commas.\n\n"
+                    "Example: " + ",".join(["min" if i % 2 == 0 else "max" for i in range(min(3, nb_cols))]) + (",..." if nb_cols > 3 else "") + "\n\n"
+                    f"Enter {nb_cols} values:"
+                )
+                s, ok = QInputDialog.getText(self, "Preferences", prompt_msg)
                 if not ok or not s: return
                 parts = [p.strip().lower() for p in s.split(",")]
                 if len(parts) != nb_cols or any(p not in ("min", "max") for p in parts):
