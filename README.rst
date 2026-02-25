@@ -334,6 +334,9 @@ https://turlure-nael-23018992.github.io/SkyRank/
 The source files for the documentation are available in the repository:
 `docs <https://github.com/Turlure-Nael-23018992/SkyRank/tree/main/docs>`_
 
+For a step-by-step guide on using the graphical interface, see:
+`GUI Usage Guide <docs/usage_guide.rst>`_
+
 
 🤝 Community Guidelines
 
