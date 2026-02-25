@@ -25,37 +25,43 @@ A minimal working example has been incorporated to illustrate a comprehensive fu
 SkyRank provides a unified ``App`` class that serves as the primary entry point for all algorithms. 
 To use it, you wrap your raw data in a **Data Object** (like ``DictObject``) and choose an algorithm.
 
+.. note::
+   Make sure to run your scripts from the **root of the SkyRank project** (where this README is located) so that the Python imports (``Core``, ``Algorithms``, etc.) are resolved correctly.
+
 .. code-block:: python
 
+    # Mandatory core import
     from Core.App import App
+
+    # Algorithms: Choose the one you want to run
+    from Algorithms.SkyIR import SkyIR
     from Algorithms.CoskySql import CoskySQL
+
+    # Data Objects: Choose the one matching your input format
     from Utils.DataTypes.DictObject import DictObject
+    from Utils.DataTypes.JsonObject import JsonObject
+
+    # Preferences: Only required for Cosky and RankSky variants
     from Utils.Preference import Preference
 
-    # 1. Prepare your data {id: (coord1, coord2, ...)}
-    # This data matches the Algorithms/Datas/RTuples8.json dataset
-    raw_data = {
-        1: (5, 20, 0.014), 
-        2: (4, 60, 0.02), 
-        3: (5, 30, 0.016),
-        4: (1, 80, 0.016),
-        5: (5, 90, 0.025),
-        6: (9, 30, 0.02),
-        7: (7, 80, 0.025),
-        8: (9, 90, 0.033)
-    }
-    
-    # 2. Wrap data and define preferences
+    # --- Scenario 1: Quick Start with a Dictionary ---
+    # Basic ranking without specific column preferences
+    raw_data = {"P1": (10, 20), "P2": (5, 15), "P3": (20, 10)}
     data = DictObject(raw_data)
-    prefs = [Preference.MIN, Preference.MIN, Preference.MIN]
     
-    # 3. Execute the workflow through the App
-    app = App(data, CoskySQL, preferences=prefs)
+    app = App(data, SkyIR)
+    print(f"SkyIR execution: {app.execution_time}s")
+    print(app.result)  # Simple formatted string: ID | Coords | Score
+
+    # --- Scenario 2: Preference-Based Ranking from JSON ---
+    # Advanced ranking where you specify MIN (lower is better) or MAX
+    data_json = JsonObject("Assets/AlgoExecution/JsonFiles/RTuples8.json")
+    prefs = [Preference.MIN, Preference.MAX, Preference.MIN]
     
-    # 4. Access results
-    print(f"Algorithm: {app.algo}")
-    print(f"Execution Time: {app.execution_time}s")
-    print(f"Skyline Points: {app.algo_instance.dict}")
+    app_advanced = App(data_json, CoskySQL, preferences=prefs)
+    print(f"\nCoskySQL execution: {app_advanced.execution_time}s")
+    print(app_advanced.result)
+
 
 💡 Why Use Data Objects?
 

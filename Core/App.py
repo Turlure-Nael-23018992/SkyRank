@@ -99,6 +99,7 @@ class App:
         else:
             DataConverter(self.r).relationToDb()
             self.algo_instance = CoskySQL("../Assets/AlgoExecution/DbFiles/TestExecution.db", self.pref)
+        self.result = "\n".join([f"ID: {k} | Coords: {v[:-1]} | Score: {v[-1]}" for k, v in self.algo_instance.dict.items()])
 
     def _start_cosky_algorithme(self):
         # print_red("Starting CoskyAlgorithme")
@@ -111,6 +112,7 @@ class App:
         else:
             self.r = {k: tuple(v) for k, v in self.r.items()}
             self.algo_instance = CoskyAlgorithme(self.r, self.pref)
+        self.result = "\n".join([f"ID: {k} | Coords: {v[:-1]} | Score: {v[-1]}" for k, v in self.algo_instance.s.items()])
 
     def _start_dp_idp_dh(self):
         # print_red("Starting DpIdpDh")
@@ -123,6 +125,10 @@ class App:
         else:
             self.r = {k: tuple(v) for k, v in self.r.items()}
             self.algo_instance = DpIdpDh(self.r)
+            rel = self.r
+        # DpIdpDh returns 1-based indices as keys, we map them back to original IDs
+        ids = list(rel.keys())
+        self.result = "\n".join([f"ID: {ids[k-1]} | Coords: {list(rel[ids[k-1]])} | Score: {v}" for k, v in self.algo_instance.score.items()])
 
     def _start_ranksky(self):
         # print_red("Starting RankSky")
@@ -137,6 +143,7 @@ class App:
         else:
             self.r = {k: tuple(v) for k, v in self.r.items()}
             self.algo_instance = RankSky(self.r, self.pref)
+        self.result = "\n".join([f"ID: {k} | Coords: {list(v[:-1])} | Score: {v[-1]}" for k, v in self.algo_instance.score.items()])
 
     def _start_skyir(self):
         # print_red("Starting SkyIR")
@@ -149,6 +156,8 @@ class App:
         else:
             self.r = {k: tuple(v) for k, v in self.r.items()}
             self.algo_instance = SkyIR(self.r); self.algo_instance.skyIR(10)
+            rel = self.r
+        self.result = "\n".join([f"ID: {k} | Coords: {list(rel[k])} | Score: {s}" for k, s in self.algo_instance.result])
 
     @staticmethod
     def _count_db_columns(db_path):
@@ -167,3 +176,50 @@ class App:
         n = cur.fetchone()[0]
         con.close()
         return n
+
+if __name__ == "__main__":
+    from Utils.DataTypes.DictObject import DictObject
+    from Algorithms.DpIdpDh import DpIdpDh
+    from Algorithms.CoskyAlgorithme import CoskyAlgorithme
+    from Utils.Preference import Preference
+
+    # Données de test
+    data_dict = {
+        "P1": [10, 20, 30],
+        "P2": [5, 15, 25],
+        "P3": [20, 10, 5],
+        "P4": [1, 2, 3]
+    }
+    data_obj = DictObject(data_dict)
+
+    print("--- Test avec DpIdpDh ---")
+    app_dp = App(data_obj, DpIdpDh)
+    print("Temps d'exécution :", app_dp.execution_time)
+    print("Résultat :")
+    print(app_dp.result)
+
+    print("\n--- Test avec CoskyAlgorithme ---")
+    prefs = [Preference.MIN, Preference.MIN, Preference.MIN]
+    app_cosky = App(data_obj, CoskyAlgorithme, preferences=prefs)
+    print("Temps d'exécution :", app_cosky.execution_time)
+    print("Résultat :")
+    print(app_cosky.result)
+
+    print("\n--- Test avec SkyIR ---")
+    app_skyir = App(data_obj, SkyIR)
+    print("Temps d'exécution :", app_skyir.execution_time)
+    print("Résultat :")
+    print(app_skyir.result)
+
+    print("\n--- Test avec RankSky ---")
+    app_rank = App(data_obj, RankSky, preferences=prefs)
+    print("Temps d'exécution :", app_rank.execution_time)
+    print("Résultat :")
+    print(app_rank.result)
+
+    print("\n--- Test avec CoskySQL ---")
+    # CoskySQL will use the internal relationToDb conversion
+    app_sql = App(data_obj, CoskySQL, preferences=prefs)
+    print("Temps d'exécution :", app_sql.execution_time)
+    print("Résultat :")
+    print(app_sql.result)
