@@ -22,7 +22,7 @@ bibliography: paper.bib
 
 # Summary
 
-SkyRank is an open source Python framework designed to implement, compare and visualize various **Skyline [@Borzsony2001] ranking algorithms implementations**, including `dp-idp` [@Valkanas2014] improved with dominance hierarchy, `RankSky`, `CoSky` and `DeepSky` [@MartinNevot2024]. While these methods have been independently introduced in the literature, SkyRank provides a **unified, reproducible, and extensible platform** to evaluate and visualize them interactively.
+SkyRank is an open source Python framework designed to implement, compare and visualize various **Skyline [@Borzsony2001] ranking algorithms implementations**, including `dp-idp` [@Valkanas2014] improved with dominance hierarchy, `RankSky`, `CoSky` and `DeepSky` [@martinnevotRankingMethodsSkyline2026]. While these methods have been independently introduced in the literature, SkyRank provides a **unified, reproducible, and extensible platform** to evaluate and visualize them interactively.
 
 SkyRank is designed for researchers, students, and practitioners working on **multi-criteria decision making**, **Pareto dominance**, and **database preference queries**. It includes a modular benchmarking backend, a LaTeX-compatible graph generator, and two graphical user interfaces (based on PyQt5 and Tkinter) for interactive data exploration.
 
@@ -102,7 +102,7 @@ The repository is organized into logically separated modules, with each director
 
 # Acknowledgements
 
-The CoSky method and the overall Skyline ranking approach are based on work by M. Martin Nevot et al. [@MartinNevot2024].  
+The CoSky method and the overall Skyline ranking approach are based on work by M. Martin Nevot et al. [@martinnevotRankingMethodsSkyline2026].  
 SkyRank implements and adapts these methods in a unified open-source environment.
 
 # References
