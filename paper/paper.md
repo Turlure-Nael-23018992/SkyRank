@@ -22,7 +22,7 @@ bibliography: paper.bib
 
 # Summary
 
-SkyRank is an open source Python framework designed to implement, compare and visualize various **Skyline [@Borzsony2001] ranking algorithms implementations**, including `dp-idp` [@Valkanas2014] improved with dominance hierarchy, `RankSky`, `CoSky` and `DeepSky` [@martinnevotRankingMethodsSkyline2026]. While these methods have been independently introduced in the literature, SkyRank provides a **unified, reproducible, and extensible platform** to evaluate and visualize them interactively.
+SkyRank is an open source Python framework designed to implement, compare and visualize various **Skyline [@Borzsony2001] ranking algorithm implementations**, including `dp-idp` [@Valkanas2014] improved with dominance hierarchy, `RankSky`, `CoSky` and `DeepSky` [@martinnevotRankingMethodsSkyline2026]. While these methods have been independently introduced in the literature, SkyRank provides a **unified, reproducible, and extensible platform** to evaluate and visualize them interactively.
 
 SkyRank is designed for researchers, students, and practitioners working on **multi-criteria decision making**, **Pareto dominance**, and **database preference queries**. It includes a modular benchmarking backend, a LaTeX-compatible graph generator, and two graphical user interfaces (based on PyQt5 and Tkinter) for interactive data exploration.
 
@@ -30,7 +30,7 @@ SkyRank is designed for researchers, students, and practitioners working on **mu
 
 Although the Skyline operator has been widely studied, **few open-source tools** exist for exploring, ranking, and visualizing Skyline points across various datasets and ranking models. 
 
-Interpreting Skyline remains difficult because Skyline queries do not provide visual or explanatory insight by default [@zhaoSkyLensVisualAnalysis2017]. Implementations are often scattered, difficult to reproduce, and lack integrated visual support.
+Interpreting the Skyline remains difficult because Skyline queries do not provide visual or explanatory insight by default [@zhaoSkyLensVisualAnalysis2017]. Implementations are often scattered, difficult to reproduce, and lack integrated visual support.
 
 Most Skyline tools focus only on computation, not exploration or visualization, and even less so ranking.
 
@@ -54,7 +54,7 @@ SkyRank addresses this gap by:
 # Features
 
 - ✅ Implementations of `dp-idp` improved with dominance hierarchy, `RankSky`, `CoSky`, `DeepSky`
-- ✅ Automatic scoring using with dominance hierarchy, PageRank [@Page1998] and [@Langville2006], cosine similarity, and TOPSIS scoring [@Lai1994]
+- ✅ Automatic scoring using dominance hierarchy, PageRank [@Page1998] and [@Langville2006], cosine similarity, and TOPSIS scoring [@Lai1994]
 - ✅ Modular architecture for adding new ranking methods
 - ✅ GUI interfaces for ranking and visual inspection of results
 - ✅ Graph export in LaTeX/TikZ format
