@@ -5,6 +5,13 @@
    :target: https://joss.theoj.org/papers/5f3289355fa004bf243ef2533b3d2117
    :alt: JOSS status
 
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.18936993.svg
+   :target: https://doi.org/10.5281/zenodo.18936993
+   :alt: Zenodo DOI
+
+.. image:: https://img.shields.io/badge/version-v1.1.1-blue.svg
+   :alt: Version v1.1.1
+
 SkyRank is an open-source benchmarking and visualization framework for multi-dimensional Skyline algorithms.
 It provides a modular architecture to run, compare, and visualize advanced preference queries over large datasets.
 

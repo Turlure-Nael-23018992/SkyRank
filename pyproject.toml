@@ -1,6 +1,6 @@
 [project]
 name = "skyrank"
-version = "1.0.0"
+version = "v1.1.1"
 description = "A framework to benchmark and visualize Skyline algorithms."
 authors = [
   { name = "Naël Turlure" },

@@ -1,5 +1,5 @@
 ---
-title: "SkyRank: a unified toolkit for Skyline ranking, benchmarking and visualization"
+title: "SkyRank: a unified toolkit for Skyline ranking, benchmarking, and visualization"
 tags:
   - skyline
   - multi-criteria decision making
@@ -22,7 +22,7 @@ bibliography: paper.bib
 
 # Summary
 
-SkyRank is an open source Python framework designed to implement, compare and visualize various **Skyline [@Borzsony2001] ranking algorithm implementations**, including `dp-idp` [@valkanasSkylineRankingIR2014] improved with dominance hierarchy, `RankSky`, `CoSky` and `DeepSky` [@martinnevotRankingMethodsSkyline2026]. While these methods have been independently introduced in the literature, SkyRank provides a **unified, reproducible, and extensible platform** to evaluate and visualize them interactively.
+SkyRank is an open source Python framework designed to implement, compare, and visualize various **Skyline [@Borzsony2001] ranking algorithm implementations**, including `dp-idp` [@valkanasSkylineRankingIR2014] improved with dominance hierarchy, `RankSky`, `CoSky`, and `DeepSky` [@martinnevotRankingMethodsSkyline2026]. While these methods have been independently introduced in the literature, SkyRank provides a **unified, reproducible, and extensible platform** to evaluate and visualize them interactively.
 
 SkyRank is designed for researchers, students, and practitioners working on **multi-criteria decision making**, **Pareto dominance**, and **database preference queries**. It includes a modular benchmarking backend, a LaTeX-compatible graph generator, and two graphical user interfaces (based on PyQt5 and Tkinter) for interactive data exploration.
 
@@ -36,7 +36,7 @@ Most Skyline tools focus only on computation, not exploration or visualization, 
 
 To our knowledge, the only open-source visualization-focused Skyline tools are Skylens implementations such as: TU Wien SkyLens [@tuwienSkyLens2019], Miguel Mota's Skyline [@motaSkyline], and gh-skyline [@ghSkyline]. SkyLens is a visual analytics system designed specifically to explore, compare, and interpret Skyline points across multidimensional datasets [@zhaoSkyLensVisualAnalysis2017].
 
-There are a few open-source tools for queries and Skyline visualization, but none for ranking. Examples include: gkoos/skyline [@gkoosSkyline], SkylineProf [@skylineProf], SkylineDet-YOLOv11Seg [@skylineDet].
+There are a few open-source tools for queries and Skyline visualization, but none for ranking. Examples include: gkoos/skyline [@gkoosSkyline], SkylineProf [@skylineProf], and SkylineDet-YOLOv11Seg [@skylineDet].
 
 SkyRank addresses this gap by:
 
@@ -53,7 +53,7 @@ SkyRank addresses this gap by:
 
 # Features
 
-- ✅ Implementations of `dp-idp` improved with dominance hierarchy, `RankSky`, `CoSky`, `DeepSky`
+- ✅ Implementations of `dp-idp` improved with dominance hierarchy, `RankSky`, `CoSky`, and `DeepSky`
 - ✅ Automatic scoring using dominance hierarchy, PageRank [@Page1998] and [@langvilleGooglesPageRankScience2006], cosine similarity, and TOPSIS scoring [@Lai1994]
 - ✅ Modular architecture for adding new ranking methods
 - ✅ GUI interfaces for ranking and visual inspection of results
@@ -84,7 +84,7 @@ The repository is organized into logically separated modules, with each director
   - `LatexMain.py` generates ready-to-use LaTeX/TikZ charts.
 
 - `Utils/` gathers reusable tools and utilities, organized by functionality:
-  - `DataModifier/` and `DataTypes/` handle data preparation, data loading and internal structures.
+  - `DataModifier/` and `DataTypes/` handle data preparation, data loading, and internal structures.
   - `Exporter/` defines data export interfaces (e.g., CSV, LaTeX).
   - `Latex/` includes tools for LaTeX/TikZ generation.
 
