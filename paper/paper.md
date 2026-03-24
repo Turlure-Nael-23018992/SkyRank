@@ -22,13 +22,13 @@ bibliography: paper.bib
 
 # Summary
 
-SkyRank is an open source Python framework designed to implement, compare, and visualize various **Skyline [@Borzsony2001] ranking algorithm implementations**, including `dp-idp` [@valkanasSkylineRankingIR2014] improved with dominance hierarchy, `RankSky`, `CoSky`, and `DeepSky` [@martinnevotRankingMethodsSkyline2026]. While these methods have been independently introduced in the literature, SkyRank provides a **unified, reproducible, and extensible platform** to evaluate and visualize them interactively.
+SkyRank is an open source Python framework designed to implement, compare, and visualize various Skyline [@Borzsony2001] ranking algorithm implementations, including `dp-idp` [@valkanasSkylineRankingIR2014] improved with dominance hierarchy, `RankSky`, `CoSky`, and `DeepSky` [@martinnevotRankingMethodsSkyline2026]. While these methods have been independently introduced in the literature, SkyRank provides a unified, reproducible, and extensible platform to evaluate and visualize them interactively.
 
-SkyRank is designed for researchers, students, and practitioners working on **multi-criteria decision making**, **Pareto dominance**, and **database preference queries**. It includes a modular benchmarking backend, a LaTeX-compatible graph generator, and two graphical user interfaces (based on PyQt5 and Tkinter) for interactive data exploration.
+SkyRank is designed for researchers, students, and practitioners working on multi-criteria decision making, Pareto dominance, and database preference queries. It includes a modular benchmarking backend, a LaTeX-compatible graph generator, and two graphical user interfaces (based on PyQt5 and Tkinter) for interactive data exploration.
 
 # Statement of need
 
-Although the Skyline operator has been widely studied, **few open-source tools** exist for exploring, ranking, and visualizing Skyline points across various datasets and ranking models. 
+Although the Skyline operator has been widely studied, few open-source tools exist for exploring, ranking, and visualizing Skyline points across various datasets and ranking models. 
 
 Interpreting the Skyline remains difficult because Skyline queries do not provide visual or explanatory insight by default [@zhaoSkyLensVisualAnalysis2017]. Implementations are often scattered, difficult to reproduce, and lack integrated visual support.
 
@@ -40,16 +40,16 @@ There are a few open-source tools for queries and Skyline visualization, but non
 
 SkyRank addresses this gap by:
 
-- Providing **ready-to-use implementations** of major Skyline ranking approaches.
-- Offering **graphical interfaces** to run algorithms and compare results visually.
+- Providing ready-to-use implementations of major Skyline ranking approaches.
+- Offering graphical interfaces to run algorithms and compare results visually.
 
 ![Graphical interface with Skyline points visualization.\label{mylabel}](SkyrankUI.png)
 
-- Supporting **LaTeX-based chart generation** for scientific reporting.
+- Supporting LaTeX-based chart generation for scientific reporting.
 
 ![Latex graph generation.\label{mylabel}](SkyrankLatex.png)
 
-- Enabling **fast experimentation** and educational use.
+- Enabling fast experimentation and educational use.
 
 # Features
 
