@@ -1,7 +1,7 @@
 cff-version: "1.2.0"
 authors:
-- family-names: Nevot
-  given-names: Mickaël Martin
+- family-names: Martin Nevot
+  given-names: Mickaël 
   orcid: "https://orcid.org/0009-0004-7893-3449"
 - family-names: Turlure
   given-names: Nael
@@ -11,8 +11,8 @@ message: If you use this software, please cite our article in the
   Journal of Open Source Software.
 preferred-citation:
   authors:
-  - family-names: Nevot
-    given-names: Mickaël Martin
+  - family-names: Martin Nevot
+    given-names: Mickaël 
     orcid: "https://orcid.org/0009-0004-7893-3449"
   - family-names: Turlure
     given-names: Nael
